@@ -1,173 +1,181 @@
-Garage Service Management System (GSMS)
+🚗 Garage Service Management System (GSMS)
 
-The Garage Service Management System (GSMS) is a web-based platform designed to streamline the operations of automotive service centers by digitizing the management of service requests, job cards, technician assignments, and repair progress tracking.
 
-Traditional garages often rely on manual record keeping, paper job cards, and verbal communication between customers, technicians, and administrators. This approach can lead to lost information, inefficient workflows, delayed repairs, and poor customer communication.
 
-GSMS addresses these challenges by providing a centralized digital system where customers can submit service requests, administrators can manage repair jobs, and technicians can update service progress in real time. The system improves transparency, accountability, and operational efficiency within garage environments.
 
-System Overview
 
-The system is built as a role-based web application where different users interact with the platform based on their responsibilities within the garage workflow.
 
-The three primary user roles in the system are:
 
-Customers
-Customers can book vehicle service requests through the system and track the progress of their repairs. Once a request is submitted, it automatically generates a job card that can be managed by the garage administration.
 
-Administrators
-Administrators oversee garage operations by viewing incoming service requests, managing job cards, assigning technicians to specific repairs, and monitoring repair progress.
+A web-based platform for managing vehicle service requests, job cards, technician assignments, and repair tracking for auto garages.
 
-Technicians
-Technicians access their assigned repair tasks through a technician dashboard where they can update repair statuses, add repair notes, and upload images documenting the repair process.
+✨ Overview
 
-Core Features
-User Authentication and Role Management
+The Garage Service Management System (GSMS) is a digital solution designed to improve how automotive service centers manage repair workflows.
 
-The system provides a login interface where users can authenticate using a username or email address along with a password. Based on the authenticated role, users are redirected to the appropriate dashboard.
+Many garages still rely on manual record keeping, paper job cards, and verbal communication between staff and customers. This can result in:
 
-Supported roles include:
+❌ lost records
+❌ delayed service updates
+❌ poor repair tracking
+❌ inefficient garage operations
 
-Administrator
+GSMS replaces this process with a centralized digital platform that connects customers, technicians, and administrators in one system.
 
-Technician
+🧩 Core Idea
 
-Customer
+Instead of paperwork and phone calls, the repair process becomes:
 
-Service Booking
+Customer Books Service
+        ↓
+System Creates Job Card
+        ↓
+Admin Assigns Technician
+        ↓
+Technician Updates Repair Progress
+        ↓
+Customer Tracks Repair Status
 
-Customers can submit vehicle service requests through a booking form that captures essential information such as:
+This creates a transparent and efficient workflow for garage operations.
 
-Customer details
+👥 User Roles
 
-Vehicle information
+The system supports three main roles.
 
-Description of the problem
+👤 Customer
 
-Preferred service
+Customers can:
 
-Upon submission, the system automatically generates a job card representing the repair task.
+Book vehicle service
 
-Job Card Management
+Track repair progress
 
-Job cards serve as the central unit of work within the system. Each job card contains detailed information about a repair request, including:
+View technician updates
 
-Customer information
+Check repair status
 
-Vehicle details
+🛠 Technician
 
-Problem description
+Technicians can:
 
-Job status
-
-Assigned technician
-
-Repair notes
-
-Uploaded repair images
-
-Administrators can view all job cards and assign technicians to handle specific repairs.
-
-Technician Task Updates
-
-Technicians can access a dashboard displaying all repair tasks assigned to them. From this interface they can:
+View assigned job cards
 
 Update repair progress
 
-Change job status
-
 Add repair notes
 
-Upload images documenting repair stages
+Upload repair images
 
-This ensures that repair progress is consistently tracked and visible within the system.
+🧑‍💼 Admin
 
-Repair Status Tracking
+Administrators manage the system by:
 
-Customers can monitor the progress of their service requests through a dedicated dashboard that displays updates such as:
+Viewing incoming service requests
 
-Job status
+Managing job cards
 
-Technician notes
+Assigning technicians
 
-Uploaded repair images
+Monitoring repair progress
 
-Completion notifications
+⚙️ Features
 
-This improves communication between the garage and customers while reducing the need for manual follow-ups.
+✔ User authentication system
+✔ Role-based dashboards
+✔ Service booking system
+✔ Automatic job card creation
+✔ Technician repair updates
+✔ Customer repair tracking
 
-System Workflow
+🖥️ System Screens (Concept)
+Landing Page
 
-The typical workflow within the system follows this process:
+Entry page introducing the system and navigation to login.
 
-A customer submits a vehicle service request.
+Login System
 
-The system automatically generates a job card.
+Users authenticate using username or email and are redirected to their role dashboard.
 
-The administrator reviews the job card and assigns a technician.
+Admin Dashboard
 
-The technician performs the repair and updates job progress.
+Admins manage job cards and technician assignments.
 
-The customer tracks repair updates through the dashboard.
+Technician Dashboard
 
-Once the repair is completed, the job card status is updated accordingly.
+Technicians update repair status and document repair progress.
 
-Technology Stack
+Customer Dashboard
 
-The system is built using modern web technologies including:
+Customers track repair progress and job card updates.
 
+🛠 Tech Stack
 Frontend
-
 HTML
-
 CSS
-
 JavaScript
-
-Backend (Planned Integration)
-
-Node.js
-
+Backend (Planned)
 Firebase Authentication
-
 Firebase Firestore
-
 Firebase Storage
+Node.js
+📂 Project Structure
+GSMS
+│
+├── index.html
+├── login.html
+│
+├── dashboards
+│   ├── admin-dashboard.html
+│   ├── tech-dashboard.html
+│   └── customer-dashboard.html
+│
+├── pages
+│   └── book-service.html
+│
+├── css
+│   └── styles.css
+│
+└── js
+    ├── auth.js
+    ├── jobs.js
+    └── session.js
+🔄 System Workflow
+Customer Request
+      ↓
+Job Card Generated
+      ↓
+Admin Assigns Technician
+      ↓
+Technician Updates Job
+      ↓
+Customer Tracks Repair
+🚀 Future Improvements
 
-The current prototype focuses on the core system interface and workflow, with backend integration planned for later development stages.
+Planned features for future development:
 
-Project Goals
+🔹 Firebase database integration
+🔹 Repair photo uploads
+🔹 Real-time job updates
+🔹 Technician workload management
+🔹 Service history tracking
+🔹 Notification system
 
-The primary goals of this system are:
+🎓 Academic Context
 
-Digitize traditional garage service workflows
+This project is developed as part of a Bachelor of Science in Computer Technology program.
 
-Improve service tracking and transparency
+The goal is to demonstrate how web technologies can digitize and improve real-world business processes, specifically in automotive service environments.
 
-Reduce administrative workload
+👨‍💻 Author
 
-Enhance communication between customers and technicians
-
-Provide a scalable system that can support multiple garage operations
-
-Future Improvements
-
-Future development plans for the system include:
-
-Full Firebase database integration
-
-Image upload support for repair documentation
-
-Real-time repair status updates
-
-Technician workload management
-
-Service history tracking for customers
-
-Notification system for repair updates
-
-Author
-
-Developed by Tyrone Jack
-Bachelor of Science in Computer Technology
+Tyrone Jack
+BSc Computer Technology
 Multimedia University of Kenya
+
+⭐ Support
+
+If you find this project interesting or useful:
+
+⭐ Star the repository
+🍴 Fork the project
+📢 Share feedback
