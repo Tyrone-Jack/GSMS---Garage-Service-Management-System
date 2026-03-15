@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Service - GSMS</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .header {
+            background: linear-gradient(135deg, var(--primary-bg), var(--primary-lighter));
+            border-bottom: 1px solid var(--primary-light);
+        }
+
+        .main-content {
+            display: flex;
+            gap: var(--spacing-lg);
+            margin-top: var(--spacing-lg);
+        }
+
+        .booking-container {
+            flex: 1;
+            padding: var(--spacing-lg) 0;
+        }
+
+        .booking-header {
+            margin-bottom: var(--spacing-2xl);
+        }
+
+        .booking-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .booking-subtitle {
+            color: var(--gray-500);
+            font-size: 16px;
+        }
+
+        .step-indicator {
+            display: flex;
+            gap: var(--spacing-md);
+            align-items: center;
+            margin-bottom: var(--spacing-2xl);
+            padding: var(--spacing-lg);
+            background: var(--white);
+            border-radius: 12px;
+            border: 1px solid var(--gray-200);
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            position: relative;
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--gray-200);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: var(--gray-600);
+            margin-bottom: 8px;
+        }
+
+        .step.active .step-number {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .step.completed .step-number {
+            background: var(--success);
+            color: var(--white);
+        }
+
+        .step-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--gray-600);
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .step.active .step-label {
+            color: var(--primary);
+        }
+
+        .step-divider {
+            position: absolute;
+            top: 20px;
+            left: -50%;
+            width: 100%;
+            height: 2px;
+            background: var(--gray-200);
+            z-index: -1;
+        }
+
+        .step:first-child .step-divider {
+            display: none;
+        }
+
+        .step.active .step-divider,
+        .step.completed .step-divider {
+            background: var(--primary);
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-2xl);
+        }
+
+        .service-card {
+            background: var(--white);
+            border: 2px solid var(--gray-200);
+            border-radius: 12px;
+            padding: var(--spacing-lg);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .service-card:hover {
+            border-color: var(--primary-light);
+            box-shadow: 0 8px 24px rgba(249, 115, 22, 0.12);
+        }
+
+        .service-card.selected {
+            border-color: var(--primary);
+            background: var(--primary-bg);
+        }
+
+        .service-icon {
+            font-size: 40px;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .service-name {
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        .service-description {
+            font-size: 13px;
+            color: var(--gray-600);
+            margin-bottom: var(--spacing-md);
+            flex: 1;
+        }
+
+        .service-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: var(--spacing-md);
+            border-top: 1px solid var(--gray-200);
+        }
+
+        .service-price {
+            font-weight: 700;
+            font-size: 18px;
+            color: var(--primary);
+        }
+
+        .service-duration {
+            font-size: 12px;
+            color: var(--gray-500);
+            background: var(--gray-100);
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .form-section {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-2xl);
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-lg);
+        }
+
+        .form-group label {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--gray-700);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 12px var(--spacing-md);
+            border: 1px solid var(--gray-300);
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+        }
+
+        .vehicle-selector {
+            display: flex;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .vehicle-option {
+            flex: 1;
+            padding: var(--spacing-md);
+            border: 2px solid var(--gray-300);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            background: var(--white);
+        }
+
+        .vehicle-option:hover {
+            border-color: var(--primary-light);
+        }
+
+        .vehicle-option.selected {
+            border-color: var(--primary);
+            background: var(--primary-bg);
+        }
+
+        .vehicle-option h4 {
+            margin-bottom: 4px;
+        }
+
+        .vehicle-option p {
+            font-size: 12px;
+            color: var(--gray-600);
+        }
+
+        .date-time-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-lg);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-2xl);
+        }
+
+        .summary-card {
+            background: var(--primary-bg);
+            border: 2px solid var(--primary-lighter);
+            border-radius: 12px;
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-2xl);
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: var(--spacing-md);
+            padding-bottom: var(--spacing-md);
+            border-bottom: 1px solid rgba(249, 115, 22, 0.2);
+        }
+
+        .summary-row:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .summary-label {
+            color: var(--gray-700);
+            font-size: 14px;
+        }
+
+        .summary-value {
+            font-weight: 600;
+            color: var(--primary-dark);
+        }
+
+        .summary-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: var(--spacing-md);
+            padding-top: var(--spacing-md);
+            border-top: 2px solid var(--primary-lighter);
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .success-message {
+            background: #dcfce7;
+            border: 1px solid var(--success);
+            color: #065f46;
+            padding: var(--spacing-lg);
+            border-radius: 8px;
+            margin-bottom: var(--spacing-lg);
+            display: none;
+        }
+
+        .success-message.show {
+            display: block;
+            animation: slideUp 0.3s ease;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .date-time-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .step-indicator {
+                padding: var(--spacing-md);
+            }
+
+            .step-label {
+                font-size: 10px;
+            }
+
+            .vehicle-selector {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-content">
+            <a href="customer-dashboard.html" class="logo">
+                <span>GS</span>
+                GSMS
+            </a>
+            <nav class="nav-menu">
+                <a href="customer-dashboard.html">Dashboard</a>
+                <a href="book-service.html" class="active">Book Service</a>
+                <a href="customer-dashboard.html#active-jobs">Active Jobs</a>
+                <a href="customer-dashboard.html#invoices">Invoices</a>
+            </nav>
+            <div class="user-profile">
+                <div class="user-avatar" id="userAvatar">JD</div>
+                <button class="btn btn-secondary btn-sm" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-title">Menu</div>
+                <ul class="sidebar-menu">
+                    <li><a href="customer-dashboard.html">Dashboard</a></li>
+                    <li><a href="book-service.html" class="active">Book Service</a></li>
+                    <li><a href="customer-dashboard.html#active-jobs">Active Jobs</a></li>
+                    <li><a href="customer-dashboard.html#invoices">Invoices</a></li>
+                    <li><a href="#profile">Profile</a></li>
+                </ul>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-title">Support</div>
+                <ul class="sidebar-menu">
+                    <li><a href="#help">Help Center</a></li>
+                    <li><a href="#contact">Contact Us</a></li>
+                    <li><a href="#faq">FAQ</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Booking Content -->
+        <div class="booking-container">
+            <div class="container">
+                <!-- Success Message -->
+                <div id="successMessage" class="success-message">
+                    <strong>Success!</strong> Your booking has been confirmed. You'll receive a confirmation email shortly.
+                </div>
+
+                <!-- Booking Header -->
+                <div class="booking-header">
+                    <h1 class="booking-title">Book a Service</h1>
+                    <p class="booking-subtitle">Schedule your vehicle maintenance in just a few steps</p>
+                </div>
+
+                <!-- Step Indicator -->
+                <div class="step-indicator">
+                    <div class="step completed">
+                        <div class="step-number">✓</div>
+                        <div class="step-label">Select Service</div>
+                        <div class="step-divider"></div>
+                    </div>
+                    <div class="step active">
+                        <div class="step-number">2</div>
+                        <div class="step-label">Vehicle & Date</div>
+                        <div class="step-divider"></div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-label">Confirm Booking</div>
+                    </div>
+                </div>
+
+                <!-- Service Selection -->
+                <div class="form-section">
+                    <div class="section-title">Select Service</div>
+                    <div class="services-grid">
+                        <div class="service-card selected" onclick="selectService(this, 'Oil Change')">
+                            <div class="service-icon">🛢️</div>
+                            <div class="service-name">Oil Change</div>
+                            <p class="service-description">Standard oil and filter replacement service</p>
+                            <div class="service-footer">
+                                <span class="service-price">$49.99</span>
+                                <span class="service-duration">30 min</span>
+                            </div>
+                        </div>
+
+                        <div class="service-card" onclick="selectService(this, 'Brake Service')">
+                            <div class="service-icon">🛑</div>
+                            <div class="service-name">Brake Service</div>
+                            <p class="service-description">Brake pad and rotor inspection</p>
+                            <div class="service-footer">
+                                <span class="service-price">$129.99</span>
+                                <span class="service-duration">1.5 hours</span>
+                            </div>
+                        </div>
+
+                        <div class="service-card" onclick="selectService(this, 'AC Service')">
+                            <div class="service-icon">❄️</div>
+                            <div class="service-name">AC Service</div>
+                            <p class="service-description">Air conditioning system service</p>
+                            <div class="service-footer">
+                                <span class="service-price">$129.99</span>
+                                <span class="service-duration">1.5 hours</span>
+                            </div>
+                        </div>
+
+                        <div class="service-card" onclick="selectService(this, 'Battery Replacement')">
+                            <div class="service-icon">🔋</div>
+                            <div class="service-name">Battery Replacement</div>
+                            <p class="service-description">Battery test and replacement</p>
+                            <div class="service-footer">
+                                <span class="service-price">$89.99</span>
+                                <span class="service-duration">30 min</span>
+                            </div>
+                        </div>
+
+                        <div class="service-card" onclick="selectService(this, 'Tire Rotation')">
+                            <div class="service-icon">🛞</div>
+                            <div class="service-name">Tire Rotation</div>
+                            <p class="service-description">Rotate and balance all four tires</p>
+                            <div class="service-footer">
+                                <span class="service-price">$65.00</span>
+                                <span class="service-duration">45 min</span>
+                            </div>
+                        </div>
+
+                        <div class="service-card" onclick="selectService(this, 'Engine Diagnostic')">
+                            <div class="service-icon">🔍</div>
+                            <div class="service-name">Engine Diagnostic</div>
+                            <p class="service-description">Complete engine system diagnostic</p>
+                            <div class="service-footer">
+                                <span class="service-price">$99.99</span>
+                                <span class="service-duration">1 hour</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Vehicle Selection -->
+                <div class="form-section">
+                    <div class="section-title">Select Vehicle</div>
+                    <div class="vehicle-selector">
+                        <div class="vehicle-option selected" onclick="selectVehicle(this)">
+                            <h4>2020 Toyota Camry</h4>
+                            <p>Plate: ABC123</p>
+                        </div>
+                        <div class="vehicle-option" onclick="selectVehicle(this)">
+                            <h4>2018 Honda Civic</h4>
+                            <p>Plate: XYZ789</p>
+                        </div>
+                        <div class="vehicle-option" onclick="selectVehicle(this)">
+                            <button class="btn btn-sm btn-outline" style="width: 100%; margin-top: 8px;">Add New Vehicle</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Date & Time Selection -->
+                <div class="form-section">
+                    <div class="section-title">Choose Date & Time</div>
+                    <div class="date-time-grid">
+                        <div class="form-group">
+                            <label for="date">Preferred Date</label>
+                            <input type="date" id="date" min="" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="time">Preferred Time</label>
+                            <select id="time" required>
+                                <option value="">Select a time slot</option>
+                                <option value="08:00">08:00 AM</option>
+                                <option value="09:00">09:00 AM</option>
+                                <option value="10:00">10:00 AM</option>
+                                <option value="11:00">11:00 AM</option>
+                                <option value="12:00">12:00 PM</option>
+                                <option value="14:00">02:00 PM</option>
+                                <option value="15:00">03:00 PM</option>
+                                <option value="16:00">04:00 PM</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Additional Details -->
+                <div class="form-section">
+                    <div class="section-title">Additional Information</div>
+                    <div class="form-group">
+                        <label for="notes">Service Notes (Optional)</label>
+                        <textarea id="notes" placeholder="Any additional details about your vehicle or service needs..." rows="4"></textarea>
+                    </div>
+                </div>
+
+                <!-- Booking Summary -->
+                <div class="summary-card">
+                    <div class="section-title" style="margin-bottom: var(--spacing-lg); color: var(--primary-dark);">Booking Summary</div>
+                    <div class="summary-row">
+                        <span class="summary-label">Service</span>
+                        <span class="summary-value" id="summaryService">Oil Change</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">Vehicle</span>
+                        <span class="summary-value" id="summaryVehicle">2020 Toyota Camry</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">Date & Time</span>
+                        <span class="summary-value" id="summaryDateTime">Not selected</span>
+                    </div>
+                    <div class="summary-total">
+                        <span>Total Amount</span>
+                        <span id="summaryPrice" style="color: var(--primary);">$49.99</span>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <button class="btn btn-secondary" onclick="goBack()">Back</button>
+                    <button class="btn btn-primary btn-lg" onclick="confirmBooking()" style="flex: 1;">Confirm Booking</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirm Booking Modal -->
+    <div id="confirmBookingModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Confirm Your Booking</h3>
+                <button class="modal-close" onclick="closeModal('confirmBookingModal')">×</button>
+            </div>
+            <div style="background: var(--gray-50); padding: var(--spacing-lg); border-radius: 8px; margin-bottom: var(--spacing-lg);">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-md); margin-bottom: var(--spacing-md);">
+                    <div>
+                        <div style="font-size: 12px; color: var(--gray-600); font-weight: 600; margin-bottom: 4px; text-transform: uppercase;">Service</div>
+                        <div id="confirmService" style="font-weight: 600; color: var(--gray-900);">Oil Change</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 12px; color: var(--gray-600); font-weight: 600; margin-bottom: 4px; text-transform: uppercase;">Price</div>
+                        <div id="confirmPrice" style="font-weight: 600; color: var(--primary); font-size: 16px;">$49.99</div>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-md); font-size: 13px;">
+                    <div>
+                        <div style="color: var(--gray-600); font-weight: 600; margin-bottom: 4px;">Vehicle</div>
+                        <div id="confirmVehicle">2020 Toyota Camry</div>
+                    </div>
+                    <div>
+                        <div style="color: var(--gray-600); font-weight: 600; margin-bottom: 4px;">Date & Time</div>
+                        <div id="confirmDateTime">TBD</div>
+                    </div>
+                </div>
+            </div>
+            <div style="background: var(--primary-bg); padding: var(--spacing-lg); border-radius: 8px; margin-bottom: var(--spacing-lg); border: 1px solid var(--primary-lighter);">
+                <h4 style="margin-bottom: var(--spacing-md); color: var(--primary-dark);">Booking Summary</h4>
+                <div style="display: grid; gap: var(--spacing-md); font-size: 13px;">
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="color: var(--gray-700);">Service Fee</span>
+                        <span style="font-weight: 600; color: var(--primary-dark);" id="summaryFee">$49.99</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="color: var(--gray-700);">Estimated Duration</span>
+                        <span style="font-weight: 600; color: var(--primary-dark);">30 minutes</span>
+                    </div>
+                    <div style="border-top: 1px solid rgba(249, 115, 22, 0.2); padding-top: var(--spacing-md); display: flex; justify-content: space-between;">
+                        <span style="color: var(--gray-700); font-weight: 600;">Total</span>
+                        <span style="font-weight: 700; color: var(--primary-dark); font-size: 16px;" id="summaryTotal">$49.99</span>
+                    </div>
+                </div>
+            </div>
+            <div style="background: #e0f2fe; padding: var(--spacing-md); border-radius: 8px; margin-bottom: var(--spacing-lg); border-left: 4px solid var(--info);">
+                <p style="color: #164e63; font-size: 13px; margin: 0;">You'll receive a confirmation email with all booking details shortly after confirmation.</p>
+            </div>
+            <div style="display: flex; gap: var(--spacing-md);">
+                <button class="btn btn-primary" style="flex: 1;" onclick="submitBooking()">Confirm Booking</button>
+                <button class="btn btn-secondary" style="flex: 1;" onclick="closeModal('confirmBookingModal')">Edit Details</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add New Vehicle Modal -->
+    <div id="addVehicleModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New Vehicle</h3>
+                <button class="modal-close" onclick="closeModal('addVehicleModal')">×</button>
+            </div>
+            <div style="margin-bottom: var(--spacing-lg);">
+                <label for="vehicleMake">Make/Brand:</label>
+                <input type="text" id="vehicleMake" placeholder="e.g., Toyota, Honda, Ford" style="margin-top: 8px;">
+            </div>
+            <div style="margin-bottom: var(--spacing-lg);">
+                <label for="vehicleModel">Model:</label>
+                <input type="text" id="vehicleModel" placeholder="e.g., Camry, Civic, F-150" style="margin-top: 8px;">
+            </div>
+            <div style="margin-bottom: var(--spacing-lg);">
+                <label for="vehicleYear">Year:</label>
+                <input type="number" id="vehicleYear" placeholder="e.g., 2020" min="2000" max="2030" style="margin-top: 8px;">
+            </div>
+            <div style="margin-bottom: var(--spacing-lg);">
+                <label for="vehiclePlate">License Plate:</label>
+                <input type="text" id="vehiclePlate" placeholder="e.g., ABC123" style="margin-top: 8px; text-transform: uppercase;">
+            </div>
+            <div style="margin-bottom: var(--spacing-lg);">
+                <label for="vehicleColor">Color:</label>
+                <input type="text" id="vehicleColor" placeholder="e.g., Black, Silver, Red" style="margin-top: 8px;">
+            </div>
+            <div style="display: flex; gap: var(--spacing-md);">
+                <button class="btn btn-primary" style="flex: 1;" onclick="saveNewVehicle()">Add Vehicle</button>
+                <button class="btn btn-secondary" style="flex: 1;" onclick="closeModal('addVehicleModal')">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const services = {
+            'Oil Change': { price: 49.99, duration: '30 min' },
+            'Brake Service': { price: 129.99, duration: '1.5 hours' },
+            'AC Service': { price: 129.99, duration: '1.5 hours' },
+            'Battery Replacement': { price: 89.99, duration: '30 min' },
+            'Tire Rotation': { price: 65.00, duration: '45 min' },
+            'Engine Diagnostic': { price: 99.99, duration: '1 hour' }
+        };
+
+        let selectedService = 'Oil Change';
+        let selectedVehicle = '2020 Toyota Camry';
+
+        function initializeUser() {
+            const user = JSON.parse(sessionStorage.getItem("currentUser"));
+            if (!user || user.role !== "customer") {
+                window.location.href = "login.html";
+                return;
+            }
+            document.getElementById("userAvatar").textContent = user.name.split(" ").map(n => n[0]).join("");
+            
+            // Set minimum date to today
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById("date").min = today;
+            document.getElementById("date").value = today;
+            updateSummary();
+        }
+
+        function selectService(element, serviceName) {
+            document.querySelectorAll(".service-card").forEach(card => {
+                card.classList.remove("selected");
+            });
+            element.classList.add("selected");
+            selectedService = serviceName;
+            updateSummary();
+        }
+
+        function selectVehicle(element) {
+            // Don't select the "Add New" button
+            if (element.querySelector("button")) return;
+            
+            document.querySelectorAll(".vehicle-option").forEach(option => {
+                if (!option.querySelector("button")) {
+                    option.classList.remove("selected");
+                }
+            });
+            element.classList.add("selected");
+            selectedVehicle = element.querySelector("h4").textContent;
+            updateSummary();
+        }
+
+        function updateSummary() {
+            document.getElementById("summaryService").textContent = selectedService;
+            document.getElementById("summaryVehicle").textContent = selectedVehicle;
+            
+            const dateInput = document.getElementById("date").value;
+            const timeInput = document.getElementById("time").value;
+            if (dateInput && timeInput) {
+                const dateObj = new Date(dateInput);
+                const dateStr = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                document.getElementById("summaryDateTime").textContent = `${dateStr} at ${timeInput}`;
+            }
+            
+            const price = services[selectedService]?.price || 0;
+            document.getElementById("summaryPrice").textContent = `$${price.toFixed(2)}`;
+        }
+
+        function confirmBooking() {
+            const date = document.getElementById("date").value;
+            const time = document.getElementById("time").value;
+
+            if (!date || !time) {
+                alert("Please select both date and time.");
+                return;
+            }
+
+            openModal('confirmBookingModal');
+        }
+
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.add('active');
+            }
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.remove('active');
+            }
+        }
+
+        function submitBooking() {
+            // Show success message
+            const successMsg = document.getElementById("successMessage");
+            successMsg.classList.add("show");
+            closeModal('confirmBookingModal');
+
+            // Reset form after 2 seconds
+            setTimeout(() => {
+                successMsg.classList.remove("show");
+                window.location.href = "customer-dashboard.html";
+            }, 2000);
+        }
+
+        function addNewVehicle() {
+            openModal('addVehicleModal');
+        }
+
+        function saveNewVehicle() {
+            const make = document.getElementById('vehicleMake').value;
+            const model = document.getElementById('vehicleModel').value;
+            const plate = document.getElementById('vehiclePlate').value;
+
+            if (make && model && plate) {
+                alert('Vehicle added successfully!');
+                closeModal('addVehicleModal');
+            } else {
+                alert('Please fill in all fields');
+            }
+        }
+
+        function goBack() {
+            window.location.href = "customer-dashboard.html";
+        }
+
+        function logout() {
+            sessionStorage.removeItem("currentUser");
+            window.location.href = "login.html";
+        }
+
+        // Close modal when clicking outside
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeModal(this.id);
+                }
+            });
+        });
+
+        // Update summary when date/time changes
+        document.getElementById("date").addEventListener("change", updateSummary);
+        document.getElementById("time").addEventListener("change", updateSummary);
+
+        document.addEventListener("DOMContentLoaded", initializeUser);
+    </script>
+</body>
+</html>

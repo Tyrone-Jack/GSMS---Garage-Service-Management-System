@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Technician Dashboard - GSMS</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .main-content {
+            display: flex;
+            gap: var(--spacing-lg);
+            margin-top: var(--spacing-lg);
+        }
+
+        .tech-body {
+            flex: 1;
+            padding: var(--spacing-lg) 0;
+        }
+
+        .tech-header {
+            margin-bottom: var(--spacing-2xl);
+        }
+
+        .tech-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .tech-subtitle {
+            color: var(--gray-500);
+            font-size: 16px;
+        }
+
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-2xl);
+        }
+
+        .stat-card {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: var(--spacing-lg);
+            text-align: center;
+            border-left: 4px solid var(--primary);
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--gray-600);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: var(--spacing-lg);
+            margin-top: var(--spacing-2xl);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+
+        .tab-buttons {
+            display: flex;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+            border-bottom: 2px solid var(--gray-200);
+        }
+
+        .tab-button {
+            padding: 12px 20px;
+            background: none;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gray-600);
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s ease;
+            margin-bottom: -2px;
+        }
+
+        .tab-button:hover {
+            color: var(--primary);
+        }
+
+        .tab-button.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .job-queue {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-lg);
+        }
+
+        .job-card {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: var(--spacing-lg);
+            border-left: 4px solid var(--primary);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .job-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 8px 24px rgba(249, 115, 22, 0.12);
+        }
+
+        .job-card.completed {
+            border-left-color: var(--success);
+            opacity: 0.8;
+        }
+
+        .job-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .job-id {
+            font-weight: 700;
+            font-size: 16px;
+            color: var(--gray-900);
+        }
+
+        .job-status {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .job-status.pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .job-status.accepted {
+            background: #e0f2fe;
+            color: #164e63;
+        }
+
+        .job-status.in-progress {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .job-status.completed {
+            background: #dcfce7;
+            color: #065f46;
+        }
+
+        .job-details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+            padding: var(--spacing-md);
+            background: var(--gray-50);
+            border-radius: 8px;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .detail-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--gray-700);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .detail-value {
+            font-size: 14px;
+            color: var(--gray-900);
+            font-weight: 500;
+        }
+
+        .job-actions {
+            display: flex;
+            gap: var(--spacing-md);
+            padding-top: var(--spacing-md);
+            border-top: 1px solid var(--gray-200);
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .action-btn-primary {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .action-btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .action-btn-secondary {
+            background: var(--gray-200);
+            color: var(--gray-900);
+        }
+
+        .action-btn-secondary:hover {
+            background: var(--gray-300);
+        }
+
+        .action-btn-success {
+            background: var(--success);
+            color: var(--white);
+        }
+
+        .action-btn-success:hover {
+            background: #059669;
+        }
+
+        .progress-tracker {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-2xl);
+        }
+
+        .progress-item {
+            display: flex;
+            gap: var(--spacing-md);
+            align-items: flex-start;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .progress-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .progress-dot {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--gray-300);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            color: var(--white);
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .progress-dot.completed {
+            background: var(--success);
+        }
+
+        .progress-dot.active {
+            background: var(--primary);
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        .progress-content {
+            flex: 1;
+            padding-top: 4px;
+        }
+
+        .progress-title {
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 4px;
+        }
+
+        .progress-time {
+            font-size: 12px;
+            color: var(--gray-600);
+        }
+
+        .no-jobs {
+            text-align: center;
+            padding: var(--spacing-2xl);
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            color: var(--gray-600);
+        }
+
+        .no-jobs-icon {
+            font-size: 48px;
+            margin-bottom: var(--spacing-lg);
+            opacity: 0.3;
+        }
+
+        .photo-upload-section {
+            background: var(--white);
+            border: 2px dashed var(--gray-300);
+            border-radius: 12px;
+            padding: var(--spacing-2xl);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .photo-upload-section:hover {
+            border-color: var(--primary);
+            background: var(--primary-bg);
+        }
+
+        .upload-icon {
+            font-size: 48px;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .upload-text {
+            color: var(--gray-600);
+            margin-bottom: 8px;
+        }
+
+        .upload-hint {
+            font-size: 12px;
+            color: var(--gray-500);
+        }
+
+        .photo-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-lg);
+        }
+
+        .photo-thumbnail {
+            aspect-ratio: 1;
+            background: var(--gray-200);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .photo-thumbnail:hover {
+            transform: scale(1.05);
+        }
+
+        .photo-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .photo-remove {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background: var(--error);
+            color: var(--white);
+            border: none;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .photo-thumbnail:hover .photo-remove {
+            opacity: 1;
+        }
+
+        .notes-section {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-2xl);
+        }
+
+        .notes-textarea {
+            width: 100%;
+            padding: var(--spacing-md);
+            border: 1px solid var(--gray-300);
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: var(--font-primary);
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .notes-textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+
+            .job-details {
+                grid-template-columns: 1fr;
+            }
+
+            .quick-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .job-actions {
+                flex-direction: column;
+            }
+
+            .action-btn {
+                width: 100%;
+            }
+
+            .photo-gallery {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            }
+        }
+
+        @media (max-width: 480px) {
+            .quick-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .tab-button {
+                padding: 8px 12px;
+                font-size: 12px;
+            }
+
+            .photo-gallery {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-content">
+            <a href="tech-dashboard.html" class="logo">
+                <span>GS</span>
+                GSMS
+            </a>
+            <nav class="nav-menu">
+                <a href="tech-dashboard.html" class="active">Jobs</a>
+                <a href="#progress">My Progress</a>
+                <a href="#profile">Profile</a>
+            </nav>
+            <div class="user-profile">
+                <div class="user-avatar" id="userAvatar">JT</div>
+                <button class="btn btn-secondary btn-sm" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-title">Menu</div>
+                <ul class="sidebar-menu">
+                    <li><a href="tech-dashboard.html" class="active">Job Queue</a></li>
+                    <li><a href="#progress">My Progress</a></li>
+                    <li><a href="#completed">Completed Jobs</a></li>
+                    <li><a href="#profile">Profile</a></li>
+                </ul>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-title">Tools</div>
+                <ul class="sidebar-menu">
+                    <li><a href="#reports">My Reports</a></li>
+                    <li><a href="#ratings">Ratings</a></li>
+                    <li><a href="#help">Help</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Tech Content -->
+        <div class="tech-body">
+            <div class="container">
+                <!-- Header -->
+                <div class="tech-header">
+                    <h1 class="tech-title">Welcome, <span id="techName">John</span></h1>
+                    <p class="tech-subtitle">Manage your assignments and track job progress</p>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="quick-stats">
+                    <div class="stat-card">
+                        <div class="stat-value">2</div>
+                        <div class="stat-label">Assigned Jobs</div>
+                    </div>
+                    <div class="stat-card" style="border-left-color: var(--success);">
+                        <div class="stat-value" style="color: var(--success);">47</div>
+                        <div class="stat-label">Jobs Completed</div>
+                    </div>
+                    <div class="stat-card" style="border-left-color: var(--info);">
+                        <div class="stat-value" style="color: var(--info);">4.8</div>
+                        <div class="stat-label">Avg Rating ⭐</div>
+                    </div>
+                    <div class="stat-card" style="border-left-color: var(--warning);">
+                        <div class="stat-value" style="color: var(--warning);">12h 45m</div>
+                        <div class="stat-label">Hours This Week</div>
+                    </div>
+                </div>
+
+                <!-- Tab Navigation -->
+                <div class="tab-buttons">
+                    <button class="tab-button active" onclick="switchTab('queue')">Assigned Jobs</button>
+                    <button class="tab-button" onclick="switchTab('in-progress')">In Progress</button>
+                    <button class="tab-button" onclick="switchTab('completed')">Completed</button>
+                </div>
+
+                <!-- Assigned Jobs Tab -->
+                <div id="queue" class="tab-content" style="display: block;">
+                    <div class="section-title">Job Queue</div>
+                    <div class="job-queue">
+                        <div class="job-card" onclick="openJobDetail(1)">
+                            <div class="job-header">
+                                <div class="job-id">JOB-2026-001</div>
+                                <span class="job-status pending">Pending Assignment</span>
+                            </div>
+
+                            <div class="job-details">
+                                <div class="detail-item">
+                                    <span class="detail-label">Customer</span>
+                                    <span class="detail-value">John Doe</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Service</span>
+                                    <span class="detail-value">Oil Change</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Vehicle</span>
+                                    <span class="detail-value">2020 Toyota Camry</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Scheduled</span>
+                                    <span class="detail-value">1/15/2026 11:00 AM</span>
+                                </div>
+                            </div>
+
+                            <div class="job-actions">
+                                <button class="action-btn action-btn-primary" onclick="acceptJob()">Accept Job</button>
+                                <button class="action-btn action-btn-secondary" onclick="rejectJob()">Decline</button>
+                            </div>
+                        </div>
+
+                        <div class="job-card" onclick="openJobDetail(2)">
+                            <div class="job-header">
+                                <div class="job-id">JOB-2026-002</div>
+                                <span class="job-status pending">Pending Assignment</span>
+                            </div>
+
+                            <div class="job-details">
+                                <div class="detail-item">
+                                    <span class="detail-label">Customer</span>
+                                    <span class="detail-value">Jane Smith</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Service</span>
+                                    <span class="detail-value">Brake Service</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Vehicle</span>
+                                    <span class="detail-value">2018 Honda Civic</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Scheduled</span>
+                                    <span class="detail-value">1/16/2026 2:00 PM</span>
+                                </div>
+                            </div>
+
+                            <div class="job-actions">
+                                <button class="action-btn action-btn-primary" onclick="acceptJob()">Accept Job</button>
+                                <button class="action-btn action-btn-secondary" onclick="rejectJob()">Decline</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- In Progress Tab -->
+                <div id="in-progress" class="tab-content" style="display: none;">
+                    <div class="section-title">Current Work</div>
+                    
+                    <div class="job-card">
+                        <div class="job-header">
+                            <div class="job-id">JOB-2026-150</div>
+                            <span class="job-status in-progress">In Progress</span>
+                        </div>
+
+                        <div class="job-details">
+                            <div class="detail-item">
+                                <span class="detail-label">Customer</span>
+                                <span class="detail-value">Mike Wilson</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Service</span>
+                                <span class="detail-value">Oil Change</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Vehicle</span>
+                                <span class="detail-value">2020 Toyota Camry (ABC123)</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Start Time</span>
+                                <span class="detail-value">1/12/2026 10:00 AM</span>
+                            </div>
+                        </div>
+
+                        <div class="progress-tracker" style="margin-top: var(--spacing-lg);">
+                            <h4 style="margin-bottom: var(--spacing-lg);">Progress</h4>
+                            <div class="progress-item">
+                                <div class="progress-dot completed">✓</div>
+                                <div class="progress-content">
+                                    <div class="progress-title">Initial Vehicle Check</div>
+                                    <div class="progress-time">Completed at 10:15 AM</div>
+                                </div>
+                            </div>
+                            <div class="progress-item">
+                                <div class="progress-dot completed">✓</div>
+                                <div class="progress-content">
+                                    <div class="progress-title">Drain Oil</div>
+                                    <div class="progress-time">Completed at 10:30 AM</div>
+                                </div>
+                            </div>
+                            <div class="progress-item">
+                                <div class="progress-dot active">⏳</div>
+                                <div class="progress-content">
+                                    <div class="progress-title">Replace Oil Filter</div>
+                                    <div class="progress-time">In progress...</div>
+                                </div>
+                            </div>
+                            <div class="progress-item">
+                                <div class="progress-dot">4</div>
+                                <div class="progress-content">
+                                    <div class="progress-title">Final Inspection</div>
+                                    <div class="progress-time">Pending</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Photo Upload -->
+                        <div style="margin-top: var(--spacing-lg);">
+                            <h4 style="margin-bottom: var(--spacing-md);">Work Photos</h4>
+                            <div class="photo-upload-section" onclick="uploadPhotos()">
+                                <div class="upload-icon">📸</div>
+                                <div class="upload-text">Click to upload photos</div>
+                                <div class="upload-hint">or drag and drop (JPG, PNG, GIF - Max 5MB)</div>
+                            </div>
+                            <div class="photo-gallery">
+                                <div class="photo-thumbnail">
+                                    <div style="background: linear-gradient(135deg, #fb923c, #fdba74); width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: white;">Oil Change</div>
+                                    <button class="photo-remove" onclick="removePhoto()">×</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Service Notes -->
+                        <div class="notes-section" style="margin-top: var(--spacing-lg);">
+                            <h4 style="margin-bottom: var(--spacing-md);">Service Notes</h4>
+                            <textarea class="notes-textarea" placeholder="Add notes about the service, parts used, issues found, etc...">Oil change completed successfully. Used recommended 5W-30 synthetic oil. Filter replaced. No issues found during inspection.</textarea>
+                        </div>
+
+                        <div class="job-actions">
+                            <button class="action-btn action-btn-secondary" onclick="saveDraft()">Save Draft</button>
+                            <button class="action-btn action-btn-success" onclick="completeJob()">Mark Complete</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Completed Tab -->
+                <div id="completed" class="tab-content" style="display: none;">
+                    <div class="section-title">Completed Jobs</div>
+                    
+                    <div class="job-card completed">
+                        <div class="job-header">
+                            <div class="job-id">JOB-2026-149</div>
+                            <span class="job-status completed">Completed</span>
+                        </div>
+
+                        <div class="job-details">
+                            <div class="detail-item">
+                                <span class="detail-label">Customer</span>
+                                <span class="detail-value">Emma Davis</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Service</span>
+                                <span class="detail-value">AC Service</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Completed</span>
+                                <span class="detail-value">1/11/2026 5:30 PM</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Customer Rating</span>
+                                <span class="detail-value">4.9 ⭐ (5)</span>
+                            </div>
+                        </div>
+
+                        <div class="job-actions">
+                            <button class="action-btn action-btn-secondary" onclick="viewJobDetails()">View Details</button>
+                        </div>
+                    </div>
+
+                    <div class="job-card completed">
+                        <div class="job-header">
+                            <div class="job-id">JOB-2026-148</div>
+                            <span class="job-status completed">Completed</span>
+                        </div>
+
+                        <div class="job-details">
+                            <div class="detail-item">
+                                <span class="detail-label">Customer</span>
+                                <span class="detail-value">David Lee</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Service</span>
+                                <span class="detail-value">Tire Rotation</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Completed</span>
+                                <span class="detail-value">1/10/2026 4:00 PM</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Customer Rating</span>
+                                <span class="detail-value">4.8 ⭐ (5)</span>
+                            </div>
+                        </div>
+
+                        <div class="job-actions">
+                            <button class="action-btn action-btn-secondary" onclick="viewJobDetails()">View Details</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Accept Job Modal -->
+    <div id="acceptJobModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Accept Job Assignment</h3>
+                <button class="modal-close" onclick="closeModal('acceptJobModal')">×</button>
+            </div>
+            <div style="background: var(--primary-bg); padding: var(--spacing-lg); border-radius: 8px; margin-bottom: var(--spacing-lg);">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-md); font-size: 14px;">
+                    <div>
+                        <div style="color: var(--gray-600); font-weight: 600; margin-bottom: 4px;">Customer</div>
+                        <div>John Doe</div>
+                    </div>
+                    <div>
+                        <div style="color: var(--gray-600); font-weight: 600; margin-bottom: 4px;">Service</div>
+                        <div>Oil Change</div>
+                    </div>
+                    <div>
+                        <div style="color: var(--gray-600); font-weight: 600; margin-bottom: 4px;">Vehicle</div>
+                        <div>2020 Toyota Camry</div>
+                    </div>
+                    <div>
+                        <div style="color: var(--gray-600); font-weight: 600; margin-bottom: 4px;">Scheduled</div>
+                        <div>1/15/2026 11:00 AM</div>
+                    </div>
+                </div>
+            </div>
+            <p style="margin-bottom: var(--spacing-lg); color: var(--gray-600);">By accepting this job, you agree to complete the service by the scheduled date and time.</p>
+            <div style="display: flex; gap: var(--spacing-md);">
+                <button class="btn btn-primary" style="flex: 1;" onclick="confirmAcceptJob()">Accept Job</button>
+                <button class="btn btn-secondary" style="flex: 1;" onclick="closeModal('acceptJobModal')">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reject Job Modal -->
+    <div id="rejectJobModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Decline Job Assignment</h3>
+                <button class="modal-close" onclick="closeModal('rejectJobModal')">×</button>
+            </div>
+            <div style="margin-bottom: var(--spacing-lg);">
+                <label for="rejectReason">Reason for declining:</label>
+                <textarea id="rejectReason" placeholder="Please provide a reason..." rows="4" style="margin-top: 8px; resize: vertical;"></textarea>
+            </div>
+            <div style="background: #fee2e2; padding: var(--spacing-md); border-radius: 8px; margin-bottom: var(--spacing-lg); border-left: 4px solid var(--error);">
+                <p style="color: #7f1d1d; font-size: 13px; margin: 0;">The admin will be notified about this decline and may reassign the job to another technician.</p>
+            </div>
+            <div style="display: flex; gap: var(--spacing-md);">
+                <button class="btn btn-danger" style="flex: 1;" onclick="confirmRejectJob()">Decline Job</button>
+                <button class="btn btn-secondary" style="flex: 1;" onclick="closeModal('rejectJobModal')">Keep Job</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Job Details Modal -->
+    <div id="jobDetailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Job Details</h3>
+                <button class="modal-close" onclick="closeModal('jobDetailModal')">×</button>
+            </div>
+            <div style="background: var(--gray-50); padding: var(--spacing-lg); border-radius: 8px; margin-bottom: var(--spacing-lg);">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-md); margin-bottom: var(--spacing-md);">
+                    <div>
+                        <div style="font-size: 12px; color: var(--gray-600); font-weight: 600; margin-bottom: 4px; text-transform: uppercase;">Job ID</div>
+                        <div style="font-weight: 600; font-size: 16px;">JOB-2026-001</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 12px; color: var(--gray-600); font-weight: 600; margin-bottom: 4px; text-transform: uppercase;">Status</div>
+                        <span class="status-badge status-pending">Pending Assignment</span>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-md);">
+                    <div>
+                        <div style="font-size: 12px; color: var(--gray-600); font-weight: 600; margin-bottom: 4px; text-transform: uppercase;">Customer</div>
+                        <div>John Doe</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 12px; color: var(--gray-600); font-weight: 600; margin-bottom: 4px; text-transform: uppercase;">Vehicle</div>
+                        <div>2020 Toyota Camry</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 12px; color: var(--gray-600); font-weight: 600; margin-bottom: 4px; text-transform: uppercase;">Service</div>
+                        <div>Oil Change</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 12px; color: var(--gray-600); font-weight: 600; margin-bottom: 4px; text-transform: uppercase;">Scheduled</div>
+                        <div>1/15/2026 11:00 AM</div>
+                    </div>
+                </div>
+            </div>
+            <div style="display: flex; gap: var(--spacing-md);">
+                <button class="btn btn-primary" style="flex: 1;" onclick="confirmAcceptJob()">Accept Job</button>
+                <button class="btn btn-secondary" style="flex: 1;" onclick="closeModal('jobDetailModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Complete Job Modal -->
+    <div id="completeJobModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Complete Job</h3>
+                <button class="modal-close" onclick="closeModal('completeJobModal')">×</button>
+            </div>
+            <div style="background: var(--gray-50); padding: var(--spacing-lg); border-radius: 8px; margin-bottom: var(--spacing-lg);">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-md); font-size: 14px;">
+                    <div>
+                        <div style="color: var(--gray-600); font-weight: 600; margin-bottom: 4px;">Job</div>
+                        <div>JOB-2026-150</div>
+                    </div>
+                    <div>
+                        <div style="color: var(--gray-600); font-weight: 600; margin-bottom: 4px;">Customer</div>
+                        <div>Mike Wilson</div>
+                    </div>
+                </div>
+            </div>
+            <div style="margin-bottom: var(--spacing-lg);">
+                <label for="completionNotes">Completion Notes:</label>
+                <textarea id="completionNotes" placeholder="Add any notes about the completed work..." rows="4" style="margin-top: 8px; resize: vertical;"></textarea>
+            </div>
+            <div style="background: #dcfce7; padding: var(--spacing-md); border-radius: 8px; margin-bottom: var(--spacing-lg); border-left: 4px solid var(--success);">
+                <p style="color: #065f46; font-size: 13px; margin: 0;">Once submitted, the customer will be notified that their service is complete.</p>
+            </div>
+            <div style="display: flex; gap: var(--spacing-md);">
+                <button class="btn btn-success" style="flex: 1;" onclick="submitCompletion()">Mark Complete</button>
+                <button class="btn btn-secondary" style="flex: 1;" onclick="closeModal('completeJobModal')">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Photo Upload Modal -->
+    <div id="photoUploadModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Upload Photos</h3>
+                <button class="modal-close" onclick="closeModal('photoUploadModal')">×</button>
+            </div>
+            <div style="border: 2px dashed var(--gray-300); border-radius: 8px; padding: var(--spacing-2xl); text-align: center; margin-bottom: var(--spacing-lg); cursor: pointer; transition: all 0.2s ease;" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--gray-300)'">
+                <div style="font-size: 32px; margin-bottom: var(--spacing-md);">📷</div>
+                <p style="margin: 0 0 var(--spacing-sm); color: var(--gray-700); font-weight: 500;">Drag & drop photos here or click to select</p>
+                <p style="margin: 0; font-size: 12px; color: var(--gray-500);">Supported formats: JPG, PNG (Max 5MB each)</p>
+                <input type="file" multiple accept="image/*" style="display: none;">
+            </div>
+            <div style="background: var(--gray-50); padding: var(--spacing-lg); border-radius: 8px; margin-bottom: var(--spacing-lg);">
+                <p style="margin: 0 0 var(--spacing-md); color: var(--gray-600); font-weight: 600;">Selected photos (0)</p>
+                <p style="margin: 0; color: var(--gray-500); font-size: 13px;">No photos selected yet</p>
+            </div>
+            <div style="display: flex; gap: var(--spacing-md);">
+                <button class="btn btn-primary" style="flex: 1;" onclick="confirmPhotoUpload()">Upload Photos</button>
+                <button class="btn btn-secondary" style="flex: 1;" onclick="closeModal('photoUploadModal')">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Job Details Modal (for viewing existing job) -->
+    <div id="jobDetailsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Job Details</h3>
+                <button class="modal-close" onclick="closeModal('jobDetailsModal')">×</button>
+            </div>
+            <div style="background: var(--gray-50); padding: var(--spacing-lg); border-radius: 8px; margin-bottom: var(--spacing-lg);">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-md); margin-bottom: var(--spacing-md);">
+                    <div>
+                        <div style="font-size: 12px; color: var(--gray-600); font-weight: 600; margin-bottom: 4px; text-transform: uppercase;">Job ID</div>
+                        <div style="font-weight: 600; font-size: 16px;">JOB-2026-150</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 12px; color: var(--gray-600); font-weight: 600; margin-bottom: 4px; text-transform: uppercase;">Status</div>
+                        <span class="status-badge status-in-progress">In Progress</span>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-md); font-size: 13px;">
+                    <div>
+                        <div style="color: var(--gray-600); font-weight: 600; margin-bottom: 4px;">Customer</div>
+                        <div>Mike Wilson</div>
+                    </div>
+                    <div>
+                        <div style="color: var(--gray-600); font-weight: 600; margin-bottom: 4px;">Vehicle</div>
+                        <div>2020 Ford F-150</div>
+                    </div>
+                    <div>
+                        <div style="color: var(--gray-600); font-weight: 600; margin-bottom: 4px;">Service</div>
+                        <div>Oil Change</div>
+                    </div>
+                    <div>
+                        <div style="color: var(--gray-600); font-weight: 600; margin-bottom: 4px;">Started</div>
+                        <div>1/12/2026 10:00 AM</div>
+                    </div>
+                </div>
+            </div>
+            <button class="btn btn-secondary" style="width: 100%;" onclick="closeModal('jobDetailsModal')">Close</button>
+        </div>
+    </div>
+
+    <script>
+        function initializeUser() {
+            const user = JSON.parse(sessionStorage.getItem("currentUser"));
+            if (!user || user.role !== "tech") {
+                window.location.href = "login.html";
+                return;
+            }
+            document.getElementById("userAvatar").textContent = user.name.split(" ").map(n => n[0]).join("");
+            document.getElementById("techName").textContent = user.name.split(" ")[0];
+        }
+
+        function switchTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll(".tab-content").forEach(content => {
+                content.style.display = "none";
+            });
+
+            // Remove active class from all tabs
+            document.querySelectorAll(".tab-button").forEach(btn => {
+                btn.classList.remove("active");
+            });
+
+            // Show selected tab
+            document.getElementById(tabName).style.display = "block";
+
+            // Add active class to clicked tab
+            event.target.classList.add("active");
+        }
+
+        function acceptJob() {
+            openModal('acceptJobModal');
+        }
+
+        function rejectJob() {
+            openModal('rejectJobModal');
+        }
+
+        function openJobDetail(jobId) {
+            openModal('jobDetailModal');
+        }
+
+        function uploadPhotos() {
+            openModal('photoUploadModal');
+        }
+
+        function removePhoto() {
+            if (confirm("Remove this photo?")) {
+                alert("Photo removed.");
+            }
+        }
+
+        function saveDraft() {
+            alert("Draft saved successfully!");
+        }
+
+        function completeJob() {
+            openModal('completeJobModal');
+        }
+
+        function viewJobDetails() {
+            openModal('jobDetailsModal');
+        }
+
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.add('active');
+            }
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.remove('active');
+            }
+        }
+
+        function confirmAcceptJob() {
+            alert("Job accepted! You can now view details and start working.");
+            closeModal('acceptJobModal');
+        }
+
+        function confirmRejectJob() {
+            const reason = document.getElementById('rejectReason').value;
+            if (reason) {
+                alert("Job declined. Admin will be notified.");
+                closeModal('rejectJobModal');
+            } else {
+                alert("Please provide a reason for declining.");
+            }
+        }
+
+        function submitCompletion() {
+            const notes = document.getElementById('completionNotes').value;
+            alert("Job marked as complete! Customer will be notified.");
+            closeModal('completeJobModal');
+        }
+
+        function confirmPhotoUpload() {
+            alert("Photos uploaded successfully!");
+            closeModal('photoUploadModal');
+        }
+
+        function logout() {
+            sessionStorage.removeItem("currentUser");
+            window.location.href = "login.html";
+        }
+
+        // Close modal when clicking outside
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeModal(this.id);
+                }
+            });
+        });
+
+        document.addEventListener("DOMContentLoaded", initializeUser);
+    </script>
+</body>
+</html>

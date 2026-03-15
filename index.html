@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GSMS - Garage Service Management System</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            background: var(--gray-50);
+        }
+
+        .header {
+            background: var(--white);
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .hero {
+            background: linear-gradient(135deg, var(--primary-bg) 0%, #fef3c7 100%);
+            padding: var(--spacing-2xl) var(--spacing-lg);
+            margin-top: var(--spacing-lg);
+        }
+
+        .hero-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: var(--spacing-2xl) 0;
+            text-align: center;
+        }
+
+        .hero-title {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: var(--spacing-md);
+            color: var(--gray-900);
+            line-height: 1.2;
+        }
+
+        .hero-subtitle {
+            font-size: 20px;
+            color: var(--gray-600);
+            margin-bottom: var(--spacing-2xl);
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: var(--spacing-lg);
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: var(--spacing-2xl) var(--spacing-lg);
+        }
+
+        .features-section {
+            margin-bottom: var(--spacing-2xl);
+        }
+
+        .section-title {
+            font-size: 32px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: var(--spacing-2xl);
+            color: var(--gray-900);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-2xl);
+        }
+
+        .feature-card {
+            background: var(--white);
+            border-radius: 12px;
+            padding: var(--spacing-2xl);
+            border: 1px solid var(--gray-200);
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .feature-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 12px 32px rgba(249, 115, 22, 0.15);
+            transform: translateY(-4px);
+        }
+
+        .feature-icon {
+            font-size: 56px;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .feature-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: var(--spacing-md);
+            color: var(--gray-900);
+        }
+
+        .feature-description {
+            color: var(--gray-600);
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .roles-section {
+            margin-bottom: var(--spacing-2xl);
+        }
+
+        .roles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-2xl);
+        }
+
+        .role-card {
+            background: var(--white);
+            border-radius: 12px;
+            padding: var(--spacing-2xl);
+            border-left: 4px solid var(--primary);
+            transition: all 0.3s ease;
+        }
+
+        .role-card:hover {
+            border-color: var(--primary-dark);
+            box-shadow: 0 12px 32px rgba(249, 115, 22, 0.15);
+            transform: translateY(-4px);
+        }
+
+        .role-icon {
+            font-size: 40px;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .role-name {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: var(--spacing-md);
+            color: var(--gray-900);
+        }
+
+        .role-features {
+            list-style: none;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .role-features li {
+            padding: 8px 0;
+            color: var(--gray-600);
+            font-size: 14px;
+            border-bottom: 1px solid var(--gray-100);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+
+        .role-features li::before {
+            content: "✓";
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .role-features li:last-child {
+            border-bottom: none;
+        }
+
+        .role-button {
+            width: 100%;
+            padding: 12px 20px;
+            background: var(--primary);
+            color: var(--white);
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .role-button:hover {
+            background: var(--primary-dark);
+        }
+
+        .demo-credentials {
+            background: var(--primary-bg);
+            border: 2px solid var(--primary-lighter);
+            border-radius: 12px;
+            padding: var(--spacing-2xl);
+            margin-bottom: var(--spacing-2xl);
+            text-align: center;
+        }
+
+        .demo-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: var(--spacing-lg);
+            color: var(--primary-dark);
+        }
+
+        .credentials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--spacing-lg);
+        }
+
+        .credential-item {
+            background: var(--white);
+            border-radius: 8px;
+            padding: var(--spacing-lg);
+            text-align: left;
+        }
+
+        .credential-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            font-weight: 700;
+            color: var(--primary-dark);
+            letter-spacing: 0.5px;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .credential-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .credential-key {
+            font-weight: 600;
+            color: var(--gray-700);
+        }
+
+        .credential-value {
+            color: var(--gray-900);
+            font-family: var(--font-mono);
+        }
+
+        .stats-section {
+            background: linear-gradient(135deg, var(--primary-bg), var(--primary-lighter));
+            border-radius: 12px;
+            padding: var(--spacing-2xl);
+            margin-bottom: var(--spacing-2xl);
+        }
+
+        .stats-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: var(--spacing-lg);
+            text-align: center;
+        }
+
+        .stat {
+            color: var(--primary-dark);
+        }
+
+        .stat-number {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .footer {
+            background: var(--gray-900);
+            color: var(--white);
+            padding: var(--spacing-2xl) var(--spacing-lg);
+            margin-top: var(--spacing-2xl);
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--spacing-2xl);
+            margin-bottom: var(--spacing-2xl);
+        }
+
+        .footer-section h4 {
+            margin-bottom: var(--spacing-lg);
+            color: var(--white);
+            font-size: 16px;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: var(--spacing-md);
+        }
+
+        .footer-links a {
+            color: var(--gray-400);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--white);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid var(--gray-700);
+            padding-top: var(--spacing-lg);
+            text-align: center;
+            color: var(--gray-400);
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 36px;
+            }
+
+            .hero-subtitle {
+                font-size: 16px;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+            }
+
+            .hero-buttons .btn {
+                width: 100%;
+            }
+
+            .section-title {
+                font-size: 28px;
+            }
+
+            .role-card {
+                padding: var(--spacing-lg);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-title {
+                font-size: 28px;
+            }
+
+            .features-grid, .roles-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .credentials-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-content">
+            <a href="index.html" class="logo">
+                <span>GS</span>
+                GSMS
+            </a>
+            <nav class="nav-menu">
+                <a href="#features">Features</a>
+                <a href="#roles">Roles</a>
+                <a href="#demo">Demo</a>
+            </nav>
+            <div class="user-profile">
+                <a href="login.html" class="btn btn-primary btn-sm">Sign In</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <div class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title">Garage Service Management System</h1>
+            <p class="hero-subtitle">Streamline your automotive service operations with our comprehensive management platform</p>
+            <div class="hero-buttons">
+                <a href="login.html" class="btn btn-primary btn-lg">Get Started</a>
+                <a href="#demo" class="btn btn-outline btn-lg">View Demo</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Stats Section -->
+        <div class="stats-section">
+            <div class="stats-content">
+                <div class="stat">
+                    <div class="stat-number">1000+</div>
+                    <div class="stat-label">Jobs Completed</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">95%</div>
+                    <div class="stat-label">Customer Satisfaction</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">50+</div>
+                    <div class="stat-label">Active Clients</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">24/7</div>
+                    <div class="stat-label">Support Available</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features Section -->
+        <div id="features" class="features-section">
+            <h2 class="section-title">Why Choose GSMS?</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">📅</div>
+                    <h3 class="feature-title">Easy Booking</h3>
+                    <p class="feature-description">Customers can book services online with instant confirmation and real-time updates</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🔧</div>
+                    <h3 class="feature-title">Job Management</h3>
+                    <p class="feature-description">Technicians receive assignments and can track progress with photo documentation</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3 class="feature-title">Analytics</h3>
+                    <p class="feature-description">Admin dashboard with comprehensive reporting and business insights</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">⭐</div>
+                    <h3 class="feature-title">Reviews & Ratings</h3>
+                    <p class="feature-description">Build reputation through customer feedback and service quality tracking</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">📱</div>
+                    <h3 class="feature-title">Mobile Ready</h3>
+                    <p class="feature-description">Fully responsive design works seamlessly on all devices</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <h3 class="feature-title">Secure</h3>
+                    <p class="feature-description">Enterprise-grade security to protect customer and business data</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Roles Section -->
+        <div id="roles" class="roles-section">
+            <h2 class="section-title">For Every Role</h2>
+            <div class="roles-grid">
+                <!-- Customer Role -->
+                <div class="role-card">
+                    <div class="role-icon">👤</div>
+                    <h3 class="role-name">Customers</h3>
+                    <ul class="role-features">
+                        <li>Book services easily online</li>
+                        <li>Track job progress in real-time</li>
+                        <li>View digital invoices</li>
+                        <li>Rate and review services</li>
+                        <li>Manage multiple vehicles</li>
+                    </ul>
+                    <button class="role-button" onclick="window.location.href='login.html?role=customer'">Customer Access</button>
+                </div>
+
+                <!-- Technician Role -->
+                <div class="role-card">
+                    <div class="role-icon">🔧</div>
+                    <h3 class="role-name">Technicians</h3>
+                    <ul class="role-features">
+                        <li>View assigned jobs</li>
+                        <li>Update job progress</li>
+                        <li>Upload work photos</li>
+                        <li>Add service notes</li>
+                        <li>Track performance metrics</li>
+                    </ul>
+                    <button class="role-button" onclick="window.location.href='login.html?role=tech'">Technician Access</button>
+                </div>
+
+                <!-- Admin Role -->
+                <div class="role-card">
+                    <div class="role-icon">👨‍💼</div>
+                    <h3 class="role-name">Administrators</h3>
+                    <ul class="role-features">
+                        <li>Manage all bookings</li>
+                        <li>Assign technicians</li>
+                        <li>Monitor job progress</li>
+                        <li>View detailed analytics</li>
+                        <li>Manage users and roles</li>
+                    </ul>
+                    <button class="role-button" onclick="window.location.href='login.html?role=admin'">Admin Access</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Demo Credentials -->
+        <div id="demo" class="demo-credentials">
+            <h2 class="demo-title">Test Drive GSMS</h2>
+            <p style="color: var(--gray-700); margin-bottom: var(--spacing-lg);">Use these credentials to explore all features:</p>
+            <div class="credentials-grid">
+                <div class="credential-item">
+                    <div class="credential-label">👤 Customer Account</div>
+                    <div class="credential-row">
+                        <span class="credential-key">Username:</span>
+                        <span class="credential-value">client</span>
+                    </div>
+                    <div class="credential-row">
+                        <span class="credential-key">Password:</span>
+                        <span class="credential-value">client123</span>
+                    </div>
+                </div>
+
+                <div class="credential-item">
+                    <div class="credential-label">🔧 Technician Account</div>
+                    <div class="credential-row">
+                        <span class="credential-key">Username:</span>
+                        <span class="credential-value">john_tjau</span>
+                    </div>
+                    <div class="credential-row">
+                        <span class="credential-key">Password:</span>
+                        <span class="credential-value">john123</span>
+                    </div>
+                </div>
+
+                <div class="credential-item">
+                    <div class="credential-label">👨‍💼 Admin Account</div>
+                    <div class="credential-row">
+                        <span class="credential-key">Username:</span>
+                        <span class="credential-value">admins</span>
+                    </div>
+                    <div class="credential-row">
+                        <span class="credential-key">Password:</span>
+                        <span class="credential-value">command123</span>
+                    </div>
+                </div>
+            </div>
+            <div style="margin-top: var(--spacing-lg);">
+                <a href="login.html" class="btn btn-primary btn-lg">Start Demo</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>GSMS</h4>
+                <p style="color: var(--gray-400); font-size: 14px; margin-bottom: var(--spacing-lg);">Garage Service Management System - Powering automotive service businesses</p>
+            </div>
+
+            <div class="footer-section">
+                <h4>Product</h4>
+                <ul class="footer-links">
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#roles">Roles</a></li>
+                    <li><a href="#demo">Demo Credentials</a></li>
+                    <li><a href="#">Pricing</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h4>Company</h4>
+                <ul class="footer-links">
+                    <li><a href="#">About</a></li>
+                    <li><a href="#">Blog</a></li>
+                    <li><a href="#">Careers</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h4>Legal</h4>
+                <ul class="footer-links">
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                    <li><a href="#">Cookie Policy</a></li>
+                    <li><a href="#">Support</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; 2026 TJ & U Garage Service Management System. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - GSMS</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .main-content {
+            display: flex;
+            gap: var(--spacing-lg);
+            margin-top: var(--spacing-lg);
+        }
+
+        .admin-body {
+            flex: 1;
+            padding: var(--spacing-lg) 0;
+        }
+
+        .admin-header {
+            margin-bottom: var(--spacing-2xl);
+        }
+
+        .admin-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .admin-subtitle {
+            color: var(--gray-500);
+            font-size: 16px;
+        }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-2xl);
+        }
+
+        .kpi-card {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: var(--spacing-lg);
+            border-left: 4px solid var(--primary);
+        }
+
+        .kpi-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            color: var(--gray-600);
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .kpi-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .kpi-change {
+            font-size: 12px;
+            color: var(--gray-600);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-lg);
+            margin-top: var(--spacing-2xl);
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: var(--spacing-md);
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            background: var(--white);
+            border: 1px solid var(--gray-300);
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: var(--primary-bg);
+        }
+
+        .table-container {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: var(--spacing-2xl);
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table thead {
+            background: var(--gray-50);
+            border-bottom: 2px solid var(--gray-200);
+        }
+
+        .table th {
+            padding: 12px var(--spacing-md);
+            text-align: left;
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            color: var(--gray-700);
+        }
+
+        .table td {
+            padding: 14px var(--spacing-md);
+            border-bottom: 1px solid var(--gray-100);
+            font-size: 14px;
+        }
+
+        .table tbody tr:hover {
+            background: var(--primary-bg);
+        }
+
+        .customer-name {
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 6px;
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            font-size: 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+
+        .action-btn-primary {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .action-btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .action-btn-secondary {
+            background: var(--gray-200);
+            color: var(--gray-900);
+        }
+
+        .action-btn-secondary:hover {
+            background: var(--gray-300);
+        }
+
+        .action-btn-success {
+            background: var(--success);
+            color: var(--white);
+        }
+
+        .action-btn-success:hover {
+            background: #059669;
+        }
+
+        .action-btn-danger {
+            background: var(--error);
+            color: var(--white);
+        }
+
+        .action-btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .tabs {
+            display: flex;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+            border-bottom: 2px solid var(--gray-200);
+        }
+
+        .tab {
+            padding: 12px 20px;
+            border: none;
+            background: none;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gray-600);
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s ease;
+            margin-bottom: -2px;
+        }
+
+        .tab:hover {
+            color: var(--primary);
+        }
+
+        .tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-approved {
+            background: #dcfce7;
+            color: #065f46;
+        }
+
+        .status-in-progress {
+            background: #e0f2fe;
+            color: #164e63;
+        }
+
+        .status-completed {
+            background: #dcfce7;
+            color: #065f46;
+        }
+
+        .status-rejected {
+            background: #fee2e2;
+            color: #7f1d1d;
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+            padding: var(--spacing-lg);
+            background: var(--gray-50);
+            border-radius: 8px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: var(--spacing-md);
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
+
+        .stat-name {
+            font-size: 12px;
+            color: var(--gray-600);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--white);
+            border-radius: 12px;
+            padding: var(--spacing-2xl);
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-lg);
+            border-bottom: 1px solid var(--gray-200);
+            padding-bottom: var(--spacing-lg);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--gray-400);
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+
+            .kpi-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: var(--spacing-md);
+            }
+
+            .table {
+                font-size: 12px;
+            }
+
+            .table th, .table td {
+                padding: 8px 6px;
+            }
+
+            .action-buttons {
+                flex-wrap: wrap;
+            }
+
+            .filter-group {
+                flex-wrap: wrap;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .kpi-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tabs {
+                flex-wrap: wrap;
+            }
+
+            .tab {
+                padding: 8px 12px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-content">
+            <a href="admin-dashboard.html" class="logo">
+                <span>GS</span>
+                GSMS
+            </a>
+            <nav class="nav-menu">
+                <a href="admin-dashboard.html" class="active">Dashboard</a>
+                <a href="#bookings">Bookings</a>
+                <a href="#jobs">Jobs</a>
+                <a href="#users">Users</a>
+                <a href="#reports">Reports</a>
+            </nav>
+            <div class="user-profile">
+                <div class="user-avatar" id="userAvatar">AD</div>
+                <button class="btn btn-secondary btn-sm" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-title">Management</div>
+                <ul class="sidebar-menu">
+                    <li><a href="admin-dashboard.html" class="active">Dashboard</a></li>
+                    <li><a href="#bookings">Bookings</a></li>
+                    <li><a href="#jobs">Jobs</a></li>
+                    <li><a href="#technicians">Technicians</a></li>
+                    <li><a href="#customers">Customers</a></li>
+                </ul>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-title">Analytics</div>
+                <ul class="sidebar-menu">
+                    <li><a href="#reports">Reports</a></li>
+                    <li><a href="#analytics">Analytics</a></li>
+                    <li><a href="#revenue">Revenue</a></li>
+                </ul>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-title">Settings</div>
+                <ul class="sidebar-menu">
+                    <li><a href="#settings">Settings</a></li>
+                    <li><a href="#users">Users</a></li>
+                    <li><a href="#help">Help</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Admin Content -->
+        <div class="admin-body">
+            <div class="container">
+                <!-- Admin Header -->
+                <div class="admin-header">
+                    <h1 class="admin-title">Administration Dashboard</h1>
+                    <p class="admin-subtitle">System overview and management controls</p>
+                </div>
+
+                <!-- KPI Cards -->
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                        <div class="kpi-label">Total Bookings</div>
+                        <div class="kpi-value">128</div>
+                        <div class="kpi-change">↑ 12% from last month</div>
+                    </div>
+
+                    <div class="kpi-card" style="border-left-color: var(--success);">
+                        <div class="kpi-label">Completed Jobs</div>
+                        <div class="kpi-value" style="color: var(--success);">95</div>
+                        <div class="kpi-change">74% completion rate</div>
+                    </div>
+
+                    <div class="kpi-card" style="border-left-color: var(--warning);">
+                        <div class="kpi-label">Pending Review</div>
+                        <div class="kpi-value" style="color: var(--warning);">23</div>
+                        <div class="kpi-change">Awaiting action</div>
+                    </div>
+
+                    <div class="kpi-card" style="border-left-color: var(--info);">
+                        <div class="kpi-label">Active Technicians</div>
+                        <div class="kpi-value" style="color: var(--info);">12</div>
+                        <div class="kpi-change">8 online now</div>
+                    </div>
+                </div>
+
+                <!-- Tabs for Different Sections -->
+                <div class="tabs">
+                    <button class="tab active" onclick="switchTab('bookings')">Booking Requests</button>
+                    <button class="tab" onclick="switchTab('jobs')">Active Jobs</button>
+                    <button class="tab" onclick="switchTab('technicians')">Technicians</button>
+                </div>
+
+                <!-- Bookings Section -->
+                <div id="bookings" class="tab-content active">
+                    <div class="section-header">
+                        <h2 class="section-title">Booking Requests</h2>
+                        <div class="filter-group">
+                            <button class="filter-btn active">All</button>
+                            <button class="filter-btn">Pending</button>
+                            <button class="filter-btn">Approved</button>
+                            <button class="filter-btn">Rejected</button>
+                        </div>
+                    </div>
+
+                    <div class="stats-row">
+                        <div class="stat-item">
+                            <div class="stat-number">15</div>
+                            <div class="stat-name">Pending</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">89</div>
+                            <div class="stat-name">Approved</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">3</div>
+                            <div class="stat-name">Rejected</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">21</div>
+                            <div class="stat-name">This Week</div>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Customer</th>
+                                    <th>Service</th>
+                                    <th>Date & Time</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="customer-name">John Doe</span></td>
+                                    <td>Oil Change</td>
+                                    <td>1/15/2026 11:00 AM</td>
+                                    <td><span class="status-badge status-pending">Pending</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn action-btn-success" onclick="approveBooking()">Approve</button>
+                                            <button class="action-btn action-btn-danger" onclick="rejectBooking()">Reject</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><span class="customer-name">Jane Smith</span></td>
+                                    <td>Brake Service</td>
+                                    <td>1/16/2026 2:00 PM</td>
+                                    <td><span class="status-badge status-pending">Pending</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn action-btn-success" onclick="approveBooking()">Approve</button>
+                                            <button class="action-btn action-btn-danger" onclick="rejectBooking()">Reject</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><span class="customer-name">Mike Wilson</span></td>
+                                    <td>AC Service</td>
+                                    <td>1/18/2026 10:00 AM</td>
+                                    <td><span class="status-badge status-approved">Approved</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn action-btn-primary" onclick="assignTech()">Assign Tech</button>
+                                            <button class="action-btn action-btn-secondary" onclick="editBooking()">Edit</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><span class="customer-name">Sarah Brown</span></td>
+                                    <td>Battery Replacement</td>
+                                    <td>1/20/2026 3:00 PM</td>
+                                    <td><span class="status-badge status-approved">Approved</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn action-btn-primary" onclick="assignTech()">Assign Tech</button>
+                                            <button class="action-btn action-btn-secondary" onclick="editBooking()">Edit</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><span class="customer-name">David Lee</span></td>
+                                    <td>Tire Rotation</td>
+                                    <td>1/22/2026 9:00 AM</td>
+                                    <td><span class="status-badge status-rejected">Rejected</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn action-btn-secondary" onclick="viewDetails()">View</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Jobs Section -->
+                <div id="jobs" class="tab-content">
+                    <div class="section-header">
+                        <h2 class="section-title">Active Jobs</h2>
+                        <div class="filter-group">
+                            <button class="filter-btn active">All</button>
+                            <button class="filter-btn">In Progress</button>
+                            <button class="filter-btn">Completed</button>
+                        </div>
+                    </div>
+
+                    <div class="stats-row">
+                        <div class="stat-item">
+                            <div class="stat-number">7</div>
+                            <div class="stat-name">In Progress</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">95</div>
+                            <div class="stat-name">Completed</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">14</div>
+                            <div class="stat-name">Avg Rating</div>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Job ID</th>
+                                    <th>Customer</th>
+                                    <th>Technician</th>
+                                    <th>Service</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>#JOB-001</td>
+                                    <td><span class="customer-name">John Doe</span></td>
+                                    <td>John Smith</td>
+                                    <td>Oil Change</td>
+                                    <td><span class="status-badge status-in-progress">In Progress</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn action-btn-secondary" onclick="viewJobStatus()">Track</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>#JOB-002</td>
+                                    <td><span class="customer-name">Jane Smith</span></td>
+                                    <td>Mike Johnson</td>
+                                    <td>Brake Service</td>
+                                    <td><span class="status-badge status-in-progress">In Progress</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn action-btn-secondary" onclick="viewJobStatus()">Track</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>#JOB-150</td>
+                                    <td><span class="customer-name">Emma Davis</span></td>
+                                    <td>Sarah Miller</td>
+                                    <td>AC Service</td>
+                                    <td><span class="status-badge status-completed">Completed</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn action-btn-secondary" onclick="viewJobDetails()">Details</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Technicians Section -->
+                <div id="technicians" class="tab-content">
+                    <div class="section-header">
+                        <h2 class="section-title">Technician Management</h2>
+                        <button class="btn btn-primary btn-sm" onclick="addTechnician()">Add Technician</button>
+                    </div>
+
+                    <div class="stats-row">
+                        <div class="stat-item">
+                            <div class="stat-number">12</div>
+                            <div class="stat-name">Total</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">8</div>
+                            <div class="stat-name">Active</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">4.7</div>
+                            <div class="stat-name">Avg Rating</div>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Specialization</th>
+                                    <th>Jobs Completed</th>
+                                    <th>Rating</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="customer-name">John Smith</span></td>
+                                    <td>Engine & Transmission</td>
+                                    <td>42</td>
+                                    <td>4.8 ⭐</td>
+                                    <td><span class="status-badge status-approved">Active</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn action-btn-secondary" onclick="editTech()">Edit</button>
+                                            <button class="action-btn action-btn-danger" onclick="deactivateTech()">Deactivate</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><span class="customer-name">Mike Johnson</span></td>
+                                    <td>Brake & Suspension</td>
+                                    <td>38</td>
+                                    <td>4.6 ⭐</td>
+                                    <td><span class="status-badge status-approved">Active</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn action-btn-secondary" onclick="editTech()">Edit</button>
+                                            <button class="action-btn action-btn-danger" onclick="deactivateTech()">Deactivate</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><span class="customer-name">Sarah Miller</span></td>
+                                    <td>AC & Electrical</td>
+                                    <td>35</td>
+                                    <td>4.9 ⭐</td>
+                                    <td><span class="status-badge status-approved">Active</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn action-btn-secondary" onclick="editTech()">Edit</button>
+                                            <button class="action-btn action-btn-danger" onclick="deactivateTech()">Deactivate</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Assign Technician Modal -->
+    <div id="assignTechModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Assign Technician</h3>
+                <button class="modal-close" onclick="closeModal('assignTechModal')">×</button>
+            </div>
+            <div style="margin-bottom: var(--spacing-lg);">
+                <label for="bookingSelect">Select Booking:</label>
+                <select id="bookingSelect" style="margin-top: 8px;">
+                    <option>John Doe - Oil Change (1/15/2026)</option>
+                    <option>Jane Smith - Brake Service (1/16/2026)</option>
+                    <option>Mike Wilson - AC Service (1/18/2026)</option>
+                </select>
+            </div>
+            <div style="margin-bottom: var(--spacing-lg);">
+                <label>Available Technicians:</label>
+                <div style="margin-top: 12px; display: flex; flex-direction: column; gap: 8px;">
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; margin-bottom: 0; font-weight: normal;">
+                        <input type="radio" name="technician" value="john-smith"> John Smith (Rating: 4.8⭐)
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; margin-bottom: 0; font-weight: normal;">
+                        <input type="radio" name="technician" value="sarah-jones"> Sarah Jones (Rating: 4.9⭐)
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; margin-bottom: 0; font-weight: normal;">
+                        <input type="radio" name="technician" value="mike-brown"> Mike Brown (Rating: 4.6⭐)
+                    </label>
+                </div>
+            </div>
+            <div style="display: flex; gap: var(--spacing-md);">
+                <button class="btn btn-primary" style="flex: 1;" onclick="saveAssignment()">Assign</button>
+                <button class="btn btn-secondary" style="flex: 1;" onclick="closeModal('assignTechModal')">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Booking Modal -->
+    <div id="editBookingModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Booking</h3>
+                <button class="modal-close" onclick="closeModal('editBookingModal')">×</button>
+            </div>
+            <div style="margin-bottom: var(--spacing-lg);">
+                <label for="editCustomer">Customer Name:</label>
+                <input type="text" id="editCustomer" value="Mike Wilson" style="margin-top: 8px;">
+            </div>
+            <div style="margin-bottom: var(--spacing-lg);">
+                <label for="editService">Service:</label>
+                <select id="editService" style="margin-top: 8px;">
+                    <option>AC Service</option>
+                    <option>Oil Change</option>
+                    <option>Brake Service</option>
+                    <option>Battery Replacement</option>
+                </select>
+            </div>
+            <div style="margin-bottom: var(--spacing-lg);">
+                <label for="editDateTime">Date & Time:</label>
+                <input type="datetime-local" id="editDateTime" style="margin-top: 8px;">
+            </div>
+            <div style="margin-bottom: var(--spacing-lg);">
+                <label for="editNotes">Notes:</label>
+                <textarea id="editNotes" rows="3" style="margin-top: 8px; resize: vertical;"></textarea>
+            </div>
+            <div style="display: flex; gap: var(--spacing-md);">
+                <button class="btn btn-primary" style="flex: 1;" onclick="saveBookingEdit()">Save Changes</button>
+                <button class="btn btn-secondary" style="flex: 1;" onclick="closeModal('editBookingModal')">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Details Modal -->
+    <div id="viewDetailsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Booking Details</h3>
+                <button class="modal-close" onclick="closeModal('viewDetailsModal')">×</button>
+            </div>
+            <div style="background: var(--gray-50); padding: var(--spacing-lg); border-radius: 8px; margin-bottom: var(--spacing-lg);">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-md);">
+                    <div>
+                        <div style="font-size: 12px; color: var(--gray-600); margin-bottom: 4px; text-transform: uppercase; font-weight: 600;">Customer</div>
+                        <div style="font-weight: 600; color: var(--gray-900);">David Lee</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 12px; color: var(--gray-600); margin-bottom: 4px; text-transform: uppercase; font-weight: 600;">Service</div>
+                        <div style="font-weight: 600; color: var(--gray-900);">Tire Rotation</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 12px; color: var(--gray-600); margin-bottom: 4px; text-transform: uppercase; font-weight: 600;">Date & Time</div>
+                        <div style="font-weight: 600; color: var(--gray-900);">1/22/2026 9:00 AM</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 12px; color: var(--gray-600); margin-bottom: 4px; text-transform: uppercase; font-weight: 600;">Status</div>
+                        <span class="status-badge status-rejected">Rejected</span>
+                    </div>
+                </div>
+            </div>
+            <div style="margin-bottom: var(--spacing-lg);">
+                <h4 style="margin-bottom: var(--spacing-md);">Rejection Reason</h4>
+                <p style="color: var(--gray-600);">Customer cancelled due to scheduling conflict.</p>
+            </div>
+            <div style="display: flex; gap: var(--spacing-md);">
+                <button class="btn btn-primary" style="flex: 1;" onclick="rescheduleBooking()">Reschedule</button>
+                <button class="btn btn-secondary" style="flex: 1;" onclick="closeModal('viewDetailsModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Job Status Modal -->
+    <div id="jobStatusModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Job Status Tracker</h3>
+                <button class="modal-close" onclick="closeModal('jobStatusModal')">×</button>
+            </div>
+            <div style="margin-bottom: var(--spacing-lg);">
+                <div style="display: flex; justify-content: space-between; margin-bottom: var(--spacing-lg);">
+                    <span style="font-weight: 600;">JOB-2026-045</span>
+                    <span class="status-badge status-in-progress">In Progress</span>
+                </div>
+                <div style="background: var(--gray-50); padding: var(--spacing-lg); border-radius: 8px; margin-bottom: var(--spacing-lg);">
+                    <div style="margin-bottom: var(--spacing-md);">
+                        <div style="font-size: 12px; color: var(--gray-600); font-weight: 600; margin-bottom: 4px;">Progress</div>
+                        <div class="progress">
+                            <div class="progress-bar" style="width: 65%;"></div>
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-md); font-size: 13px;">
+                        <div>
+                            <div style="color: var(--gray-600); margin-bottom: 4px;">Customer</div>
+                            <div style="font-weight: 600;">Jane Smith</div>
+                        </div>
+                        <div>
+                            <div style="color: var(--gray-600); margin-bottom: 4px;">Technician</div>
+                            <div style="font-weight: 600;">John Smith</div>
+                        </div>
+                        <div>
+                            <div style="color: var(--gray-600); margin-bottom: 4px;">Started</div>
+                            <div style="font-weight: 600;">1/16/2026 2:30 PM</div>
+                        </div>
+                        <div>
+                            <div style="color: var(--gray-600); margin-bottom: 4px;">Est. Completion</div>
+                            <div style="font-weight: 600;">4:00 PM</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button class="btn btn-secondary" style="width: 100%;" onclick="closeModal('jobStatusModal')">Close</button>
+        </div>
+    </div>
+
+    <!-- Job Details Modal -->
+    <div id="jobDetailsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Job Details</h3>
+                <button class="modal-close" onclick="closeModal('jobDetailsModal')">×</button>
+            </div>
+            <div style="background: var(--gray-50); padding: var(--spacing-lg); border-radius: 8px; margin-bottom: var(--spacing-lg);">
+                <div style="display: grid; gap: var(--spacing-lg);">
+                    <div>
+                        <div style="font-size: 12px; color: var(--gray-600); font-weight: 600; margin-bottom: 4px; text-transform: uppercase;">Job ID</div>
+                        <div style="font-weight: 600; color: var(--gray-900); font-size: 16px;">JOB-2026-045</div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-md);">
+                        <div>
+                            <div style="font-size: 12px; color: var(--gray-600); font-weight: 600; margin-bottom: 4px; text-transform: uppercase;">Customer</div>
+                            <div style="color: var(--gray-900);">Jane Smith</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 12px; color: var(--gray-600); font-weight: 600; margin-bottom: 4px; text-transform: uppercase;">Vehicle</div>
+                            <div style="color: var(--gray-900);">2018 Honda Civic</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 12px; color: var(--gray-600); font-weight: 600; margin-bottom: 4px; text-transform: uppercase;">Service</div>
+                            <div style="color: var(--gray-900);">Brake Service</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 12px; color: var(--gray-600); font-weight: 600; margin-bottom: 4px; text-transform: uppercase;">Status</div>
+                            <span class="status-badge status-in-progress">In Progress</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button class="btn btn-secondary" style="width: 100%;" onclick="closeModal('jobDetailsModal')">Close</button>
+        </div>
+    </div>
+
+    <!-- Add Technician Modal -->
+    <div id="addTechnicianModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New Technician</h3>
+                <button class="modal-close" onclick="closeModal('addTechnicianModal')">×</button>
+            </div>
+            <div style="margin-bottom: var(--spacing-lg);">
+                <label for="techName">Full Name:</label>
+                <input type="text" id="techName" placeholder="Enter technician name" style="margin-top: 8px;">
+            </div>
+            <div style="margin-bottom: var(--spacing-lg);">
+                <label for="techEmail">Email:</label>
+                <input type="email" id="techEmail" placeholder="Enter email address" style="margin-top: 8px;">
+            </div>
+            <div style="margin-bottom: var(--spacing-lg);">
+                <label for="techPhone">Phone:</label>
+                <input type="tel" id="techPhone" placeholder="Enter phone number" style="margin-top: 8px;">
+            </div>
+            <div style="margin-bottom: var(--spacing-lg);">
+                <label for="techSpecialty">Specialty:</label>
+                <select id="techSpecialty" style="margin-top: 8px;">
+                    <option>Oil Change</option>
+                    <option>Brake Service</option>
+                    <option>AC Service</option>
+                    <option>General Maintenance</option>
+                </select>
+            </div>
+            <div style="display: flex; gap: var(--spacing-md);">
+                <button class="btn btn-primary" style="flex: 1;" onclick="saveTechnicianInfo()">Add Technician</button>
+                <button class="btn btn-secondary" style="flex: 1;" onclick="closeModal('addTechnicianModal')">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Technician Modal -->
+    <div id="editTechModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Technician</h3>
+                <button class="modal-close" onclick="closeModal('editTechModal')">×</button>
+            </div>
+            <div style="margin-bottom: var(--spacing-lg);">
+                <label for="editTechName">Full Name:</label>
+                <input type="text" id="editTechName" value="John Smith" style="margin-top: 8px;">
+            </div>
+            <div style="margin-bottom: var(--spacing-lg);">
+                <label for="editTechEmail">Email:</label>
+                <input type="email" id="editTechEmail" value="john.smith@gsms.com" style="margin-top: 8px;">
+            </div>
+            <div style="margin-bottom: var(--spacing-lg);">
+                <label for="editTechPhone">Phone:</label>
+                <input type="tel" id="editTechPhone" value="+1 234-567-8900" style="margin-top: 8px;">
+            </div>
+            <div style="margin-bottom: var(--spacing-lg);">
+                <label for="editTechSpecialty">Specialty:</label>
+                <select id="editTechSpecialty" style="margin-top: 8px;">
+                    <option selected>Oil Change</option>
+                    <option>Brake Service</option>
+                    <option>AC Service</option>
+                    <option>General Maintenance</option>
+                </select>
+            </div>
+            <div style="display: flex; gap: var(--spacing-md);">
+                <button class="btn btn-primary" style="flex: 1;" onclick="updateTechnicianInfo()">Save Changes</button>
+                <button class="btn btn-secondary" style="flex: 1;" onclick="closeModal('editTechModal')">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function initializeUser() {
+            const user = JSON.parse(sessionStorage.getItem("currentUser"));
+            if (!user || user.role !== "admin") {
+                window.location.href = "login.html";
+                return;
+            }
+            document.getElementById("userAvatar").textContent = user.name.split(" ").map(n => n[0]).join("");
+        }
+
+        function switchTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll(".tab-content").forEach(content => {
+                content.classList.remove("active");
+            });
+
+            // Remove active class from all tabs
+            document.querySelectorAll(".tab").forEach(tab => {
+                tab.classList.remove("active");
+            });
+
+            // Show selected tab content
+            document.getElementById(tabName).classList.add("active");
+
+            // Add active class to clicked tab
+            event.target.classList.add("active");
+        }
+
+        function approveBooking() {
+            alert("Booking approved successfully!");
+        }
+
+        function rejectBooking() {
+            alert("Booking rejected. Confirmation email sent to customer.");
+        }
+
+        function assignTech() {
+            openModal('assignTechModal');
+        }
+
+        function editBooking() {
+            openModal('editBookingModal');
+        }
+
+        function viewDetails() {
+            openModal('viewDetailsModal');
+        }
+
+        function viewJobStatus() {
+            openModal('jobStatusModal');
+        }
+
+        function viewJobDetails() {
+            openModal('jobDetailsModal');
+        }
+
+        function addTechnician() {
+            openModal('addTechnicianModal');
+        }
+
+        function editTech() {
+            openModal('editTechModal');
+        }
+
+        function deactivateTech() {
+            if (confirm("Are you sure you want to deactivate this technician?")) {
+                alert("Technician deactivated successfully.");
+            }
+        }
+
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.add('active');
+            }
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.remove('active');
+            }
+        }
+
+        function saveAssignment() {
+            const selectedTech = document.querySelector('input[name="technician"]:checked');
+            if (selectedTech) {
+                alert('Technician assigned successfully!');
+                closeModal('assignTechModal');
+            } else {
+                alert('Please select a technician');
+            }
+        }
+
+        function saveBookingEdit() {
+            alert('Booking updated successfully!');
+            closeModal('editBookingModal');
+        }
+
+        function rescheduleBooking() {
+            alert('Booking rescheduled successfully!');
+            closeModal('viewDetailsModal');
+        }
+
+        function saveTechnicianInfo() {
+            alert('Technician information saved!');
+            closeModal('addTechnicianModal');
+        }
+
+        function updateTechnicianInfo() {
+            alert('Technician information updated!');
+            closeModal('editTechModal');
+        }
+
+        function logout() {
+            sessionStorage.removeItem("currentUser");
+            window.location.href = "login.html";
+        }
+
+        // Close modal when clicking outside
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeModal(this.id);
+                }
+            });
+        });
+
+        document.addEventListener("DOMContentLoaded", initializeUser);
+    </script>
+</body>
+</html>

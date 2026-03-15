@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - GSMS</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #fef3c7 0%, #fdba74 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: var(--spacing-md);
+        }
+
+        .login-container {
+            background: var(--white);
+            border-radius: 16px;
+            padding: var(--spacing-2xl);
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            animation: slideUp 0.5s ease;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: var(--spacing-2xl);
+        }
+
+        .login-logo {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto var(--spacing-md);
+            color: var(--white);
+            font-size: 32px;
+            font-weight: 700;
+        }
+
+        .login-header h1 {
+            margin-bottom: var(--spacing-sm);
+            font-size: 28px;
+        }
+
+        .login-header p {
+            color: var(--gray-500);
+            font-size: 14px;
+        }
+
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-lg);
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+        }
+
+        .form-group label {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gray-700);
+        }
+
+        .form-group input {
+            padding: 12px var(--spacing-md);
+            border: 1px solid var(--gray-300);
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+        }
+
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+        }
+
+        .remember-me input {
+            width: auto;
+            cursor: pointer;
+        }
+
+        .forgot-password {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+
+        .forgot-password:hover {
+            color: var(--primary-dark);
+        }
+
+        .login-btn {
+            padding: 12px var(--spacing-md);
+            background-color: var(--primary);
+            color: var(--white);
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .login-btn:hover {
+            background-color: var(--primary-dark);
+            box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+        }
+
+        .login-btn:active {
+            transform: scale(0.98);
+        }
+
+        .login-divider {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            margin: var(--spacing-lg) 0;
+            color: var(--gray-400);
+            font-size: 14px;
+        }
+
+        .login-divider::before,
+        .login-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background-color: var(--gray-300);
+        }
+
+        .demo-credentials {
+            background-color: var(--primary-bg);
+            border: 1px solid var(--primary-lighter);
+            border-radius: 8px;
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .demo-credentials h4 {
+            color: var(--primary-dark);
+            margin-bottom: var(--spacing-sm);
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .demo-account {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            font-size: 12px;
+            color: var(--gray-700);
+            border-bottom: 1px solid rgba(249, 115, 22, 0.2);
+        }
+
+        .demo-account:last-child {
+            border-bottom: none;
+        }
+
+        .demo-label {
+            font-weight: 600;
+            color: var(--primary-dark);
+        }
+
+        .login-footer {
+            text-align: center;
+            margin-top: var(--spacing-lg);
+            font-size: 14px;
+            color: var(--gray-600);
+        }
+
+        .login-footer a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.2s ease;
+        }
+
+        .login-footer a:hover {
+            color: var(--primary-dark);
+        }
+
+        .error-message {
+            background-color: #fee2e2;
+            border: 1px solid #fecaca;
+            color: #7f1d1d;
+            padding: var(--spacing-md);
+            border-radius: 8px;
+            display: none;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .error-message.show {
+            display: block;
+            animation: slideUp 0.3s ease;
+        }
+
+        @media (max-width: 480px) {
+            .login-container {
+                padding: var(--spacing-lg);
+            }
+
+            .login-header h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <div class="login-logo">GS</div>
+            <h1>Garage Service</h1>
+            <p>Management System</p>
+        </div>
+
+        <div id="errorMessage" class="error-message"></div>
+
+        <!--<div class="demo-credentials">
+            <h4>Demo Credentials</h4>
+            <div class="demo-account">
+                <span><span class="demo-label">Admin:</span> admins / command123</span>
+            </div>
+            <div class="demo-account">
+                <span><span class="demo-label">Tech:</span> john_tjau / john123</span>
+            </div>
+            <div class="demo-account">
+                <span><span class="demo-label">Customer:</span> client / client123</span>
+            </div>
+        </div>-->
+
+        <form class="login-form" onsubmit="handleLogin(event)">
+            <div class="form-group">
+                <label for="username">Username or Email</label>
+                <input 
+                    type="text" 
+                    id="username" 
+                    placeholder="Enter your username or email" 
+                    required
+                    autocomplete="username"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input 
+                    type="password" 
+                    id="password" 
+                    placeholder="Enter your password" 
+                    required
+                    autocomplete="current-password"
+                >
+            </div>
+
+            <div class="form-options">
+                <label class="remember-me">
+                    <input type="checkbox" id="rememberMe">
+                    <span>Remember me</span>
+                </label>
+                <a href="#" class="forgot-password" onclick="handleForgotPassword(event)">Forgot password?</a>
+            </div>
+
+            <button type="submit" class="login-btn">Sign In</button>
+        </form>
+
+        <div class="login-divider">or</div>
+
+        <div class="login-footer">
+            Don't have an account? <a href="register.html">Create one</a>
+        </div>
+    </div>
+
+    <script>
+        const users = [
+            {
+                username: "admins",
+                email: "adminstjandu2026@gmail.com",
+                password: "command123",
+                role: "admin",
+                name: "Admin"
+            },
+            {
+                username: "john_tjau",
+                email: "johntjandu2026@gmail.com",
+                password: "john123",
+                role: "tech",
+                name: "John Technician"
+            },
+            {
+                username: "client",
+                email: "client2026@gmail.com",
+                password: "client123",
+                role: "customer",
+                name: "John Doe"
+            }
+        ];
+
+        function handleLogin(event) {
+            event.preventDefault();
+
+            const identifier = document.getElementById("username").value.trim();
+            const password = document.getElementById("password").value;
+            const errorMessage = document.getElementById("errorMessage");
+
+            // Clear error message
+            errorMessage.classList.remove("show");
+
+            const user = users.find(u => 
+                (u.username === identifier || u.email === identifier) && u.password === password
+            );
+
+            if (user) {
+                // Store user session
+                sessionStorage.setItem("currentUser", JSON.stringify({
+                    username: user.username,
+                    email: user.email,
+                    role: user.role,
+                    name: user.name
+                }));
+
+                // Redirect based on role
+                setTimeout(() => {
+                    const redirectMap = {
+                        admin: "admin-dashboard.html",
+                        tech: "tech-dashboard.html",
+                        customer: "customer-dashboard.html"
+                    };
+                    window.location.href = redirectMap[user.role] || "login.html";
+                }, 300);
+            } else {
+                // Show error
+                errorMessage.textContent = "Invalid username/email or password. Please try again.";
+                errorMessage.classList.add("show");
+            }
+        }
+
+        function handleForgotPassword(event) {
+            event.preventDefault();
+            alert("Password recovery feature coming soon!");
+        }
+
+        // Demo: Auto-fill on page load for testing
+        document.addEventListener("DOMContentLoaded", () => {
+            const params = new URLSearchParams(window.location.search);
+            if (params.get("role")) {
+                const role = params.get("role");
+                const userRole = users.find(u => u.role === role);
+                if (userRole) {
+                    document.getElementById("username").value = userRole.username;
+                    document.getElementById("password").value = userRole.password;
+                }
+            }
+        });
+    </script>
+</body>
+</html>

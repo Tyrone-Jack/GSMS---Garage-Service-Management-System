@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - GSMS</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .main-content {
+            display: flex;
+            gap: var(--spacing-lg);
+            margin-top: var(--spacing-lg);
+        }
+
+        .dashboard-body {
+            flex: 1;
+            padding: var(--spacing-lg) 0;
+        }
+
+        .welcome-section {
+            margin-bottom: var(--spacing-2xl);
+        }
+
+        .welcome-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .welcome-subtitle {
+            color: var(--gray-500);
+            font-size: 16px;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-2xl);
+        }
+
+        .action-card {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: var(--spacing-lg);
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .action-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 8px 24px rgba(249, 115, 22, 0.12);
+            transform: translateY(-4px);
+        }
+
+        .action-icon {
+            width: 56px;
+            height: 56px;
+            background: var(--primary-bg);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto var(--spacing-md);
+            font-size: 28px;
+        }
+
+        .action-card h3 {
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .action-card p {
+            font-size: 13px;
+            color: var(--gray-500);
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: var(--spacing-lg);
+            margin-top: var(--spacing-2xl);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+
+        .pending-bookings {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: var(--spacing-lg);
+        }
+
+        .booking-item {
+            background: var(--primary-bg);
+            border-left: 4px solid var(--primary);
+            border-radius: 8px;
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-lg);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: var(--spacing-lg);
+            transition: all 0.3s ease;
+        }
+
+        .booking-item:hover {
+            transform: translateX(4px);
+        }
+
+        .booking-info {
+            flex: 1;
+        }
+
+        .booking-info h4 {
+            margin-bottom: 4px;
+        }
+
+        .booking-service {
+            font-size: 14px;
+            color: var(--gray-600);
+            margin-bottom: 4px;
+        }
+
+        .booking-date {
+            font-size: 12px;
+            color: var(--gray-500);
+        }
+
+        .booking-status {
+            display: flex;
+            gap: var(--spacing-sm);
+            align-items: center;
+        }
+
+        .active-jobs {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-2xl);
+        }
+
+        .job-card {
+            background: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            border-radius: 10px;
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-lg);
+            display: grid;
+            gap: var(--spacing-md);
+        }
+
+        .job-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: var(--spacing-md);
+        }
+
+        .job-title {
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .job-details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--spacing-md);
+            font-size: 13px;
+            color: var(--gray-600);
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: var(--gray-700);
+        }
+
+        .progress-section {
+            margin-top: var(--spacing-md);
+        }
+
+        .progress-section h4 {
+            margin-bottom: var(--spacing-md);
+            font-size: 14px;
+        }
+
+        .status-timeline {
+            display: flex;
+            gap: var(--spacing-md);
+            overflow-x: auto;
+            padding-bottom: var(--spacing-sm);
+        }
+
+        .timeline-item {
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .timeline-dot {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--gray-300);
+            border: 2px solid var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .timeline-dot.active {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .timeline-dot.completed {
+            background: var(--success);
+            color: var(--white);
+        }
+
+        .timeline-label {
+            font-size: 11px;
+            text-align: center;
+            color: var(--gray-600);
+            max-width: 60px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: var(--spacing-2xl);
+            color: var(--gray-500);
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: var(--spacing-lg);
+            opacity: 0.3;
+        }
+
+        .recent-invoices {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-2xl);
+        }
+
+        .invoice-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+        }
+
+        .invoice-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--spacing-md);
+            background: var(--gray-50);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .invoice-item:hover {
+            background: var(--primary-bg);
+        }
+
+        .invoice-info {
+            flex: 1;
+        }
+
+        .invoice-id {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .invoice-date {
+            font-size: 12px;
+            color: var(--gray-500);
+        }
+
+        .invoice-amount {
+            font-weight: 700;
+            font-size: 16px;
+            color: var(--primary);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-2xl);
+        }
+
+        .stat-card {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: var(--spacing-lg);
+            text-align: center;
+        }
+
+        .stat-icon {
+            font-size: 28px;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--gray-600);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+
+            .job-details {
+                grid-template-columns: 1fr;
+            }
+
+            .quick-actions {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-content">
+            <a href="customer-dashboard.html" class="logo">
+                <span>GS</span>
+                GSMS
+            </a>
+            <nav class="nav-menu">
+                <a href="customer-dashboard.html" class="active">Dashboard</a>
+                <a href="book-service.html">Book Service</a>
+                <a href="#active-jobs">Active Jobs</a>
+                <a href="#invoices">Invoices</a>
+            </nav>
+            <div class="user-profile">
+                <div class="user-avatar" id="userAvatar">JD</div>
+                <button class="btn btn-secondary btn-sm" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-title">Menu</div>
+                <ul class="sidebar-menu">
+                    <li><a href="customer-dashboard.html" class="active">Dashboard</a></li>
+                    <li><a href="book-service.html">Book Service</a></li>
+                    <li><a href="#active-jobs">Active Jobs</a></li>
+                    <li><a href="#invoices">Invoices</a></li>
+                    <li><a href="#profile">Profile</a></li>
+                </ul>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-title">Support</div>
+                <ul class="sidebar-menu">
+                    <li><a href="#help">Help Center</a></li>
+                    <li><a href="#contact">Contact Us</a></li>
+                    <li><a href="#faq">FAQ</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Dashboard Content -->
+        <div class="dashboard-body">
+            <div class="container">
+                <!-- Welcome Section -->
+                <div class="welcome-section">
+                    <h1 class="welcome-title">Welcome back, <span id="userName">John</span>!</h1>
+                    <p class="welcome-subtitle">Manage your vehicle services and track repairs</p>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">📅</div>
+                        <div class="stat-value">2</div>
+                        <div class="stat-label">Pending Bookings</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🔧</div>
+                        <div class="stat-value">1</div>
+                        <div class="stat-label">Active Jobs</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">✅</div>
+                        <div class="stat-value">8</div>
+                        <div class="stat-label">Completed</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">💰</div>
+                        <div class="stat-value">$856</div>
+                        <div class="stat-label">Total Spent</div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="section-title">Quick Actions</div>
+                <div class="quick-actions">
+                    <a href="book-service.html" class="action-card">
+                        <div class="action-icon">📅</div>
+                        <h3>Book Service</h3>
+                        <p>Schedule a new service</p>
+                    </a>
+                    <a href="#active-jobs" class="action-card">
+                        <div class="action-icon">🔧</div>
+                        <h3>Active Job</h3>
+                        <p>Track progress</p>
+                    </a>
+                    <a href="#invoices" class="action-card">
+                        <div class="action-icon">📄</div>
+                        <h3>View Bills</h3>
+                        <p>Check invoices</p>
+                    </a>
+                    <a href="#reviews" class="action-card">
+                        <div class="action-icon">⭐</div>
+                        <h3>Leave Review</h3>
+                        <p>Share feedback</p>
+                    </a>
+                </div>
+
+                <!-- Pending Bookings -->
+                <div class="section-title">Pending Bookings</div>
+                <div class="pending-bookings">
+                    <div class="booking-item">
+                        <div class="booking-info">
+                            <h4>2020 Toyota Camry</h4>
+                            <p class="booking-service">AC Service</p>
+                            <p class="booking-date">Scheduled: 1/15/2026 at 11:00 AM</p>
+                        </div>
+                        <div class="booking-status">
+                            <span class="badge badge-warning">Pending</span>
+                            <button class="btn btn-sm btn-outline">Modify</button>
+                        </div>
+                    </div>
+
+                    <div class="booking-item">
+                        <div class="booking-info">
+                            <h4>2020 Toyota Camry</h4>
+                            <p class="booking-service">Brake Service</p>
+                            <p class="booking-date">Scheduled: 1/18/2026 at 2:00 PM</p>
+                        </div>
+                        <div class="booking-status">
+                            <span class="badge badge-warning">Pending</span>
+                            <button class="btn btn-sm btn-outline">Modify</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Active Jobs -->
+                <div id="active-jobs" class="section-title">Active Jobs</div>
+                <div class="active-jobs">
+                    <div class="job-card">
+                        <div class="job-header">
+                            <div>
+                                <div class="job-title">Oil Change Service</div>
+                                <p style="color: var(--gray-500); font-size: 13px; margin-top: 4px;">2020 Toyota Camry - License: ABC123</p>
+                            </div>
+                            <span class="badge badge-success">In Progress</span>
+                        </div>
+
+                        <div class="job-details">
+                            <div class="detail-item">
+                                <span class="detail-label">Technician</span>
+                                <span>John Smith</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Start Time</span>
+                                <span>1/12/2026 10:00 AM</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Estimated Duration</span>
+                                <span>0.5 hours</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Status</span>
+                                <span>60% Complete</span>
+                            </div>
+                        </div>
+
+                        <div class="progress-section">
+                            <h4>Progress</h4>
+                            <div class="progress">
+                                <div class="progress-bar" style="width: 60%"></div>
+                            </div>
+                        </div>
+
+                        <div class="progress-section">
+                            <h4>Service Timeline</h4>
+                            <div class="status-timeline">
+                                <div class="timeline-item">
+                                    <div class="timeline-dot completed">✓</div>
+                                    <span class="timeline-label">Initial Check</span>
+                                </div>
+                                <div class="timeline-item">
+                                    <div class="timeline-dot completed">✓</div>
+                                    <span class="timeline-label">Oil Drain</span>
+                                </div>
+                                <div class="timeline-item">
+                                    <div class="timeline-dot active">🔄</div>
+                                    <span class="timeline-label">Filter Change</span>
+                                </div>
+                                <div class="timeline-item">
+                                    <div class="timeline-dot">⏳</div>
+                                    <span class="timeline-label">Final Check</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: var(--spacing-lg); display: flex; gap: var(--spacing-sm);">
+                            <button class="btn btn-sm btn-outline" onclick="viewJobDetails()">View Details</button>
+                            <button class="btn btn-sm btn-outline" onclick="contactTechnician()">Contact Tech</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Invoices -->
+                <div id="invoices" class="section-title">Recent Invoices</div>
+                <div class="recent-invoices">
+                    <div class="invoice-list">
+                        <div class="invoice-item">
+                            <div class="invoice-info">
+                                <div class="invoice-id">INV-2026-001</div>
+                                <div class="invoice-date">1/5/2026 - Oil Change</div>
+                            </div>
+                            <span class="badge badge-success">Paid</span>
+                            <div class="invoice-amount">$45.99</div>
+                        </div>
+
+                        <div class="invoice-item">
+                            <div class="invoice-info">
+                                <div class="invoice-id">INV-2026-002</div>
+                                <div class="invoice-date">1/8/2026 - Tire Rotation</div>
+                            </div>
+                            <span class="badge badge-success">Paid</span>
+                            <div class="invoice-amount">$65.00</div>
+                        </div>
+
+                        <div class="invoice-item">
+                            <div class="invoice-info">
+                                <div class="invoice-id">INV-2026-003</div>
+                                <div class="invoice-date">12/20/2025 - Battery Replacement</div>
+                            </div>
+                            <span class="badge badge-success">Paid</span>
+                            <div class="invoice-amount">$120.00</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Job Details Modal -->
+    <div id="jobDetailsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Job Details</h3>
+                <button class="modal-close" onclick="closeModal('jobDetailsModal')">×</button>
+            </div>
+            <div style="background: var(--gray-50); padding: var(--spacing-lg); border-radius: 8px; margin-bottom: var(--spacing-lg);">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-md); margin-bottom: var(--spacing-md);">
+                    <div>
+                        <div style="font-size: 12px; color: var(--gray-600); font-weight: 600; margin-bottom: 4px; text-transform: uppercase;">Service</div>
+                        <div style="font-weight: 600; color: var(--gray-900);">Oil Change Service</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 12px; color: var(--gray-600); font-weight: 600; margin-bottom: 4px; text-transform: uppercase;">Status</div>
+                        <span class="status-badge status-in-progress">In Progress</span>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-md); font-size: 13px;">
+                    <div>
+                        <div style="color: var(--gray-600); font-weight: 600; margin-bottom: 4px;">Vehicle</div>
+                        <div>2020 Toyota Camry (ABC123)</div>
+                    </div>
+                    <div>
+                        <div style="color: var(--gray-600); font-weight: 600; margin-bottom: 4px;">Technician</div>
+                        <div>John Smith</div>
+                    </div>
+                    <div>
+                        <div style="color: var(--gray-600); font-weight: 600; margin-bottom: 4px;">Start Time</div>
+                        <div>1/12/2026 10:00 AM</div>
+                    </div>
+                    <div>
+                        <div style="color: var(--gray-600); font-weight: 600; margin-bottom: 4px;">Est. Completion</div>
+                        <div>10:30 AM</div>
+                    </div>
+                </div>
+            </div>
+            <div style="margin-bottom: var(--spacing-lg);">
+                <h4 style="margin-bottom: var(--spacing-md); color: var(--gray-700);">Progress</h4>
+                <div class="progress" style="margin-bottom: var(--spacing-md);">
+                    <div class="progress-bar" style="width: 60%;"></div>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--spacing-md); font-size: 12px;">
+                    <div style="text-align: center;">
+                        <div style="color: var(--success); font-weight: 700; margin-bottom: 4px;">✓</div>
+                        <div style="color: var(--gray-600);">Initial Check</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="color: var(--success); font-weight: 700; margin-bottom: 4px;">✓</div>
+                        <div style="color: var(--gray-600);">Oil Drain</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="color: var(--primary); font-weight: 700; margin-bottom: 4px;">⏳</div>
+                        <div style="color: var(--gray-600);">Filter Change</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="color: var(--gray-400); font-weight: 700; margin-bottom: 4px;">○</div>
+                        <div style="color: var(--gray-600);">Final Check</div>
+                    </div>
+                </div>
+            </div>
+            <div style="display: flex; gap: var(--spacing-md);">
+                <button class="btn btn-primary" style="flex: 1;" onclick="contactTechnician()">Contact Tech</button>
+                <button class="btn btn-secondary" style="flex: 1;" onclick="closeModal('jobDetailsModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact Technician Modal -->
+    <div id="contactTechModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Contact Technician</h3>
+                <button class="modal-close" onclick="closeModal('contactTechModal')">×</button>
+            </div>
+            <div style="background: var(--gray-50); padding: var(--spacing-lg); border-radius: 8px; margin-bottom: var(--spacing-lg);">
+                <div style="display: flex; gap: var(--spacing-md); align-items: center;">
+                    <div style="width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--primary-light)); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700;">JS</div>
+                    <div>
+                        <div style="font-weight: 600; color: var(--gray-900);">John Smith</div>
+                        <div style="font-size: 13px; color: var(--gray-600);">Rating: 4.8⭐ • Online</div>
+                    </div>
+                </div>
+            </div>
+            <div style="margin-bottom: var(--spacing-lg);">
+                <label for="techMessage">Message:</label>
+                <textarea id="techMessage" placeholder="Type your message here..." rows="4" style="margin-top: 8px; resize: vertical;"></textarea>
+            </div>
+            <div style="background: #e0f2fe; padding: var(--spacing-md); border-radius: 8px; margin-bottom: var(--spacing-lg); border-left: 4px solid var(--info);">
+                <p style="color: #164e63; font-size: 13px; margin: 0;">Your message will be delivered to the technician immediately.</p>
+            </div>
+            <div style="display: flex; gap: var(--spacing-md);">
+                <button class="btn btn-primary" style="flex: 1;" onclick="sendMessage()">Send Message</button>
+                <button class="btn btn-secondary" style="flex: 1;" onclick="closeModal('contactTechModal')">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize user info
+        function initializeUser() {
+            const user = JSON.parse(sessionStorage.getItem("currentUser"));
+            if (!user || user.role !== "customer") {
+                window.location.href = "login.html";
+                return;
+            }
+            
+            document.getElementById("userName").textContent = user.name.split(" ")[0];
+            document.getElementById("userAvatar").textContent = user.name.split(" ").map(n => n[0]).join("");
+        }
+
+        function logout() {
+            sessionStorage.removeItem("currentUser");
+            window.location.href = "login.html";
+        }
+
+        function viewJobDetails() {
+            openModal('jobDetailsModal');
+        }
+
+        function contactTechnician() {
+            openModal('contactTechModal');
+        }
+
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.add('active');
+            }
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.remove('active');
+            }
+        }
+
+        function sendMessage() {
+            const message = document.getElementById('techMessage').value;
+            if (message.trim()) {
+                alert('Message sent to technician!');
+                document.getElementById('techMessage').value = '';
+                closeModal('contactTechModal');
+            } else {
+                alert('Please enter a message');
+            }
+        }
+
+        // Close modal when clicking outside
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeModal(this.id);
+                }
+            });
+        });
+
+        // Initialize on page load
+        document.addEventListener("DOMContentLoaded", initializeUser);
+    </script>
+</body>
+</html>
