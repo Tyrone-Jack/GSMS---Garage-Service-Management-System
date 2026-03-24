@@ -1011,13 +1011,92 @@
     </div>
 
     <script>
-        function initializeUser() {
-            const user = JSON.parse(sessionStorage.getItem("currentUser"));
-            if (!user || user.role !== "admin") {
+        let currentUser = null;
+        let projects = [];
+
+        async function initializeUser() {
+            const userStr = sessionStorage.getItem("currentUser");
+            if (!userStr) {
                 window.location.href = "login.html";
                 return;
             }
-            document.getElementById("userAvatar").textContent = user.name.split(" ").map(n => n[0]).join("");
+
+            currentUser = JSON.parse(userStr);
+            if (currentUser.role !== "admin") {
+                window.location.href = "login.html";
+                return;
+            }
+            
+            document.getElementById("userAvatar").textContent = currentUser.name.split(" ").map(n => n[0]).join("");
+            
+            // Load data from API
+            await loadProjects();
+            await loadTechnicians();
+        }
+
+        async function loadProjects(status = null) {
+            try {
+                const url = status ? `/api/admin/projects?status=${status}` : '/api/admin/projects';
+                const response = await fetch(url);
+                projects = await response.json();
+                renderProjects();
+            } catch (error) {
+                console.error("Error loading projects:", error);
+                alert("Failed to load projects");
+            }
+        }
+
+        function renderProjects() {
+            const tbody = document.querySelector(".table tbody");
+            tbody.innerHTML = projects.map(p => `
+                <tr>
+                    <td><span class="customer-name">${p.customer_name}</span></td>
+                    <td>${p.service_name}</td>
+                    <td>${p.make} ${p.model} - ${p.license_plate}</td>
+                    <td>${new Date(p.booking_date).toLocaleDateString()}</td>
+                    <td><span class="status-badge status-${p.status}">${p.status.charAt(0).toUpperCase() + p.status.slice(1)}</span></td>
+                    <td>
+                        <div class="action-buttons">
+                            ${p.status === 'pending' ? `
+                                <button class="action-btn action-btn-primary" onclick="approveBooking(${p.id})">Approve</button>
+                                <button class="action-btn action-btn-danger" onclick="rejectBooking(${p.id})">Reject</button>
+                            ` : ''}
+                            <button class="action-btn action-btn-secondary" onclick="viewDetails(${p.id})">View</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function loadTechnicians() {
+            try {
+                const response = await fetch('/api/admin/technicians');
+                const techs = await response.json();
+                renderTechnicians(techs);
+            } catch (error) {
+                console.error("Error loading technicians:", error);
+            }
+        }
+
+        function renderTechnicians(techs) {
+            const tbody = document.querySelector(".table tbody");
+            if (document.querySelector(".table tbody").parentElement.id === "techTable") {
+                tbody.innerHTML = techs.map(t => `
+                    <tr>
+                        <td><span class="customer-name">${t.name}</span></td>
+                        <td>All Services</td>
+                        <td>${t.active_jobs || 0}</td>
+                        <td>4.8 ⭐</td>
+                        <td><span class="status-badge status-approved">Active</span></td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn action-btn-secondary" onclick="editTech()">Edit</button>
+                                <button class="action-btn action-btn-danger" onclick="deactivateTech()">Deactivate</button>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
+            }
         }
 
         function switchTab(tabName) {
@@ -1038,12 +1117,40 @@
             event.target.classList.add("active");
         }
 
-        function approveBooking() {
-            alert("Booking approved successfully!");
+        async function approveBooking(projectId) {
+            try {
+                const response = await fetch(`/api/admin/projects/${projectId}/status`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: 'approved' })
+                });
+                
+                if (response.ok) {
+                    alert("Booking approved successfully!");
+                    await loadProjects();
+                }
+            } catch (error) {
+                console.error("Error approving booking:", error);
+                alert("Failed to approve booking");
+            }
         }
 
-        function rejectBooking() {
-            alert("Booking rejected. Confirmation email sent to customer.");
+        async function rejectBooking(projectId) {
+            try {
+                const response = await fetch(`/api/admin/projects/${projectId}/status`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: 'rejected' })
+                });
+                
+                if (response.ok) {
+                    alert("Booking rejected. Confirmation email sent to customer.");
+                    await loadProjects();
+                }
+            } catch (error) {
+                console.error("Error rejecting booking:", error);
+                alert("Failed to reject booking");
+            }
         }
 
         function assignTech() {

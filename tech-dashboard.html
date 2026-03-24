@@ -970,14 +970,70 @@
     </div>
 
     <script>
-        function initializeUser() {
-            const user = JSON.parse(sessionStorage.getItem("currentUser"));
-            if (!user || user.role !== "tech") {
+        let currentUser = null;
+        let techJobs = [];
+
+        async function initializeUser() {
+            const userStr = sessionStorage.getItem("currentUser");
+            if (!userStr) {
                 window.location.href = "login.html";
                 return;
             }
-            document.getElementById("userAvatar").textContent = user.name.split(" ").map(n => n[0]).join("");
-            document.getElementById("techName").textContent = user.name.split(" ")[0];
+
+            currentUser = JSON.parse(userStr);
+            if (currentUser.role !== "tech") {
+                window.location.href = "login.html";
+                return;
+            }
+            
+            document.getElementById("userAvatar").textContent = currentUser.name.split(" ").map(n => n[0]).join("");
+            document.getElementById("techName").textContent = currentUser.name.split(" ")[0];
+            
+            // Load technician jobs from API
+            await loadTechJobs();
+        }
+
+        async function loadTechJobs() {
+            try {
+                const response = await fetch(`/api/tech/jobs?technicianId=${currentUser.id}`);
+                techJobs = await response.json();
+                renderJobCards();
+            } catch (error) {
+                console.error("Error loading jobs:", error);
+            }
+        }
+
+        function renderJobCards() {
+            const container = document.getElementById('queue');
+            if (!container) return;
+            
+            if (techJobs.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: var(--gray-600); padding: var(--spacing-lg);">No assigned jobs at this time.</p>';
+                return;
+            }
+
+            container.innerHTML = techJobs.map((job, idx) => `
+                <div class="job-card" onclick="openJobDetail(${job.id})">
+                    <div class="job-header">
+                        <div class="job-id">JOB-2026-${String(job.id).padStart(3, '0')}</div>
+                        <span class="job-status ${job.status}">${job.status.charAt(0).toUpperCase() + job.status.slice(1)}</span>
+                    </div>
+                    <div class="job-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Customer</span>
+                            <span class="detail-value">${job.customer_name}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Service</span>
+                            <span class="detail-value">${job.service_name}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Vehicle</span>
+                            <span class="detail-value">${job.make} ${job.model}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
         }
 
         function switchTab(tabName) {
@@ -1024,7 +1080,7 @@
             alert("Draft saved successfully!");
         }
 
-        function completeJob() {
+        async function completeJob() {
             openModal('completeJobModal');
         }
 
@@ -1046,9 +1102,10 @@
             }
         }
 
-        function confirmAcceptJob() {
+        async function confirmAcceptJob() {
             alert("Job accepted! You can now view details and start working.");
             closeModal('acceptJobModal');
+            await loadTechJobs();
         }
 
         function confirmRejectJob() {
@@ -1061,10 +1118,11 @@
             }
         }
 
-        function submitCompletion() {
+        async function submitCompletion() {
             const notes = document.getElementById('completionNotes').value;
             alert("Job marked as complete! Customer will be notified.");
             closeModal('completeJobModal');
+            await loadTechJobs();
         }
 
         function confirmPhotoUpload() {

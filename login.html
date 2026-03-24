@@ -298,65 +298,52 @@
     </div>
 
     <script>
-        const users = [
-            {
-                username: "admins",
-                email: "adminstjandu2026@gmail.com",
-                password: "command123",
-                role: "admin",
-                name: "Admin"
-            },
-            {
-                username: "john_tjau",
-                email: "johntjandu2026@gmail.com",
-                password: "john123",
-                role: "tech",
-                name: "John Technician"
-            },
-            {
-                username: "client",
-                email: "client2026@gmail.com",
-                password: "client123",
-                role: "customer",
-                name: "John Doe"
-            }
-        ];
-
-        function handleLogin(event) {
+        async function handleLogin(event) {
             event.preventDefault();
 
-            const identifier = document.getElementById("username").value.trim();
+            const username = document.getElementById("username").value.trim();
             const password = document.getElementById("password").value;
             const errorMessage = document.getElementById("errorMessage");
 
             // Clear error message
             errorMessage.classList.remove("show");
 
-            const user = users.find(u => 
-                (u.username === identifier || u.email === identifier) && u.password === password
-            );
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
 
-            if (user) {
-                // Store user session
-                sessionStorage.setItem("currentUser", JSON.stringify({
-                    username: user.username,
-                    email: user.email,
-                    role: user.role,
-                    name: user.name
-                }));
+                if (response.ok) {
+                    const user = await response.json();
+                    
+                    // Store user session
+                    sessionStorage.setItem("currentUser", JSON.stringify({
+                        id: user.id,
+                        username: user.username,
+                        email: user.email,
+                        role: user.role,
+                        name: user.name,
+                        phone: user.phone
+                    }));
 
-                // Redirect based on role
-                setTimeout(() => {
-                    const redirectMap = {
-                        admin: "admin-dashboard.html",
-                        tech: "tech-dashboard.html",
-                        customer: "customer-dashboard.html"
-                    };
-                    window.location.href = redirectMap[user.role] || "login.html";
-                }, 300);
-            } else {
-                // Show error
-                errorMessage.textContent = "Invalid username/email or password. Please try again.";
+                    // Redirect based on role
+                    setTimeout(() => {
+                        const redirectMap = {
+                            admin: "admin-dashboard.html",
+                            tech: "tech-dashboard.html",
+                            customer: "customer-dashboard.html"
+                        };
+                        window.location.href = redirectMap[user.role] || "login.html";
+                    }, 300);
+                } else {
+                    errorMessage.textContent = "Invalid username or password. Please try again.";
+                    errorMessage.classList.add("show");
+                }
+            } catch (error) {
+                console.error("Login error:", error);
+                errorMessage.textContent = "Server error. Please try again later.";
                 errorMessage.classList.add("show");
             }
         }
@@ -371,10 +358,17 @@
             const params = new URLSearchParams(window.location.search);
             if (params.get("role")) {
                 const role = params.get("role");
-                const userRole = users.find(u => u.role === role);
-                if (userRole) {
-                    document.getElementById("username").value = userRole.username;
-                    document.getElementById("password").value = userRole.password;
+                // Demo accounts: admin, john_tech, customer1
+                const demoAccounts = {
+                    admin: { username: 'admin', password: 'admin123' },
+                    tech: { username: 'john_tech', password: 'tech123' },
+                    customer: { username: 'customer1', password: 'cust123' }
+                };
+                
+                const account = demoAccounts[role];
+                if (account) {
+                    document.getElementById("username").value = account.username;
+                    document.getElementById("password").value = account.password;
                 }
             }
         });

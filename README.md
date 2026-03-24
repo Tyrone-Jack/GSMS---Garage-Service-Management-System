@@ -110,55 +110,99 @@ Customers track repair progress and job card updates.
 
 🛠 Tech Stack
 Frontend
-HTML
-CSS
-JavaScript
-Backend (Planned)
-Firebase Authentication
-Firebase Firestore
-Firebase Storage
+HTML5
+CSS3
+Vanilla JavaScript
+Backend
+Express.js
+SQLite Database
 Node.js
+CORS for API integration
 📂 Project Structure
-GSMS
+GSMS/
 │
-├── index.html
-├── login.html
+├── server.js                 # Express server entry point
+├── database.js              # SQLite database setup and seeding
+├── package.json             # Node.js dependencies
 │
-├── dashboards
+├── public/                  # Frontend files (served by Express)
+│   ├── index.html          # Landing page
+│   ├── login.html          # Authentication page
+│   ├── book-service.html   # Service booking form
 │   ├── admin-dashboard.html
 │   ├── tech-dashboard.html
-│   └── customer-dashboard.html
+│   ├── customer-dashboard.html
+│   └── styles.css          # Global styling
 │
-├── pages
-│   └── book-service.html
-│
-├── css
-│   └── styles.css
-│
-└── js
-    ├── auth.js
-    ├── jobs.js
-    └── session.js
-🔄 System Workflow
-Customer Request
-      ↓
-Job Card Generated
-      ↓
-Admin Assigns Technician
-      ↓
-Technician Updates Job
-      ↓
-Customer Tracks Repair
-🚀 Future Improvements
+├── api-utils.js            # Shared API utility functions
+├── gsms.db                 # SQLite database (auto-created)
+└── README.md
+🚀 Getting Started
+
+Installation
+
+npm install
+
+Running the Server
+
+npm start
+
+The server will start on http://localhost:3000 and the database will be auto-created and seeded with demo data.
+
+Demo Credentials
+
+Admin
+Username: admin
+Password: admin123
+
+Technician
+Username: john_tech
+Password: tech123
+
+Customer
+Username: customer1
+Password: cust123
+
+API Endpoints
+
+Authentication
+POST /api/login
+
+Customer Endpoints
+GET /api/customer/projects?customerId=ID
+POST /api/customer/projects
+GET /api/customer/jobs?customerId=ID
+GET /api/customer/invoices?customerId=ID
+
+Admin Endpoints
+GET /api/admin/projects
+PUT /api/admin/projects/:id/status
+GET /api/admin/technicians
+PUT /api/admin/jobs/:id/assign
+
+Technician Endpoints
+GET /api/tech/jobs?technicianId=ID
+PUT /api/tech/jobs/:id/status
+PUT /api/tech/jobs/:id/notes
+GET /api/tech/jobs/:id/notes
+
+Shared Endpoints
+GET /api/services
+GET /api/vehicles/:customerId
+🚀 Future Enhancements
 
 Planned features for future development:
 
-🔹 Firebase database integration
-🔹 Repair photo uploads
-🔹 Real-time job updates
-🔹 Technician workload management
-🔹 Service history tracking
-🔹 Notification system
+🔹 Photo upload and storage
+🔹 Real-time job updates with WebSockets
+🔹 Notification system (email/SMS)
+🔹 Advanced analytics and reporting
+🔹 Technician performance tracking
+🔹 Customer ratings and reviews
+🔹 Payment processing integration
+🔹 Mobile app development
+🔹 PDF invoice generation
+🔹 Email notifications
 
 🎓 Academic Context
 

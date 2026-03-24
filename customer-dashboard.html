@@ -694,15 +694,67 @@
 
     <script>
         // Initialize user info
-        function initializeUser() {
-            const user = JSON.parse(sessionStorage.getItem("currentUser"));
-            if (!user || user.role !== "customer") {
+        let currentUser = null;
+        let customerJobs = [];
+        let customerProjects = [];
+
+        async function initializeUser() {
+            const userStr = sessionStorage.getItem("currentUser");
+            if (!userStr) {
+                window.location.href = "login.html";
+                return;
+            }
+
+            currentUser = JSON.parse(userStr);
+            if (currentUser.role !== "customer") {
                 window.location.href = "login.html";
                 return;
             }
             
-            document.getElementById("userName").textContent = user.name.split(" ")[0];
-            document.getElementById("userAvatar").textContent = user.name.split(" ").map(n => n[0]).join("");
+            document.getElementById("userName").textContent = currentUser.name.split(" ")[0];
+            document.getElementById("userAvatar").textContent = currentUser.name.split(" ").map(n => n[0]).join("");
+            
+            // Load customer data from API
+            await loadCustomerJobs();
+        }
+
+        async function loadCustomerJobs() {
+            try {
+                const response = await fetch(`/api/customer/jobs?customerId=${currentUser.id}`);
+                customerJobs = await response.json();
+                renderJobCards();
+            } catch (error) {
+                console.error("Error loading jobs:", error);
+            }
+        }
+
+        function renderJobCards() {
+            const container = document.querySelector(".active-jobs");
+            if (!container) return;
+            
+            if (customerJobs.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: var(--gray-600); padding: var(--spacing-lg);">No active jobs at this time.</p>';
+                return;
+            }
+
+            container.innerHTML = customerJobs.map(job => `
+                <div class="job-card">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: var(--spacing-md);">
+                        <h4>${job.service_name}</h4>
+                        <span class="badge badge-${job.status === 'completed' ? 'success' : 'warning'}">${job.status.charAt(0).toUpperCase() + job.status.slice(1)}</span>
+                    </div>
+                    <div class="job-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Vehicle</span>
+                            <span>${job.make} ${job.model} (${job.license_plate})</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Technician</span>
+                            <span>${job.tech_name || 'Pending Assignment'}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
         }
 
         function logout() {
