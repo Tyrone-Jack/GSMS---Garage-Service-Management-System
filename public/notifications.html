@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Notifications - GSMS</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="toast.js"></script>
+    <style>
+      .notifications-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: var(--spacing-xl);
+      }
+
+      .notifications-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: var(--spacing-xl);
+        flex-wrap: wrap;
+        gap: var(--spacing-md);
+      }
+
+      .notifications-title {
+        font-size: 28px;
+        font-weight: 700;
+      }
+
+      .notifications-actions {
+        display: flex;
+        gap: var(--spacing-md);
+      }
+
+      .notification-item {
+        background: var(--white);
+        border: 1px solid var(--gray-200);
+        border-radius: 12px;
+        padding: var(--spacing-lg);
+        margin-bottom: var(--spacing-md);
+        display: flex;
+        gap: var(--spacing-md);
+        transition: all 0.3s ease;
+        cursor: pointer;
+        position: relative;
+      }
+
+      .notification-item:hover {
+        transform: translateX(4px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      .notification-item.unread {
+        background: linear-gradient(135deg, var(--primary-bg), white);
+        border-left: 4px solid var(--primary);
+      }
+
+      .notification-icon {
+        font-size: 32px;
+        flex-shrink: 0;
+      }
+
+      .notification-content {
+        flex: 1;
+      }
+
+      .notification-title {
+        font-weight: 700;
+        font-size: 16px;
+        margin-bottom: 6px;
+      }
+
+      .notification-message {
+        font-size: 14px;
+        color: var(--gray-600);
+        margin-bottom: 8px;
+        line-height: 1.4;
+      }
+
+      .notification-time {
+        font-size: 11px;
+        color: var(--gray-400);
+      }
+
+      .mark-read-btn {
+        background: none;
+        border: none;
+        color: var(--primary);
+        cursor: pointer;
+        font-size: 12px;
+        padding: 4px 8px;
+        border-radius: 4px;
+        transition: all 0.2s ease;
+      }
+
+      .mark-read-btn:hover {
+        background: var(--primary-bg);
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: var(--spacing-2xl);
+        color: var(--gray-500);
+      }
+
+      .empty-state-icon {
+        font-size: 64px;
+        margin-bottom: var(--spacing-lg);
+        opacity: 0.5;
+      }
+
+      @media (max-width: 768px) {
+        .notifications-container {
+          padding: var(--spacing-md);
+        }
+
+        .notifications-header {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .notification-icon {
+          font-size: 24px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <div class="header-content">
+        <a href="customer-dashboard.html" class="logo">
+          <span>GS</span>
+          GSMS
+        </a>
+        <nav class="nav-menu">
+          <a href="customer-dashboard.html">Dashboard</a>
+          <a href="book-service.html">Book Service</a>
+          <a href="profile.html">Profile</a>
+        </nav>
+        <div class="user-profile">
+          <a href="profile.html">
+            <div class="user-avatar" id="userAvatar">JD</div>
+          </a>
+          <button class="btn btn-secondary btn-sm" onclick="logout()">
+            Logout
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="notifications-container">
+        <div class="notifications-header">
+          <h1 class="notifications-title">🔔 Notifications</h1>
+          <div class="notifications-actions">
+            <button class="btn btn-sm btn-outline" onclick="markAllAsRead()">
+              Mark all as read
+            </button>
+            <button
+              class="btn btn-sm btn-outline"
+              onclick="loadNotifications()"
+            >
+              Refresh
+            </button>
+          </div>
+        </div>
+
+        <div id="notificationsList">
+          <div class="empty-state">
+            <div class="empty-state-icon">🔔</div>
+            <p>Loading notifications...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let currentUser = null;
+      let notifications = [];
+
+      async function initialize() {
+        const userStr = sessionStorage.getItem("currentUser");
+        if (!userStr) {
+          window.location.href = "login.html";
+          return;
+        }
+        currentUser = JSON.parse(userStr);
+        document.getElementById("userAvatar").textContent = currentUser.name
+          .split(" ")
+          .map((n) => n[0])
+          .join("");
+        await loadNotifications();
+      }
+
+      async function loadNotifications() {
+        try {
+          const response = await fetch(
+            `http://localhost:3000/api/notifications?userId=${currentUser.id}&role=${currentUser.role}`,
+          );
+          notifications = await response.json();
+          renderNotifications();
+        } catch (error) {
+          console.error("Error loading notifications:", error);
+          showToast("Failed to load notifications", "error");
+        }
+      }
+function renderNotifications() {
+    const container = document.getElementById("notificationsList");
+    
+    if (notifications.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-state-icon">🔔</div>
+                <h3>No notifications yet</h3>
+                <p>When you receive updates about your services, they'll appear here.</p>
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = notifications.map(notif => {
+        // Calculate time here to debug
+        const timeString = formatTime(notif.created_at);
+        console.log("Notification:", notif.id, "Date:", notif.created_at, "Formatted:", timeString);
+        
+        return `
+            <div class="notification-item ${notif.read ? '' : 'unread'}" onclick="viewNotification(${notif.id})">
+                <div class="notification-icon">${getNotificationIcon(notif.type)}</div>
+                <div class="notification-content">
+                    <div class="notification-title">${escapeHtml(notif.title)}</div>
+                    <div class="notification-message">${escapeHtml(notif.message)}</div>
+                    <div class="notification-time">${timeString}</div>
+                </div>
+                ${!notif.read ? `
+                    <button class="mark-read-btn" onclick="event.stopPropagation(); markAsRead(${notif.id})">
+                        Mark as read
+                    </button>
+                ` : ''}
+            </div>
+        `;
+    }).join('');
+}
+      
+      function getNotificationIcon(type) {
+        const icons = {
+          job_update: "🔧",
+          payment: "💰",
+          review: "⭐",
+          system: "ℹ️",
+          booking: "📅",
+          reminder: "⏰",
+        };
+        return icons[type] || "📢";
+      }
+      function parseDate(dateString) {
+        if (!dateString) return new Date();
+        // Handle SQLite format: "2026-04-05 14:30:00"
+        if (dateString.includes(" ")) {
+          return new Date(dateString.replace(" ", "T"));
+        }
+        return new Date(dateString);
+      }
+
+      function formatTime(dateString) {
+    if (!dateString) return 'Just now';
+    
+    try {
+        // Parse the date
+        let date = new Date(dateString);
+        
+        // Subtract 3 hours to fix timezone (GMT+3 adjustment)
+        date.setHours(date.getHours() + 3);
+        
+        if (isNaN(date.getTime())) {
+            return 'Just now';
+        }
+        
+        const now = new Date();
+        const diffMs = now - date;
+        const diffMins = Math.floor(diffMs / 60000);
+        const diffHours = Math.floor(diffMs / 3600000);
+        const diffDays = Math.floor(diffMs / 86400000);
+        
+        if (diffMins < 1) return 'Just now';
+        if (diffMins === 1) return '1 minute ago';
+        if (diffMins < 60) return `${diffMins} minutes ago`;
+        if (diffHours === 1) return '1 hour ago';
+        if (diffHours < 24) return `${diffHours} hours ago`;
+        if (diffDays === 1) return 'Yesterday';
+        if (diffDays < 7) return `${diffDays} days ago`;
+        
+        return date.toLocaleDateString('en-US', { 
+            month: 'short', 
+            day: 'numeric'
+        });
+    } catch (error) {
+        console.error("Error formatting date:", error);
+        return 'Recently';
+    }
+}
+
+      async function markAsRead(notifId) {
+        try {
+          await fetch(
+            `http://localhost:3000/api/notifications/${notifId}/read`,
+            {
+              method: "PUT",
+            },
+          );
+          await loadNotifications();
+          // Update the bell count on dashboard (will update when returning)
+        } catch (error) {
+          console.error("Error marking as read:", error);
+          showToast("Failed to mark as read", "error");
+        }
+      }
+
+      async function markAllAsRead() {
+        try {
+          await fetch(`http://localhost:3000/api/notifications/read-all`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              user_id: currentUser.id,
+              user_role: currentUser.role,
+            }),
+          });
+          await loadNotifications();
+          showToast("All notifications marked as read", "success");
+        } catch (error) {
+          console.error("Error marking all as read:", error);
+          showToast("Failed to mark all as read", "error");
+        }
+      }
+
+      function viewNotification(notifId) {
+        // Mark as read if unread
+        const notif = notifications.find((n) => n.id === notifId);
+        if (notif && !notif.read) {
+          markAsRead(notifId);
+        }
+
+        // Redirect based on notification type
+        if (notif.type === "job_update") {
+          window.location.href = "customer-dashboard.html#active-jobs";
+        } else if (notif.type === "payment") {
+          window.location.href = "customer-dashboard.html#invoices";
+        } else if (notif.type === "review") {
+          window.location.href = "customer-dashboard.html#reviews";
+        }
+      }
+
+      function escapeHtml(text) {
+        if (!text) return "";
+        const div = document.createElement("div");
+        div.textContent = text;
+        return div.innerHTML;
+      }
+
+      function logout() {
+        sessionStorage.removeItem("currentUser");
+        window.location.href = "login.html";
+      }
+
+      initialize();
+    </script>
+  </body>
+</html>

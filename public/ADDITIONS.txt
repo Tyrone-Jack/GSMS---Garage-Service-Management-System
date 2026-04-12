@@ -1,0 +1,17 @@
+Customer dashboard: 
+1. Total Spent Tab 
+2. Review Tab
+3. notifications.html
+4. Service Histoty tab
+5. Vehicles tab
+6. Fix the progress lines on progress bar(z-index)
+7. Comprehensive Vehicle inspection price assignment at completion of job by tech
+
+Tech dashboard  
+1. Finish all modals
+2. add camera permision request for photos upload
+3. Add tech-profile.html
+4. Fix total earnings and jobs in quick stats tab
+
+Admin dashboard
+1. Everything

@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Jobs - GSMS</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="toast.js"></script>
+    <style>
+        .main-content {
+            display: flex;
+            gap: var(--spacing-lg);
+            margin-top: var(--spacing-lg);
+        }
+
+        .jobs-container {
+            flex: 1;
+            padding: var(--spacing-lg) 0;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-2xl);
+        }
+
+        .stat-card {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: var(--spacing-lg);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--gray-600);
+            margin-top: 4px;
+        }
+
+        /* Filters */
+        .filters {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .filters-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-group label {
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: var(--gray-600);
+        }
+
+        .filter-group input,
+        .filter-group select {
+            padding: 8px 12px;
+            border: 1px solid var(--gray-300);
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .filter-group input:focus,
+        .filter-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+        }
+
+        .filter-actions {
+            display: flex;
+            gap: var(--spacing-sm);
+            align-items: flex-end;
+        }
+
+        /* Bulk Actions */
+        .bulk-actions {
+            background: var(--primary-bg);
+            border: 1px solid var(--primary-lighter);
+            border-radius: 12px;
+            padding: var(--spacing-md) var(--spacing-lg);
+            margin-bottom: var(--spacing-lg);
+            display: none;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: var(--spacing-md);
+        }
+
+        .bulk-actions.show {
+            display: flex;
+        }
+
+        /* Job Cards */
+        .jobs-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+        }
+
+        .job-card {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .job-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .job-checkbox {
+            width: 20px;
+            margin: 20px 0 0 20px;
+            cursor: pointer;
+        }
+
+        .job-card-content {
+            flex: 1;
+            padding: var(--spacing-lg);
+        }
+
+        .job-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-md);
+            padding-bottom: var(--spacing-sm);
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .job-id {
+            font-weight: 700;
+            font-size: 16px;
+            color: var(--primary);
+        }
+
+        .job-status {
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-pending { background: #fef3c7; color: #d97706; }
+        .status-approved { background: #dbeafe; color: #2563eb; }
+        .status-in_progress { background: #e0e7ff; color: #4f46e5; }
+        .status-completed { background: #d1fae5; color: #059669; }
+        .status-cancelled { background: #fee2e2; color: #dc2626; }
+
+        .job-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .info-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--gray-500);
+            text-transform: uppercase;
+        }
+
+        .info-value {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .job-actions {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin-top: var(--spacing-md);
+            padding-top: var(--spacing-md);
+            border-top: 1px solid var(--gray-200);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: var(--spacing-2xl);
+            color: var(--gray-500);
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: var(--spacing-lg);
+            opacity: 0.5;
+        }
+
+        .loading {
+            text-align: center;
+            padding: var(--spacing-2xl);
+            color: var(--gray-500);
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .filters-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .job-card {
+                flex-direction: column;
+            }
+            
+            .job-checkbox {
+                margin: 15px 0 0 15px;
+                width: 20px;
+            }
+            
+            .job-info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <a href="admin-dashboard.html" class="logo">
+                <span>GS</span>
+                GSMS
+            </a>
+            <nav class="nav-menu">
+                <a href="admin-dashboard.html">Dashboard</a>
+                <a href="all-jobs.html" class="active">All Jobs</a>
+                <a href="services.html">Services</a>
+                <a href="users.html">Users</a>
+            </nav>
+            <div class="user-profile">
+                <div class="user-avatar" id="userAvatar">AD</div>
+                <span id="adminName" style="margin-right: var(--spacing-md);"></span>
+                <button class="btn btn-secondary btn-sm" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-title">Menu</div>
+                <ul class="sidebar-menu">
+                    <li><a href="admin-dashboard.html">Dashboard</a></li>
+                    <li><a href="all-jobs.html" class="active">All Jobs</a></li>
+                    <li><a href="services.html">Services</a></li>
+                    <li><a href="users.html">Users</a></li>
+                    <li><a href="reports.html">Reports</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-title">Quick Stats</div>
+                <div id="quickStats">
+                    <p>Total Jobs: <strong id="totalJobs">0</strong></p>
+                    <p>Completed: <strong id="completedJobs">0</strong></p>
+                    <p>Active: <strong id="activeJobs">0</strong></p>
+                </div>
+            </div>
+        </aside>
+
+        <div class="jobs-container">
+            <div class="container">
+                <h1>All Service Jobs</h1>
+                <p>View, filter, and download all service records</p>
+
+                <!-- Stats Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card" onclick="filterByStatus('all')">
+                        <div class="stat-value" id="statTotal">0</div>
+                        <div class="stat-label">Total Jobs</div>
+                    </div>
+                    <div class="stat-card" onclick="filterByStatus('pending')">
+                        <div class="stat-value" id="statPending">0</div>
+                        <div class="stat-label">Pending</div>
+                    </div>
+                    <div class="stat-card" onclick="filterByStatus('in_progress')">
+                        <div class="stat-value" id="statActive">0</div>
+                        <div class="stat-label">In Progress</div>
+                    </div>
+                    <div class="stat-card" onclick="filterByStatus('completed')">
+                        <div class="stat-value" id="statCompleted">0</div>
+                        <div class="stat-label">Completed</div>
+                    </div>
+                </div>
+
+                <!-- Filters -->
+                <div class="filters">
+                    <div class="filters-row">
+                        <div class="filter-group">
+                            <label>Status</label>
+                            <select id="statusFilter">
+                                <option value="all">All</option>
+                                <option value="pending">Pending</option>
+                                <option value="approved">Approved</option>
+                                <option value="in_progress">In Progress</option>
+                                <option value="completed">Completed</option>
+                                <option value="cancelled">Cancelled</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Customer</label>
+                            <select id="customerFilter">
+                                <option value="all">All Customers</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Service Type</label>
+                            <select id="serviceFilter">
+                                <option value="all">All Services</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Technician</label>
+                            <select id="technicianFilter">
+                                <option value="all">All Technicians</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="filters-row">
+                        <div class="filter-group">
+                            <label>Date From</label>
+                            <input type="date" id="dateFrom">
+                        </div>
+                        <div class="filter-group">
+                            <label>Date To</label>
+                            <input type="date" id="dateTo">
+                        </div>
+                        <div class="filter-group">
+                            <label>Search</label>
+                            <input type="text" id="searchInput" placeholder="Job ID, Vehicle, Customer...">
+                        </div>
+                        <div class="filter-actions">
+                            <button class="btn btn-primary" onclick="applyFilters()">Apply Filters</button>
+                            <button class="btn btn-outline" onclick="resetFilters()">Reset</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bulk Actions -->
+                <div id="bulkActions" class="bulk-actions">
+                    <div>
+                        <strong id="selectedCount">0</strong> jobs selected
+                    </div>
+                    <div style="display: flex; gap: var(--spacing-sm);">
+                        <button class="btn btn-primary" onclick="downloadSelected()">
+                            📥 Download Selected
+                        </button>
+                        <button class="btn btn-primary" onclick="downloadAllFiltered()">
+                            📥 Download All Filtered
+                        </button>
+                        <button class="btn btn-secondary" onclick="clearSelection()">
+                            Clear Selection
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Jobs List -->
+                <div id="jobsList" class="jobs-list">
+                    <div class="loading">Loading jobs...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Job Details Modal -->
+    <div id="jobModal" class="modal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h3 id="modalTitle">Job Details</h3>
+                <button class="modal-close" onclick="closeModal('jobModal')">×</button>
+            </div>
+            <div id="jobModalContent"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+        let allJobs = [];
+        let filteredJobs = [];
+        let selectedJobs = new Set();
+        let customersList = [];
+        let servicesList = [];
+        let techniciansList = [];
+        const API_BASE_URL = 'http://localhost:3000';
+
+        async function initialize() {
+            const userStr = sessionStorage.getItem("currentUser");
+            if (!userStr) {
+                window.location.href = "login.html";
+                return;
+            }
+
+            currentUser = JSON.parse(userStr);
+            if (currentUser.role !== "admin") {
+                window.location.href = "login.html";
+                return;
+            }
+            
+            document.getElementById("userAvatar").textContent = currentUser.name.split(" ").map(n => n[0]).join("");
+            document.getElementById("adminName").textContent = currentUser.name;
+            
+            await loadFilterOptions();
+            await loadAllJobs();
+            
+            // Add event listeners
+            document.getElementById("statusFilter").addEventListener("change", applyFilters);
+            document.getElementById("customerFilter").addEventListener("change", applyFilters);
+            document.getElementById("serviceFilter").addEventListener("change", applyFilters);
+            document.getElementById("technicianFilter").addEventListener("change", applyFilters);
+            document.getElementById("dateFrom").addEventListener("change", applyFilters);
+            document.getElementById("dateTo").addEventListener("change", applyFilters);
+            document.getElementById("searchInput").addEventListener("keyup", applyFilters);
+        }
+
+        async function loadFilterOptions() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/admin/filter-options`);
+                const options = await response.json();
+                
+                customersList = options.customers || [];
+                servicesList = options.services || [];
+                techniciansList = options.technicians || [];
+                
+                const customerFilter = document.getElementById("customerFilter");
+                customerFilter.innerHTML = '<option value="all">All Customers</option>' + 
+                    customersList.map(c => `<option value="${c.id}">${c.name} (@${c.username})</option>`).join('');
+                
+                const serviceFilter = document.getElementById("serviceFilter");
+                serviceFilter.innerHTML = '<option value="all">All Services</option>' + 
+                    servicesList.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+                
+                const technicianFilter = document.getElementById("technicianFilter");
+                technicianFilter.innerHTML = '<option value="all">All Technicians</option>' + 
+                    techniciansList.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
+                
+            } catch (error) {
+                console.error("Error loading filter options:", error);
+            }
+        }
+
+        async function loadAllJobs() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/admin/jobs`);
+                allJobs = await response.json();
+                applyFilters();
+                await loadStats();
+            } catch (error) {
+                console.error("Error loading jobs:", error);
+                document.getElementById("jobsList").innerHTML = '<div class="empty-state"><div class="empty-state-icon">❌</div><p>Failed to load jobs</p></div>';
+            }
+        }
+
+        async function loadStats() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/admin/stats`);
+                const stats = await response.json();
+                
+                document.getElementById("statTotal").textContent = stats.totalJobs || 0;
+                document.getElementById("statPending").textContent = stats.pending || 0;
+                document.getElementById("statActive").textContent = stats.active || 0;
+                document.getElementById("statCompleted").textContent = stats.completed || 0;
+                
+                document.getElementById("totalJobs").textContent = stats.totalJobs || 0;
+                document.getElementById("completedJobs").textContent = stats.completed || 0;
+                document.getElementById("activeJobs").textContent = stats.active || 0;
+            } catch (error) {
+                console.error("Error loading stats:", error);
+            }
+        }
+
+        function applyFilters() {
+            const status = document.getElementById("statusFilter").value;
+            const customerId = document.getElementById("customerFilter").value;
+            const serviceId = document.getElementById("serviceFilter").value;
+            const technicianId = document.getElementById("technicianFilter").value;
+            const dateFrom = document.getElementById("dateFrom").value;
+            const dateTo = document.getElementById("dateTo").value;
+            const search = document.getElementById("searchInput").value.toLowerCase();
+            
+            filteredJobs = allJobs.filter(job => {
+                if (status !== 'all' && job.status !== status) return false;
+                if (customerId !== 'all' && job.customer_id != customerId) return false;
+                if (serviceId !== 'all' && job.service_id != serviceId) return false;
+                if (technicianId !== 'all' && job.technician_id != technicianId) return false;
+                if (dateFrom && new Date(job.created_at) < new Date(dateFrom)) return false;
+                if (dateTo && new Date(job.created_at) > new Date(dateTo)) return false;
+                if (search) {
+                    const searchable = `${job.id} ${job.service_name} ${job.make} ${job.model} ${job.license_plate} ${job.customer_name}`.toLowerCase();
+                    if (!searchable.includes(search)) return false;
+                }
+                return true;
+            });
+            
+            renderJobs();
+            updateBulkActionsBar();
+        }
+
+        function resetFilters() {
+            document.getElementById("statusFilter").value = "all";
+            document.getElementById("customerFilter").value = "all";
+            document.getElementById("serviceFilter").value = "all";
+            document.getElementById("technicianFilter").value = "all";
+            document.getElementById("dateFrom").value = "";
+            document.getElementById("dateTo").value = "";
+            document.getElementById("searchInput").value = "";
+            applyFilters();
+        }
+
+        function filterByStatus(status) {
+            document.getElementById("statusFilter").value = status;
+            applyFilters();
+        }
+
+        function renderJobs() {
+            const container = document.getElementById("jobsList");
+            
+            if (filteredJobs.length === 0) {
+                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📋</div><p>No jobs found</p></div>';
+                return;
+            }
+            
+            container.innerHTML = filteredJobs.map(job => `
+                <div class="job-card" data-job-id="${job.id}">
+                    <input type="checkbox" class="job-checkbox" onchange="toggleJobSelection(${job.id})" ${selectedJobs.has(job.id) ? 'checked' : ''}>
+                    <div class="job-card-content">
+                        <div class="job-header">
+                            <div>
+                                <span class="job-id">#${job.id}</span>
+                                <span style="margin-left: 12px;">${job.service_name}</span>
+                            </div>
+                            <span class="job-status status-${job.status}">${job.status.replace('_', ' ').toUpperCase()}</span>
+                        </div>
+                        <div class="job-info-grid">
+                            <div class="info-item">
+                                <span class="info-label">Customer</span>
+                                <span class="info-value">${job.customer_name} (@${job.customer_username || 'user'})</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Technician</span>
+                                <span class="info-value">${job.technician_name || 'Not Assigned'}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Vehicle</span>
+                                <span class="info-value">${job.year} ${job.make} ${job.model}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">License Plate</span>
+                                <span class="info-value">${job.license_plate}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Created</span>
+                                <span class="info-value">${new Date(job.created_at).toLocaleDateString()}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Amount</span>
+                                <span class="info-value">KES ${(job.amount || 0).toLocaleString()}</span>
+                            </div>
+                        </div>
+                        <div class="job-actions">
+                            <button class="btn btn-sm btn-outline" onclick="viewJobDetails(${job.id})">View Details</button>
+                            <button class="btn btn-sm btn-primary" onclick="downloadSingleJob(${job.id})">📥 Download</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function toggleJobSelection(jobId) {
+            if (selectedJobs.has(jobId)) {
+                selectedJobs.delete(jobId);
+            } else {
+                selectedJobs.add(jobId);
+            }
+            updateBulkActionsBar();
+        }
+
+        function clearSelection() {
+            selectedJobs.clear();
+            updateBulkActionsBar();
+            renderJobs();
+        }
+
+        function updateBulkActionsBar() {
+            const bar = document.getElementById('bulkActions');
+            const count = document.getElementById('selectedCount');
+            
+            if (selectedJobs.size > 0) {
+                bar.classList.add('show');
+                count.textContent = selectedJobs.size;
+            } else {
+                bar.classList.remove('show');
+            }
+        }
+
+        async function downloadSingleJob(jobId) {
+            const job = filteredJobs.find(j => j.id === jobId);
+            if (!job) return;
+            await generateAndDownloadJobCard(job);
+        }
+
+        async function downloadSelected() {
+            if (selectedJobs.size === 0) {
+                showToast("No jobs selected", "warning");
+                return;
+            }
+            
+            const selectedJobsArray = filteredJobs.filter(job => selectedJobs.has(job.id));
+            showToast(`Downloading ${selectedJobsArray.length} job cards...`, "info");
+            
+            for (let i = 0; i < selectedJobsArray.length; i++) {
+                setTimeout(async () => {
+                    await generateAndDownloadJobCard(selectedJobsArray[i]);
+                }, i * 500);
+            }
+            
+            setTimeout(() => {
+                showToast(`Downloaded ${selectedJobsArray.length} job cards!`, "success");
+                clearSelection();
+            }, selectedJobsArray.length * 500 + 1000);
+        }
+
+        async function downloadAllFiltered() {
+            if (filteredJobs.length === 0) {
+                showToast("No jobs to download", "warning");
+                return;
+            }
+            
+            showToast(`Downloading ${filteredJobs.length} job cards...`, "info");
+            
+            for (let i = 0; i < filteredJobs.length; i++) {
+                setTimeout(async () => {
+                    await generateAndDownloadJobCard(filteredJobs[i]);
+                }, i * 500);
+            }
+            
+            setTimeout(() => {
+                showToast(`Downloaded ${filteredJobs.length} job cards!`, "success");
+            }, filteredJobs.length * 500 + 1000);
+        }
+
+        async function generateAndDownloadJobCard(job) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/admin/jobs/${job.id}/full`);
+                const fullJob = await response.json();
+                
+                const jobCardHtml = generateJobCardHTML(fullJob);
+                const blob = new Blob([jobCardHtml], { type: 'text/html' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `Job_Card_${job.id}_${job.service_name.replace(/\s/g, '_')}.html`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            } catch (error) {
+                console.error('Error:', error);
+                showToast(`Failed to download job #${job.id}`, "error");
+            }
+        }
+
+        function generateJobCardHTML(job) {
+            const partsTotal = job.parts ? job.parts.reduce((sum, p) => sum + p.total_price, 0) : 0;
+            const serviceAmount = job.final_price || job.price || 0;
+            const totalAmount = serviceAmount + partsTotal;
+            
+            return `<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Job Card #${job.id}</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; padding: 40px 20px; }
+        .job-card { max-width: 900px; margin: 0 auto; background: white; border-radius: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); overflow: hidden; }
+        .card-header { background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); color: white; padding: 30px; text-align: center; }
+        .card-header h1 { font-size: 28px; margin-bottom: 8px; }
+        .status-badge { display: inline-block; padding: 6px 16px; border-radius: 50px; font-size: 12px; font-weight: 600; margin-top: 12px; background: rgba(255,255,255,0.2); }
+        .card-body { padding: 30px; }
+        .section { margin-bottom: 24px; border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; }
+        .section-title { background: #f8fafc; padding: 12px 20px; font-weight: 700; border-bottom: 2px solid #f97316; }
+        .section-content { padding: 20px; }
+        .info-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+        .info-item { display: flex; flex-direction: column; gap: 4px; }
+        .info-label { font-size: 11px; font-weight: 600; color: #64748b; text-transform: uppercase; }
+        .info-value { font-size: 15px; font-weight: 500; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e5e7eb; }
+        th { background: #f8fafc; font-weight: 600; }
+        .total-row { background: #fef3c7; font-weight: 700; }
+        .amount { font-size: 24px; font-weight: 700; color: #f97316; }
+        .card-footer { background: #f8fafc; padding: 20px; text-align: center; font-size: 11px; color: #94a3b8; }
+        @media print { body { background: white; padding: 0; } .job-card { box-shadow: none; } }
+    </style>
+</head>
+<body>
+    <div class="job-card">
+        <div class="card-header">
+            <h1>🔧 GSMS SERVICE JOB CARD</h1>
+            <div>Job ID: #${job.id}</div>
+            <div class="status-badge">${job.status.toUpperCase()}</div>
+        </div>
+        <div class="card-body">
+            <div class="section">
+                <div class="section-title">📋 JOB INFORMATION</div>
+                <div class="section-content">
+                    <div class="info-grid">
+                        <div class="info-item"><span class="info-label">Service</span><span class="info-value">${job.service_name}</span></div>
+                        <div class="info-item"><span class="info-label">Created</span><span class="info-value">${new Date(job.created_at).toLocaleString()}</span></div>
+                        <div class="info-item"><span class="info-label">Completed</span><span class="info-value">${job.completed_at ? new Date(job.completed_at).toLocaleString() : 'Pending'}</span></div>
+                        <div class="info-item"><span class="info-label">Preferred Date</span><span class="info-value">${new Date(job.preferred_date).toLocaleString()}</span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="section">
+                <div class="section-title">👥 CUSTOMER & TECHNICIAN</div>
+                <div class="section-content">
+                    <div class="info-grid">
+                        <div class="info-item"><span class="info-label">Customer</span><span class="info-value">${job.customer_name} (@${job.customer_username})</span></div>
+                        <div class="info-item"><span class="info-label">Technician</span><span class="info-value">${job.technician_name || 'Not Assigned'} ${job.technician_username ? `(@${job.technician_username})` : ''}</span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="section">
+                <div class="section-title">🚗 VEHICLE DETAILS</div>
+                <div class="section-content">
+                    <div class="info-grid">
+                        <div class="info-item"><span class="info-label">Make & Model</span><span class="info-value">${job.year} ${job.make} ${job.model}</span></div>
+                        <div class="info-item"><span class="info-label">License Plate</span><span class="info-value">${job.license_plate}</span></div>
+                        <div class="info-item"><span class="info-label">Color</span><span class="info-value">${job.color || 'N/A'}</span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="section">
+                <div class="section-title">🔩 PARTS USED</div>
+                <div class="section-content">
+                    ${job.parts && job.parts.length > 0 ? `
+                        <table>
+                            <thead><tr><th>Part Name</th><th>Qty</th><th>Unit Price</th><th>Total</th></tr></thead>
+                            <tbody>${job.parts.map(p => `<tr><td>${p.part_name}</td><td>${p.quantity}</td><td>KES ${p.unit_price.toLocaleString()}</td><td>KES ${p.total_price.toLocaleString()}</td></tr>`).join('')}
+                            <tr class="total-row"><td colspan="3" style="text-align: right;">Total Parts:</td><td>KES ${partsTotal.toLocaleString()}</td></tr>
+                            </tbody>
+                        </table>
+                    ` : '<p>No parts recorded</p>'}
+                </div>
+            </div>
+            <div class="section">
+                <div class="section-title">📝 REPAIR NOTES</div>
+                <div class="section-content"><p>${job.repair_notes || 'No notes recorded'}</p></div>
+            </div>
+            <div class="section">
+                <div class="section-title">💰 INVOICE SUMMARY</div>
+                <div class="section-content">
+                    <div class="info-grid">
+                        <div class="info-item"><span class="info-label">Service Fee</span><span class="info-value">KES ${serviceAmount.toLocaleString()}</span></div>
+                        <div class="info-item"><span class="info-label">Parts Total</span><span class="info-value">KES ${partsTotal.toLocaleString()}</span></div>
+                        <div class="info-item"><span class="info-label">Total Amount</span><span class="info-value amount">KES ${totalAmount.toLocaleString()}</span></div>
+                        <div class="info-item"><span class="info-label">Payment Status</span><span class="info-value">${job.payment_status === 'paid' ? '✓ PAID' : '⏳ PENDING'}</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer">
+            <p>Generated by GSMS Admin System | ${new Date().toLocaleString()}</p>
+            <p>This is an official service record. Please retain for your records.</p>
+        </div>
+    </div>
+</body>
+</html>`;
+        }
+
+        async function viewJobDetails(jobId) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/admin/jobs/${jobId}/full`);
+                const job = await response.json();
+                
+                const partsTotal = job.parts ? job.parts.reduce((sum, p) => sum + p.total_price, 0) : 0;
+                const serviceAmount = job.final_price || job.price || 0;
+                
+                const modalContent = `
+                    <div style="max-height: 70vh; overflow-y: auto;">
+                        <div class="info-grid" style="margin-bottom: 20px;">
+                            <div class="info-item"><span class="info-label">Job ID</span><span class="info-value">#${job.id}</span></div>
+                            <div class="info-item"><span class="info-label">Status</span><span class="info-value">${job.status}</span></div>
+                            <div class="info-item"><span class="info-label">Customer</span><span class="info-value">${job.customer_name}</span></div>
+                            <div class="info-item"><span class="info-label">Technician</span><span class="info-value">${job.technician_name || 'Not Assigned'}</span></div>
+                            <div class="info-item"><span class="info-label">Vehicle</span><span class="info-value">${job.year} ${job.make} ${job.model}</span></div>
+                            <div class="info-item"><span class="info-label">Total Amount</span><span class="info-value" style="color: #f97316; font-weight: 700;">KES ${(serviceAmount + partsTotal).toLocaleString()}</span></div>
+                        </div>
+                        <h4>🔩 Parts Used</h4>
+                        ${job.parts && job.parts.length > 0 ? `
+                            <table style="width: 100%; margin-bottom: 20px;">
+                                <thead><tr><th>Part</th><th>Qty</th><th>Price</th><th>Total</th></tr></thead>
+                                <tbody>${job.parts.map(p => `<tr><td>${p.part_name}</td><td>${p.quantity}</td><td>KES ${p.unit_price.toLocaleString()}</td><td>KES ${p.total_price.toLocaleString()}</td></tr>`).join('')}</tbody>
+                            </table>
+                        ` : '<p>No parts recorded</p>'}
+                        <h4>📝 Repair Notes</h4>
+                        <p>${job.repair_notes || 'No notes'}</p>
+                        <h4>⏱️ Timeline</h4>
+                        ${job.updates && job.updates.length > 0 ? job.updates.map(u => `<div style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>${u.status}</strong> - ${new Date(u.created_at).toLocaleString()}<br>${u.notes || ''}</div>`).join('') : '<p>No updates</p>'}
+                    </div>
+                    <div style="margin-top: 20px; display: flex; gap: 10px;">
+                        <button class="btn btn-primary" onclick="downloadSingleJob(${job.id})">📥 Download</button>
+                        <button class="btn btn-secondary" onclick="closeModal('jobModal')">Close</button>
+                    </div>
+                `;
+                
+                document.getElementById("modalTitle").textContent = `Job #${job.id} - ${job.service_name}`;
+                document.getElementById("jobModalContent").innerHTML = modalContent;
+                openModal('jobModal');
+            } catch (error) {
+                console.error("Error:", error);
+                showToast("Failed to load job details", "error");
+            }
+        }
+
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        function logout() {
+            sessionStorage.removeItem("currentUser");
+            window.location.href = "login.html";
+        }
+
+        document.addEventListener("DOMContentLoaded", initialize);
+    </script>
+</body>
+</html>

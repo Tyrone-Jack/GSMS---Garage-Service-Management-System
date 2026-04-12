@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAQ - GSMS</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .main-content {
+            display: flex;
+            gap: var(--spacing-lg);
+            margin-top: var(--spacing-lg);
+        }
+
+        .faq-container {
+            flex: 1;
+            padding: var(--spacing-lg) 0;
+        }
+
+        .faq-header {
+            background: linear-gradient(135deg, var(--primary-bg), var(--primary-lighter));
+            border-radius: 16px;
+            padding: var(--spacing-2xl);
+            margin-bottom: var(--spacing-2xl);
+            text-align: center;
+        }
+
+        .faq-title {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .faq-subtitle {
+            font-size: 16px;
+            color: var(--gray-600);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .search-box {
+            max-width: 500px;
+            margin: var(--spacing-xl) auto 0;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 14px 20px;
+            border: 2px solid var(--gray-200);
+            border-radius: 50px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+        }
+
+        .search-box .search-icon {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 20px;
+            color: var(--gray-400);
+        }
+
+        .faq-categories {
+            display: flex;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-2xl);
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .category-btn {
+            padding: 8px 20px;
+            background: var(--gray-100);
+            border: 1px solid var(--gray-200);
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .category-btn:hover {
+            background: var(--primary-bg);
+            border-color: var(--primary);
+        }
+
+        .category-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .faq-section {
+            margin-bottom: var(--spacing-2xl);
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: var(--spacing-lg);
+            padding-bottom: var(--spacing-md);
+            border-bottom: 2px solid var(--gray-200);
+        }
+
+        .faq-item {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            margin-bottom: var(--spacing-md);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .faq-item:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .faq-question {
+            padding: var(--spacing-lg);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            font-size: 16px;
+            background: var(--white);
+            transition: background 0.3s ease;
+        }
+
+        .faq-question:hover {
+            background: var(--gray-50);
+        }
+
+        .faq-question.active {
+            background: var(--primary-bg);
+            color: var(--primary-dark);
+        }
+
+        .faq-question .icon {
+            font-size: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .faq-question.active .icon {
+            transform: rotate(180deg);
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            background: var(--gray-50);
+            border-top: 1px solid var(--gray-200);
+        }
+
+        .faq-answer.show {
+            max-height: 500px;
+        }
+
+        .faq-answer-content {
+            padding: var(--spacing-lg);
+            color: var(--gray-700);
+            line-height: 1.6;
+        }
+
+        .faq-answer-content p {
+            margin-bottom: var(--spacing-md);
+        }
+
+        .faq-answer-content ul, 
+        .faq-answer-content ol {
+            margin-left: var(--spacing-lg);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .faq-answer-content li {
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .contact-support {
+            background: linear-gradient(135deg, var(--primary-bg), var(--primary-lighter));
+            border-radius: 16px;
+            padding: var(--spacing-2xl);
+            text-align: center;
+            margin-top: var(--spacing-2xl);
+        }
+
+        .contact-support h3 {
+            font-size: 24px;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .contact-support p {
+            margin-bottom: var(--spacing-lg);
+            color: var(--gray-600);
+        }
+
+        .contact-buttons {
+            display: flex;
+            gap: var(--spacing-md);
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: var(--spacing-2xl);
+            color: var(--gray-500);
+        }
+
+        .no-results-icon {
+            font-size: 48px;
+            margin-bottom: var(--spacing-lg);
+            opacity: 0.5;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+
+            .faq-title {
+                font-size: 28px;
+            }
+
+            .faq-question {
+                font-size: 14px;
+                padding: var(--spacing-md);
+            }
+
+            .contact-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-content">
+            <a href="customer-dashboard.html" class="logo">
+                <span>GS</span>
+                GSMS
+            </a>
+            <nav class="nav-menu">
+                <a href="customer-dashboard.html">Dashboard</a>
+                <a href="book-service.html">Book Service</a>
+                <a href="customer-dashboard.html#active-jobs">Active Jobs</a>
+                <a href="customer-dashboard.html#invoices">Invoices</a>
+                <a href="profile.html">Profile</a>
+            </nav>
+            <div class="user-profile">
+                <div class="user-avatar" id="userAvatar">JD</div>
+                <button class="btn btn-secondary btn-sm" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-title">Menu</div>
+                <ul class="sidebar-menu">
+                    <li><a href="customer-dashboard.html">Dashboard</a></li>
+                    <li><a href="book-service.html">Book Service</a></li>
+                    <li><a href="customer-dashboard.html#active-jobs">Active Jobs</a></li>
+                    <li><a href="customer-dashboard.html#invoices">Invoices</a></li>
+                    <li><a href="profile.html">Profile</a></li>
+                </ul>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-title">Support</div>
+                <ul class="sidebar-menu">
+                    <!--<li><a href="#help">Help Center</a></li>-->
+                    <li><a href="contact.html">Contact Us</a></li>
+                    <li><a href="faq.html" class="active">FAQ</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <div class="faq-container">
+            <div class="container">
+                <!-- FAQ Header -->
+                <div class="faq-header">
+                    <h1 class="faq-title">Frequently Asked Questions</h1>
+                    <p class="faq-subtitle">Find answers to common questions about our services, booking process, and more.</p>
+                    
+                    <div class="search-box">
+                        <input type="text" id="searchInput" placeholder="Search questions..." onkeyup="searchFAQ()">
+                        <span class="search-icon">🔍</span>
+                    </div>
+                </div>
+
+                <!-- Category Filters -->
+                <div class="faq-categories">
+                    <button class="category-btn active" onclick="filterCategory('all')">All Questions</button>
+                    <button class="category-btn" onclick="filterCategory('booking')">Booking</button>
+                    <button class="category-btn" onclick="filterCategory('services')">Services</button>
+                    <button class="category-btn" onclick="filterCategory('payments')">Payments</button>
+                    <button class="category-btn" onclick="filterCategory('vehicles')">Vehicles</button>
+                    <button class="category-btn" onclick="filterCategory('account')">Account</button>
+                </div>
+
+                <!-- FAQ Content -->
+                <div id="faqContent">
+                    <!-- Booking Section -->
+                    <div class="faq-section" data-category="booking">
+                        <h2 class="section-title">📅 Booking & Scheduling</h2>
+                        
+                        <div class="faq-item">
+                            <div class="faq-question" onclick="toggleAnswer(this)">
+                                How do I book a service?
+                                <span class="icon">▼</span>
+                            </div>
+                            <div class="faq-answer">
+                                <div class="faq-answer-content">
+                                    <p>Booking a service is easy! Follow these steps:</p>
+                                    <ol>
+                                        <li>Log in to your customer account</li>
+                                        <li>Click on "Book Service" in the navigation menu</li>
+                                        <li>Select the service you need (choose "Comprehensive Vehicle Inspection" if unsure)</li>
+                                        <li>Select your vehicle or add a new one</li>
+                                        <li>Choose your preferred date and time</li>
+                                        <li>Review your booking details and confirm</li>
+                                    </ol>
+                                    <p>You'll receive a confirmation email with your booking details.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-question" onclick="toggleAnswer(this)">
+                                Can I reschedule or cancel my booking?
+                                <span class="icon">▼</span>
+                            </div>
+                            <div class="faq-answer">
+                                <div class="faq-answer-content">
+                                    <p>Yes, you can modify or cancel your booking up to 24 hours before the scheduled time. To do this:</p>
+                                    <ol>
+                                        <li>Go to your Dashboard</li>
+                                        <li>Find the booking under "Pending Bookings"</li>
+                                        <li>Click "Modify" to reschedule or cancel</li>
+                                    </ol>
+                                    <p>For cancellations less than 24 hours before the appointment, please contact us directly.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-question" onclick="toggleAnswer(this)">
+                                What are your operating hours?
+                                <span class="icon">▼</span>
+                            </div>
+                            <div class="faq-answer">
+                                <div class="faq-answer-content">
+                                    <p>Our service center operates:</p>
+                                    <ul>
+                                        <li><strong>Monday - Friday:</strong> 8:00 AM - 6:00 PM</li>
+                                        <li><strong>Saturday:</strong> 9:00 AM - 4:00 PM</li>
+                                        <li><strong>Sunday:</strong> Closed</li>
+                                    </ul>
+                                    <p>We accept bookings during these hours. Same-day service may be available depending on availability.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Services Section -->
+                    <div class="faq-section" data-category="services">
+                        <h2 class="section-title">🔧 Services & Pricing</h2>
+                        
+                        <div class="faq-item">
+                            <div class="faq-question" onclick="toggleAnswer(this)">
+                                What is included in the Comprehensive Vehicle Inspection?
+                                <span class="icon">▼</span>
+                            </div>
+                            <div class="faq-answer">
+                                <div class="faq-answer-content">
+                                    <p>The Comprehensive Vehicle Inspection includes a thorough check of:</p>
+                                    <ul>
+                                        <li>Engine performance and diagnostics</li>
+                                        <li>Transmission system</li>
+                                        <li>Brake system (pads, rotors, fluid)</li>
+                                        <li>Suspension and steering components</li>
+                                        <li>Electrical system (battery, alternator, starter)</li>
+                                        <li>Cooling system</li>
+                                        <li>Fluid levels and conditions</li>
+                                        <li>Tire condition and pressure</li>
+                                        <li>Exhaust system</li>
+                                    </ul>
+                                    <p>After the inspection, you'll receive a detailed report with recommended repairs and a quote.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-question" onclick="toggleAnswer(this)">
+                                Are your prices fixed or quoted?
+                                <span class="icon">▼</span>
+                            </div>
+                            <div class="faq-answer">
+                                <div class="faq-answer-content">
+                                    <p>Most of our standard services have fixed prices (e.g., Oil Change, Tire Rotation). However:</p>
+                                    <ul>
+                                        <li><strong>Comprehensive Vehicle Inspection:</strong> Price is quoted after inspection based on findings</li>
+                                        <li><strong>Complex repairs:</strong> May require a quote after initial diagnosis</li>
+                                        <li><strong>Parts replacement:</strong> Prices may vary based on your vehicle's make and model</li>
+                                    </ul>
+                                    <p>You'll always receive a quote and approve it before any work begins.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-question" onclick="toggleAnswer(this)">
+                                Do you use genuine parts?
+                                <span class="icon">▼</span>
+                            </div>
+                            <div class="faq-answer">
+                                <div class="faq-answer-content">
+                                    <p>Yes, we use high-quality parts for all repairs. We offer:</p>
+                                    <ul>
+                                        <li><strong>Genuine OEM parts</strong> (Original Equipment Manufacturer)</li>
+                                        <li><strong>High-quality aftermarket parts</strong> with warranty</li>
+                                    </ul>
+                                    <p>You can choose your preference when we provide the quote, and we'll explain the differences in price and quality.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Payments Section -->
+                    <div class="faq-section" data-category="payments">
+                        <h2 class="section-title">💰 Payments & Invoicing</h2>
+                        
+                        <div class="faq-item">
+                            <div class="faq-question" onclick="toggleAnswer(this)">
+                                What payment methods do you accept?
+                                <span class="icon">▼</span>
+                            </div>
+                            <div class="faq-answer">
+                                <div class="faq-answer-content">
+                                    <p>We accept multiple payment methods:</p>
+                                    <ul>
+                                        <li>💳 Credit/Debit Cards (Visa, Mastercard)</li>
+                                        <li>📱 M-Pesa (Paybill number provided on invoice)</li>
+                                        <li>💵 Cash on pickup</li>
+                                        <li>🏦 Bank Transfer</li>
+                                    </ul>
+                                    <p>Payment is required upon completion of service unless prior arrangements have been made.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-question" onclick="toggleAnswer(this)">
+                                When will I receive my invoice?
+                                <span class="icon">▼</span>
+                            </div>
+                            <div class="faq-answer">
+                                <div class="faq-answer-content">
+                                    <p>Invoices are generated and available in your dashboard:</p>
+                                    <ul>
+                                        <li>Immediately after service completion</li>
+                                        <li>Accessible under the "Invoices" section</li>
+                                        <li>Also sent to your registered email address</li>
+                                    </ul>
+                                    <p>You can view, download, and print your invoices anytime from your account.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-question" onclick="toggleAnswer(this)">
+                                Do you offer warranties on your work?
+                                <span class="icon">▼</span>
+                            </div>
+                            <div class="faq-answer">
+                                <div class="faq-answer-content">
+                                    <p>Yes, we stand behind our work:</p>
+                                    <ul>
+                                        <li><strong>Labor warranty:</strong> 6 months or 10,000 km (whichever comes first)</li>
+                                        <li><strong>Parts warranty:</strong> Varies by part (typically 12 months)</li>
+                                        <li><strong>Battery warranty:</strong> 24 months</li>
+                                    </ul>
+                                    <p>Warranty details are included on your invoice. Please keep your invoice for any warranty claims.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Vehicles Section -->
+                    <div class="faq-section" data-category="vehicles">
+                        <h2 class="section-title">🚗 Vehicle Management</h2>
+                        
+                        <div class="faq-item">
+                            <div class="faq-question" onclick="toggleAnswer(this)">
+                                How many vehicles can I add to my account?
+                                <span class="icon">▼</span>
+                            </div>
+                            <div class="faq-answer">
+                                <div class="faq-answer-content">
+                                    <p>You can add an unlimited number of vehicles to your account. This is perfect for:</p>
+                                    <ul>
+                                        <li>Families with multiple cars</li>
+                                        <li>Businesses with fleet vehicles</li>
+                                        <li>Car enthusiasts with multiple vehicles</li>
+                                    </ul>
+                                    <p>Simply go to your Profile and click "Add Vehicle" to register a new vehicle.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-question" onclick="toggleAnswer(this)">
+                                Can I edit or remove a vehicle?
+                                <span class="icon">▼</span>
+                            </div>
+                            <div class="faq-answer">
+                                <div class="faq-answer-content">
+                                    <p>Yes, you can manage your vehicles anytime from your Profile page:</p>
+                                    <ul>
+                                        <li><strong>Edit:</strong> Update vehicle details (make, model, year, plate number)</li>
+                                        <li><strong>Delete:</strong> Remove a vehicle (only possible if it has no active or past services)</li>
+                                    </ul>
+                                    <p>If a vehicle has service history, it cannot be deleted but can be marked as inactive.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Account Section -->
+                    <div class="faq-section" data-category="account">
+                        <h2 class="section-title">👤 Account Management</h2>
+                        
+                        <div class="faq-item">
+                            <div class="faq-question" onclick="toggleAnswer(this)">
+                                How do I change my password?
+                                <span class="icon">▼</span>
+                            </div>
+                            <div class="faq-answer">
+                                <div class="faq-answer-content">
+                                    <p>To change your password:</p>
+                                    <ol>
+                                        <li>Go to your Profile page</li>
+                                        <li>Click "Change" under the Password section</li>
+                                        <li>Enter your current password</li>
+                                        <li>Enter and confirm your new password</li>
+                                        <li>Click "Update Password"</li>
+                                    </ol>
+                                    <p>Make sure your new password is at least 6 characters long and secure.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-question" onclick="toggleAnswer(this)">
+                                I forgot my password. How do I reset it?
+                                <span class="icon">▼</span>
+                            </div>
+                            <div class="faq-answer">
+                                <div class="faq-answer-content">
+                                    <p>If you forgot your password:</p>
+                                    <ol>
+                                        <li>Click "Forgot Password?" on the login page</li>
+                                        <li>Enter your registered email address</li>
+                                        <li>Check your email for a password reset link</li>
+                                        <li>Follow the link to create a new password</li>
+                                    </ol>
+                                    <p>If you don't receive the email within 5 minutes, check your spam folder or contact our support team.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-question" onclick="toggleAnswer(this)">
+                                How do I update my personal information?
+                                <span class="icon">▼</span>
+                            </div>
+                            <div class="faq-answer">
+                                <div class="faq-answer-content">
+                                    <p>To update your profile information:</p>
+                                    <ol>
+                                        <li>Go to your Profile page</li>
+                                        <li>Click "Edit" under Personal Information</li>
+                                        <li>Update your name, email, phone number, or location</li>
+                                        <li>Click "Save Changes"</li>
+                                    </ol>
+                                    <p>Your updated information will be reflected immediately.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-question" onclick="toggleAnswer(this)">
+                                How do I delete my account?
+                                <span class="icon">▼</span>
+                            </div>
+                            <div class="faq-answer">
+                                <div class="faq-answer-content">
+                                    <p>To delete your account:</p>
+                                    <ol>
+                                        <li>Go to your Profile page</li>
+                                        <li>Scroll to "Account Settings"</li>
+                                        <li>Click "Delete Account"</li>
+                                        <li>Confirm your decision by typing "DELETE"</li>
+                                    </ol>
+                                    <p><strong>Warning:</strong> This action is permanent and will delete all your data including service history, vehicles, and invoices. Please make sure to download any important documents before proceeding.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- No Results Message -->
+                <div id="noResults" class="no-results" style="display: none;">
+                    <div class="no-results-icon">🔍</div>
+                    <h3>No questions found</h3>
+                    <p>Try searching with different keywords or browse our categories above.</p>
+                </div>
+
+                <!-- Contact Support -->
+                <div class="contact-support">
+                    <h3>Still have questions?</h3>
+                    <p>Our support team is here to help you 24/7</p>
+                    <div class="contact-buttons">
+                        <button class="btn btn-primary" onclick="contactSupport()">📧 Email Support</button>
+                        <button class="btn btn-outline" onclick="callSupport()">📞 Call Us: 0700 123 456</button>
+                        <button class="btn btn-outline" onclick="whatsappSupport()">💬 WhatsApp: 0712 345 678</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="toast.js"></script>
+    <script>
+        let currentUser = null;
+        let currentCategory = 'all';
+        let searchTerm = '';
+
+        async function initializeUser() {
+            const userStr = sessionStorage.getItem("currentUser");
+            if (!userStr) {
+                window.location.href = "login.html";
+                return;
+            }
+
+            currentUser = JSON.parse(userStr);
+            document.getElementById("userAvatar").textContent = currentUser.name.split(" ").map(n => n[0]).join("");
+        }
+
+        function toggleAnswer(element) {
+            const answer = element.nextElementSibling;
+            const isActive = element.classList.contains('active');
+            
+            // Close all other answers
+            document.querySelectorAll('.faq-question').forEach(q => {
+                if (q !== element) {
+                    q.classList.remove('active');
+                    q.nextElementSibling.classList.remove('show');
+                }
+            });
+            
+            // Toggle current answer
+            if (!isActive) {
+                element.classList.add('active');
+                answer.classList.add('show');
+            } else {
+                element.classList.remove('active');
+                answer.classList.remove('show');
+            }
+        }
+
+        function filterCategory(category) {
+            currentCategory = category;
+            searchTerm = '';
+            document.getElementById('searchInput').value = '';
+            
+            // Update active button
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Show/hide sections based on category
+            const sections = document.querySelectorAll('.faq-section');
+            let visibleCount = 0;
+            
+            sections.forEach(section => {
+                if (category === 'all' || section.dataset.category === category) {
+                    section.style.display = 'block';
+                    visibleCount++;
+                } else {
+                    section.style.display = 'none';
+                }
+            });
+            
+            document.getElementById('noResults').style.display = visibleCount === 0 ? 'block' : 'none';
+        }
+
+        function searchFAQ() {
+            searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            
+            if (searchTerm === '') {
+                // Reset to category view
+                filterCategory(currentCategory);
+                return;
+            }
+            
+            // Show all sections for search
+            document.querySelectorAll('.faq-section').forEach(section => {
+                section.style.display = 'block';
+            });
+            
+            // Search through questions and answers
+            const faqItems = document.querySelectorAll('.faq-item');
+            let visibleCount = 0;
+            
+            faqItems.forEach(item => {
+                const question = item.querySelector('.faq-question').innerText.toLowerCase();
+                const answer = item.querySelector('.faq-answer-content').innerText.toLowerCase();
+                
+                if (question.includes(searchTerm) || answer.includes(searchTerm)) {
+                    item.style.display = 'block';
+                    visibleCount++;
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+            
+            document.getElementById('noResults').style.display = visibleCount === 0 ? 'block' : 'none';
+        }
+
+        function contactSupport() {
+            window.location.href = "mailto:support@gsms.co.ke?subject=GSMS Support Request";
+        }
+
+        function callSupport() {
+            window.location.href = "tel:0700123456";
+        }
+
+        function whatsappSupport() {
+            window.open("https://wa.me/254712345678", "_blank");
+        }
+
+        function logout() {
+            sessionStorage.removeItem("currentUser");
+            window.location.href = "login.html";
+        }
+
+        document.addEventListener("DOMContentLoaded", initializeUser);
+    </script>
+</body>
+</html>

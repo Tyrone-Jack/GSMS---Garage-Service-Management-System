@@ -1,0 +1,1343 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard - GSMS</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="toast.js"></script>
+    <style>
+      .main-content {
+        display: flex;
+        gap: var(--spacing-lg);
+        margin-top: var(--spacing-lg);
+      }
+
+      .admin-container {
+        flex: 1;
+        padding: var(--spacing-lg) 0;
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: var(--spacing-lg);
+        margin-bottom: var(--spacing-2xl);
+      }
+
+      .stat-card {
+        background: var(--white);
+        border: 1px solid var(--gray-200);
+        border-radius: 12px;
+        padding: var(--spacing-lg);
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      .stat-value {
+        font-size: 32px;
+        font-weight: 700;
+        color: var(--primary);
+      }
+
+      .stat-label {
+        font-size: 13px;
+        color: var(--gray-600);
+        margin-top: 4px;
+      }
+
+      .filters {
+        background: var(--white);
+        border: 1px solid var(--gray-200);
+        border-radius: 12px;
+        padding: var(--spacing-lg);
+        margin-bottom: var(--spacing-lg);
+        display: flex;
+        gap: var(--spacing-md);
+        flex-wrap: wrap;
+        align-items: flex-end;
+      }
+
+      .filter-group {
+        flex: 1;
+        min-width: 150px;
+      }
+
+      .filter-group label {
+        display: block;
+        font-size: 12px;
+        font-weight: 600;
+        margin-bottom: 4px;
+        color: var(--gray-600);
+      }
+
+      .filter-group input,
+      .filter-group select {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid var(--gray-300);
+        border-radius: 6px;
+      }
+
+      .jobs-grid {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-md);
+      }
+
+      .job-card {
+        background: var(--white);
+        border: 1px solid var(--gray-200);
+        border-radius: 12px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+      }
+
+      .job-card:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      .job-header {
+        background: var(--gray-50);
+        padding: var(--spacing-md) var(--spacing-lg);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: var(--spacing-sm);
+        border-bottom: 1px solid var(--gray-200);
+      }
+
+      .job-id {
+        font-weight: 700;
+        color: var(--primary);
+      }
+
+      .job-status {
+        padding: 4px 12px;
+        border-radius: 50px;
+        font-size: 12px;
+        font-weight: 600;
+      }
+
+      .status-pending {
+        background: #fef3c7;
+        color: #d97706;
+      }
+      .status-approved {
+        background: #dbeafe;
+        color: #2563eb;
+      }
+      .status-in_progress {
+        background: #e0e7ff;
+        color: #4f46e5;
+      }
+      .status-completed {
+        background: #d1fae5;
+        color: #059669;
+      }
+      .status-cancelled {
+        background: #fee2e2;
+        color: #dc2626;
+      }
+
+      .job-body {
+        padding: var(--spacing-lg);
+      }
+
+      .job-info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: var(--spacing-md);
+        margin-bottom: var(--spacing-lg);
+      }
+
+      .info-item {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .info-label {
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--gray-500);
+        text-transform: uppercase;
+      }
+
+      .info-value {
+        font-size: 14px;
+        font-weight: 500;
+      }
+
+      .parts-list {
+        background: var(--gray-50);
+        border-radius: 8px;
+        padding: var(--spacing-md);
+        margin-top: var(--spacing-md);
+      }
+
+      .parts-table {
+        width: 100%;
+        font-size: 13px;
+        border-collapse: collapse;
+      }
+
+      .parts-table th,
+      .parts-table td {
+        padding: 8px;
+        text-align: left;
+        border-bottom: 1px solid var(--gray-200);
+      }
+
+      .parts-table th {
+        font-weight: 600;
+        color: var(--gray-600);
+      }
+
+      .job-actions {
+        padding: var(--spacing-md) var(--spacing-lg);
+        background: var(--gray-50);
+        border-top: 1px solid var(--gray-200);
+        display: flex;
+        gap: var(--spacing-sm);
+        justify-content: flex-end;
+      }
+
+      .modal-large {
+        max-width: 900px;
+        width: 90%;
+      }
+
+      .download-btn {
+        background: var(--primary);
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 6px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .download-btn:hover {
+        background: var(--primary-dark);
+      }
+
+      @media (max-width: 768px) {
+        .main-content {
+          flex-direction: column;
+        }
+
+        .filters {
+          flex-direction: column;
+        }
+
+        .filter-group {
+          width: 100%;
+        }
+
+        .job-info-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .job-checkbox {
+        width: 20px;
+        margin-right: 15px;
+        transform: scale(1.2);
+        cursor: pointer;
+      }
+
+      
+      
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <div class="header-content">
+        <a href="admin-dashboard.html" class="logo">
+          <span>GS</span>
+          GSMS
+        </a>
+        <nav class="nav-menu">
+          <a href="admin-dashboard.html" class="active">Dashboard</a>
+          <a href="all-jobs.html">All Jobs</a>
+          <a href="services.html">Services</a>
+          <a href="users.html">Users</a>
+        </nav>
+        <div class="user-profile">
+          <div class="user-avatar" id="userAvatar">AD</div>
+          <span id="adminName" style="margin-right: var(--spacing-md)"></span>
+          <button class="btn btn-secondary btn-sm" onclick="logout()">
+            Logout
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <aside class="sidebar">
+        <div class="sidebar-section">
+          <div class="sidebar-title">Admin Menu</div>
+          <ul class="sidebar-menu">
+            <li><a href="admin-dashboard.html" class="active">Dashboard</a></li>
+            <li><a href="all-jobs.html" onclick="loadAllJobs()">All Jobs</a></li>
+            <li><a href="services.html" onclick="loadServices()">Services</a></li>
+            <li><a href="users.html" onclick="loadUsers()">Users</a></li>
+            <li><a href="reports.html" onclick="showReports()">Reports</a></li>
+          </ul>
+        </div>
+        <div class="sidebar-section">
+          <div class="sidebar-title">Quick Stats</div>
+          <div id="quickStats">
+            <p>Total Jobs: <strong id="totalJobs">0</strong></p>
+            <p>Completed: <strong id="completedJobs">0</strong></p>
+            <p>Active: <strong id="activeJobs">0</strong></p>
+            <p>Revenue: <strong id="totalRevenue">KES 0</strong></p>
+          </div>
+        </div>
+      </aside>
+
+      <div class="admin-container">
+        <div class="container">
+          <h1>Admin Dashboard</h1>
+          <p>Manage and oversee all service operations</p>
+          <div
+            style="
+              display: flex;
+              justify-content: flex-end;
+              margin-bottom: var(--spacing-md);
+            "
+          >
+            <button class="btn btn-sm btn-outline" onclick="refreshAllData()">
+              🔄 Refresh Data
+            </button>
+          </div>
+
+          <!-- Stats Grid -->
+          <div class="stats-grid">
+            <div class="stat-card" onclick="filterByStatus('all')">
+              <div class="stat-value" id="statTotalJobs">0</div>
+              <div class="stat-label">Total Jobs</div>
+            </div>
+            <div class="stat-card" onclick="filterByStatus('pending')">
+              <div class="stat-value" id="statPending">0</div>
+              <div class="stat-label">Pending</div>
+            </div>
+            <div class="stat-card" onclick="filterByStatus('in_progress')">
+              <div class="stat-value" id="statActive">0</div>
+              <div class="stat-label">In Progress</div>
+            </div>
+            <div class="stat-card" onclick="filterByStatus('completed')">
+              <div class="stat-value" id="statCompleted">0</div>
+              <div class="stat-label">Completed</div>
+            </div>
+            <div class="stat-card" onclick="filterByStatus('all')">
+              <div class="stat-value" id="statRevenue">KES 0</div>
+              <div class="stat-label">Total Revenue</div>
+            </div>
+          </div>
+
+          <!-- Filters 
+          <div class="filters">
+            <div class="filter-group">
+              <label>Status</label>
+              <select id="statusFilter" onchange="applyFilters()">
+                <option value="all">All</option>
+                <option value="pending">Pending</option>
+                <option value="approved">Approved</option>
+                <option value="in_progress">In Progress</option>
+                <option value="completed">Completed</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label>Date From</label>
+              <input type="date" id="dateFrom" onchange="applyFilters()" />
+            </div>
+            <div class="filter-group">
+              <label>Date To</label>
+              <input type="date" id="dateTo" onchange="applyFilters()" />
+            </div>
+            <div class="filter-group">
+              <label>Search</label>
+              <input
+                type="text"
+                id="searchInput"
+                placeholder="Job ID, Customer, Technician..."
+                onkeyup="applyFilters()"
+              />
+            </div>
+            <div class="filter-group">
+              <button class="btn btn-primary" onclick="applyFilters()">
+                Apply Filters
+              </button>
+              <button class="btn btn-outline" onclick="resetFilters()">
+                Reset
+              </button>
+            </div>
+          </div>
+-->
+          <!-- Advanced Filters -->
+          <div class="filters">
+            <div class="filter-group">
+              <label>Status</label>
+              <select id="statusFilter" onchange="applyFilters()">
+                <option value="all">All</option>
+                <option value="pending">Pending</option>
+                <option value="approved">Approved</option>
+                <option value="in_progress">In Progress</option>
+                <option value="completed">Completed</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label>Customer</label>
+              <select id="customerFilter" onchange="applyFilters()">
+                <option value="all">All Customers</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label>Service Type</label>
+              <select id="serviceFilter" onchange="applyFilters()">
+                <option value="all">All Services</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label>Technician</label>
+              <select id="technicianFilter" onchange="applyFilters()">
+                <option value="all">All Technicians</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label>Date From</label>
+              <input type="date" id="dateFrom" onchange="applyFilters()" />
+            </div>
+            <div class="filter-group">
+              <label>Date To</label>
+              <input type="date" id="dateTo" onchange="applyFilters()" />
+            </div>
+            <div class="filter-group">
+              <label>Search</label>
+              <input
+                type="text"
+                id="searchInput"
+                placeholder="Job ID, Vehicle..."
+                onkeyup="applyFilters()"
+              />
+            </div>
+            <div class="filter-group">
+              <button class="btn btn-primary" onclick="applyFilters()">
+                Apply Filters
+              </button>
+              <button class="btn btn-outline" onclick="resetFilters()">
+                Reset
+              </button>
+            </div>
+          </div>
+
+          <!-- Bulk Actions Bar -->
+          <div
+            id="bulkActionsBar"
+            style="
+              display: none;
+              background: var(--primary-bg);
+              padding: var(--spacing-md);
+              border-radius: 8px;
+              margin-bottom: var(--spacing-lg);
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              flex-wrap: wrap;
+              gap: var(--spacing-md);
+            "
+          >
+            <!-- <div><strong id="selectedCount">0</strong> jobs selected</div> -->
+            <div style="display: flex; gap: var(--spacing-sm)">
+              <!--<button class="btn btn-primary" onclick="downloadSelectedAsPDF()">
+                📥 Download Selected (PDF)
+              </button>-->
+              <button class="btn btn-primary" onclick="downloadAllFiltered()">
+                📥 Download All Filtered
+              </button>
+              <button class="btn btn-secondary" onclick="clearSelection()">
+                Clear Selection
+              </button>
+            </div>
+          </div>
+          <!-- Jobs List -->
+          <div id="jobsContainer" class="jobs-grid">
+            <div
+              class="loading"
+              style="text-align: center; padding: var(--spacing-xl)"
+            >
+              Loading jobs...
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Job Details Modal -->
+    <div id="jobModal" class="modal">
+      <div class="modal-content modal-large">
+        <div class="modal-header">
+          <h3 id="modalTitle">Job Details</h3>
+          <button class="modal-close" onclick="closeModal('jobModal')">
+            ×
+          </button>
+        </div>
+        <div id="jobModalContent">
+          <!-- Dynamic content -->
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Store filter options
+      let customersList = [];
+      let servicesList = [];
+      let techniciansList = [];
+      let selectedJobs = new Set();
+
+      // Load filter options
+      async function loadFilterOptions() {
+        try {
+          const response = await fetch(
+            `${API_BASE_URL}/api/admin/filter-options`,
+          );
+          const options = await response.json();
+
+          customersList = options.customers;
+          servicesList = options.services;
+          techniciansList = options.technicians;
+
+          // Populate customer filter
+          const customerFilter = document.getElementById("customerFilter");
+          customerFilter.innerHTML =
+            '<option value="all">All Customers</option>' +
+            customersList
+              .map(
+                (c) =>
+                  `<option value="${c.id}">${c.name} (${c.username})</option>`,
+              )
+              .join("");
+
+          // Populate service filter
+          const serviceFilter = document.getElementById("serviceFilter");
+          serviceFilter.innerHTML =
+            '<option value="all">All Services</option>' +
+            servicesList
+              .map((s) => `<option value="${s.id}">${s.name}</option>`)
+              .join("");
+
+          // Populate technician filter
+          const technicianFilter = document.getElementById("technicianFilter");
+          technicianFilter.innerHTML =
+            '<option value="all">All Technicians</option>' +
+            techniciansList
+              .map((t) => `<option value="${t.id}">${t.name}</option>`)
+              .join("");
+        } catch (error) {
+          console.error("Error loading filter options:", error);
+        }
+      }
+
+      // Apply all filters
+      function applyFilters() {
+        const status = document.getElementById("statusFilter").value;
+        const customerId = document.getElementById("customerFilter").value;
+        const serviceId = document.getElementById("serviceFilter").value;
+        const technicianId = document.getElementById("technicianFilter").value;
+        const dateFrom = document.getElementById("dateFrom").value;
+        const dateTo = document.getElementById("dateTo").value;
+        const search = document
+          .getElementById("searchInput")
+          .value.toLowerCase();
+
+        filteredJobs = allJobs.filter((job) => {
+          if (status !== "all" && job.status !== status) return false;
+          if (customerId !== "all" && job.customer_id != customerId)
+            return false;
+          if (serviceId !== "all" && job.service_id != serviceId) return false;
+          if (technicianId !== "all" && job.technician_id != technicianId)
+            return false;
+          if (dateFrom && new Date(job.created_at) < new Date(dateFrom))
+            return false;
+          if (dateTo && new Date(job.created_at) > new Date(dateTo))
+            return false;
+          if (search) {
+            const searchable =
+              `${job.id} ${job.service_name} ${job.make} ${job.model} ${job.license_plate} ${job.customer_name}`.toLowerCase();
+            if (!searchable.includes(search)) return false;
+          }
+          return true;
+        });
+
+        renderJobs();
+        updateBulkActionsBar();
+      }
+
+      // Reset all filters
+      function resetFilters() {
+        document.getElementById("statusFilter").value = "all";
+        document.getElementById("customerFilter").value = "all";
+        document.getElementById("serviceFilter").value = "all";
+        document.getElementById("technicianFilter").value = "all";
+        document.getElementById("dateFrom").value = "";
+        document.getElementById("dateTo").value = "";
+        document.getElementById("searchInput").value = "";
+        applyFilters();
+      }
+
+      // Update job cards with checkboxes
+      function renderJobs() {
+        const container = document.getElementById("jobsContainer");
+
+        if (filteredJobs.length === 0) {
+          container.innerHTML =
+            '<div class="empty-state"><div class="empty-state-icon">📋</div><p>No jobs found</p></div>';
+          return;
+        }
+
+        container.innerHTML = filteredJobs
+          .map(
+            (job) => `
+        <div class="job-card" data-job-id="${job.id}">
+            <input type="checkbox" class="job-checkbox" onchange="toggleJobSelection(${job.id})" ${selectedJobs.has(job.id) ? "checked" : ""}>
+            <div class="job-card-content" style="flex: 1;">
+                <div class="job-header">
+                    <div>
+                        <span class="job-id">#${job.id}</span>
+                        <span style="margin-left: 12px;">${job.service_name}</span>
+                    </div>
+                    <span class="job-status status-${job.status}">${job.status.replace("_", " ").toUpperCase()}</span>
+                </div>
+                <div class="job-body">
+                    <div class="job-info-grid">
+                        <div class="info-item">
+                            <span class="info-label">Customer</span>
+                            <span class="info-value">${job.customer_name} (@${job.customer_username || job.customer_name?.split(" ")[0]})</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Technician</span>
+                            <span class="info-value">${job.technician_name || "Not Assigned"}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Vehicle</span>
+                            <span class="info-value">${job.year} ${job.make} ${job.model}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">License Plate</span>
+                            <span class="info-value">${job.license_plate}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Created</span>
+                            <span class="info-value">${new Date(job.created_at).toLocaleDateString()}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Amount</span>
+                            <span class="info-value">KES ${(job.amount || 0).toLocaleString()}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="job-actions">
+                    <button class="btn btn-sm btn-outline" onclick="viewJobDetails(${job.id})">View Details</button>
+                    <button class="btn btn-sm btn-primary" onclick="downloadSingleJobCard(${job.id})">📥 Download Card</button>
+                </div>
+            </div>
+        </div>
+    `,
+          )
+          .join("");
+      }
+
+      // Toggle job selection
+      function toggleJobSelection(jobId) {
+        if (selectedJobs.has(jobId)) {
+          selectedJobs.delete(jobId);
+        } else {
+          selectedJobs.add(jobId);
+        }
+        updateBulkActionsBar();
+      }
+
+      // Clear all selections
+      function clearSelection() {
+        selectedJobs.clear();
+        updateBulkActionsBar();
+        renderJobs(); // Re-render to uncheck checkboxes
+      }
+
+      // Update bulk actions bar visibility
+      function updateBulkActionsBar() {
+        const bar = document.getElementById("bulkActionsBar");
+        const count = document.getElementById("selectedCount");
+
+        if (selectedJobs.size > 0) {
+          bar.style.display = "flex";
+          count.textContent = selectedJobs.size;
+        } else {
+          bar.style.display = "none";
+        }
+      }
+
+      // Download single job card
+      async function downloadSingleJobCard(jobId) {
+        const job = filteredJobs.find((j) => j.id === jobId);
+        if (!job) return;
+        await generateAndDownloadJobCard(job);
+      }
+
+      // Download all filtered jobs
+      async function downloadAllFiltered() {
+        if (filteredJobs.length === 0) {
+          showToast("No jobs to download", "warning");
+          return;
+        }
+
+        showToast(
+          `Preparing ${filteredJobs.length} job cards for download...`,
+          "info",
+        );
+
+        for (let i = 0; i < filteredJobs.length; i++) {
+          // Add small delay between downloads to avoid browser blocking
+          setTimeout(async () => {
+            await generateAndDownloadJobCard(filteredJobs[i]);
+          }, i * 500);
+        }
+
+        setTimeout(
+          () => {
+            showToast(
+              `Downloaded ${filteredJobs.length} job cards!`,
+              "success",
+            );
+          },
+          filteredJobs.length * 500 + 1000,
+        );
+      }
+
+      // Download selected jobs
+      async function downloadSelectedAsPDF() {
+        if (selectedJobs.size === 0) {
+          showToast("No jobs selected", "warning");
+          return;
+        }
+
+        const selectedJobsArray = filteredJobs.filter((job) =>
+          selectedJobs.has(job.id),
+        );
+
+        showToast(
+          `Preparing ${selectedJobsArray.length} selected job cards...`,
+          "info",
+        );
+
+        for (let i = 0; i < selectedJobsArray.length; i++) {
+          setTimeout(async () => {
+            await generateAndDownloadJobCard(selectedJobsArray[i]);
+          }, i * 500);
+        }
+
+        setTimeout(
+          () => {
+            showToast(
+              `Downloaded ${selectedJobsArray.length} job cards!`,
+              "success",
+            );
+            clearSelection();
+          },
+          selectedJobsArray.length * 500 + 1000,
+        );
+      }
+
+      // Generate and download a single job card
+      async function generateAndDownloadJobCard(job) {
+        try {
+          // Fetch full job details
+          const response = await fetch(
+            `${API_BASE_URL}/api/admin/jobs/${job.id}/full`,
+          );
+          const fullJob = await response.json();
+
+          const jobCardHtml = generateJobCardHTML(fullJob);
+
+          const blob = new Blob([jobCardHtml], { type: "text/html" });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = `Job_Card_${job.id}_${job.service_name.replace(/\s/g, "_")}.html`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        } catch (error) {
+          console.error("Error generating job card:", error);
+          showToast(`Failed to download job #${job.id}`, "error");
+        }
+      }
+
+      // Generate Job Card HTML (reuse your existing function)
+      function generateJobCardHTML(job) {
+        // This should contain your existing job card HTML generation code
+        // Use the same format as before
+        return `<!DOCTYPE html>...`; // Your existing job card HTML
+      }
+      let currentUser = null;
+      let allJobs = [];
+      let filteredJobs = [];
+      const API_BASE_URL = "http://localhost:3000";
+
+      async function initializeUser() {
+        const userStr = sessionStorage.getItem("currentUser");
+        if (!userStr) {
+          window.location.href = "login.html";
+          return;
+        }
+
+        currentUser = JSON.parse(userStr);
+        if (currentUser.role !== "admin") {
+          window.location.href = "login.html";
+          return;
+        }
+
+        document.getElementById("userAvatar").textContent = currentUser.name
+          .split(" ")
+          .map((n) => n[0])
+          .join("");
+        document.getElementById("adminName").textContent = currentUser.name;
+
+        await loadFilterOptions();
+        await loadAllJobs();
+        await loadStats();
+      }
+
+      /* async function loadAllJobs() {
+        try {
+          const response = await fetch(`${API_BASE_URL}/api/admin/jobs`);
+          allJobs = await response.json();
+          applyFilters();
+        } catch (error) {
+          console.error("Error loading jobs:", error);
+          showToast("Failed to load jobs", "error");
+        }
+      }
+*/
+      async function refreshAllData() {
+        showToast("Refreshing data...", "info");
+        await loadAllJobs();
+        await loadStats();
+        showToast("Data refreshed!", "success");
+      }
+      async function loadAllJobs() {
+        try {
+          const response = await fetch(`${API_BASE_URL}/api/admin/jobs`);
+          const jobs = await response.json();
+
+          console.log("Jobs received:", jobs.length); // Debug log
+
+          allJobs = jobs;
+          applyFilters();
+
+          // Update stats after loading jobs
+          await loadStats();
+        } catch (error) {
+          console.error("Error loading jobs:", error);
+          showToast("Failed to load jobs", "error");
+          document.getElementById("jobsContainer").innerHTML = `
+            <div class="empty-state">
+                <div class="empty-state-icon">❌</div>
+                <p>Failed to load jobs. Please check server connection.</p>
+            </div>
+        `;
+        }
+      }
+      /* async function loadStats() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/admin/stats`);
+                const stats = await response.json();
+                
+                document.getElementById("statTotalJobs").textContent = stats.totalJobs || 0;
+                document.getElementById("statPending").textContent = stats.pending || 0;
+                document.getElementById("statActive").textContent = stats.active || 0;
+                document.getElementById("statCompleted").textContent = stats.completed || 0;
+                document.getElementById("statRevenue").textContent = `KES ${(stats.totalRevenue || 0).toLocaleString()}`;
+                
+                document.getElementById("totalJobs").textContent = stats.totalJobs || 0;
+                document.getElementById("completedJobs").textContent = stats.completed || 0;
+                document.getElementById("activeJobs").textContent = stats.active || 0;
+                document.getElementById("totalRevenue").textContent = `KES ${(stats.totalRevenue || 0).toLocaleString()}`;
+            } catch (error) {
+                console.error("Error loading stats:", error);
+            }
+        }
+*/
+      async function loadStats() {
+        try {
+          const response = await fetch(`${API_BASE_URL}/api/admin/stats`);
+          const stats = await response.json();
+
+          console.log("Stats received:", stats); // Debug log
+
+          // Update stat cards
+          document.getElementById("statTotalJobs").textContent =
+            stats.totalJobs || 0;
+          document.getElementById("statPending").textContent =
+            stats.pending || 0;
+          document.getElementById("statActive").textContent = stats.active || 0;
+          document.getElementById("statCompleted").textContent =
+            stats.completed || 0;
+          document.getElementById("statRevenue").textContent =
+            `KES ${(stats.totalRevenue || 0).toLocaleString()}`;
+
+          // Update quick stats sidebar
+          document.getElementById("totalJobs").textContent =
+            stats.totalJobs || 0;
+          document.getElementById("completedJobs").textContent =
+            stats.completed || 0;
+          document.getElementById("activeJobs").textContent = stats.active || 0;
+          document.getElementById("totalRevenue").textContent =
+            `KES ${(stats.totalRevenue || 0).toLocaleString()}`;
+        } catch (error) {
+          console.error("Error loading stats:", error);
+          showToast("Failed to load stats", "error");
+        }
+      }
+      function applyFilters() {
+        const status = document.getElementById("statusFilter").value;
+        const dateFrom = document.getElementById("dateFrom").value;
+        const dateTo = document.getElementById("dateTo").value;
+        const search = document
+          .getElementById("searchInput")
+          .value.toLowerCase();
+
+        filteredJobs = allJobs.filter((job) => {
+          if (status !== "all" && job.status !== status) return false;
+
+          if (dateFrom && new Date(job.created_at) < new Date(dateFrom))
+            return false;
+          if (dateTo && new Date(job.created_at) > new Date(dateTo))
+            return false;
+
+          if (search) {
+            const searchable =
+              `${job.id} ${job.service_name} ${job.customer_name} ${job.technician_name || ""}`.toLowerCase();
+            if (!searchable.includes(search)) return false;
+          }
+
+          return true;
+        });
+
+        renderJobs();
+      }
+
+      function resetFilters() {
+        document.getElementById("statusFilter").value = "all";
+        document.getElementById("dateFrom").value = "";
+        document.getElementById("dateTo").value = "";
+        document.getElementById("searchInput").value = "";
+        applyFilters();
+      }
+
+      function renderJobs() {
+        const container = document.getElementById("jobsContainer");
+
+        if (filteredJobs.length === 0) {
+          container.innerHTML =
+            '<div class="empty-state"><div class="empty-state-icon">📋</div><p>No jobs found</p></div>';
+          return;
+        }
+
+        container.innerHTML = filteredJobs
+          .map(
+            (job) => `
+                <div class="job-card">
+                    <div class="job-header">
+                        <div>
+                            <span class="job-id">#${job.id}</span>
+                            <span style="margin-left: 12px;">${job.service_name}</span>
+                        </div>
+                        <span class="job-status status-${job.status}">${job.status.replace("_", " ").toUpperCase()}</span>
+                    </div>
+                    <div class="job-body">
+                        <div class="job-info-grid">
+                            <div class="info-item">
+                                <span class="info-label">Customer</span>
+                                <span class="info-value">${job.customer_name}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Technician</span>
+                                <span class="info-value">${job.technician_name || "Not Assigned"}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Vehicle</span>
+                                <span class="info-value">${job.year} ${job.make} ${job.model}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">License Plate</span>
+                                <span class="info-value">${job.license_plate}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Created</span>
+                                <span class="info-value">${new Date(job.created_at).toLocaleDateString()}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Amount</span>
+                                <span class="info-value">KES ${(job.amount || 0).toLocaleString()}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="job-actions">
+                        <button class="btn btn-sm btn-outline" onclick="viewJobDetails(${job.id})">View Details</button>
+                        <button class="btn btn-sm btn-primary" onclick="downloadJobCard(${job.id})">📥 Download Job Card</button>
+                    </div>
+                </div>
+            `,
+          )
+          .join("");
+      }
+
+      async function viewJobDetails(jobId) {
+        try {
+          const response = await fetch(
+            `${API_BASE_URL}/api/admin/jobs/${jobId}/full`,
+          );
+          const job = await response.json();
+
+          const modalContent = `
+                    <div style="max-height: 70vh; overflow-y: auto;">
+                        <div class="job-info-grid">
+                            <div class="info-item">
+                                <span class="info-label">Job ID</span>
+                                <span class="info-value">#${job.id}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Status</span>
+                                <span class="job-status status-${job.status}">${job.status}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Customer</span>
+                                <span class="info-value">${job.customer_name}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Technician</span>
+                                <span class="info-value">${job.technician_name || "Not Assigned"}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Service</span>
+                                <span class="info-value">${job.service_name}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Vehicle</span>
+                                <span class="info-value">${job.year} ${job.make} ${job.model} (${job.license_plate})</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Created</span>
+                                <span class="info-value">${new Date(job.created_at).toLocaleString()}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Completed</span>
+                                <span class="info-value">${job.completed_at ? new Date(job.completed_at).toLocaleString() : "Not completed"}</span>
+                            </div>
+                        </div>
+                        
+                        <h4 style="margin: var(--spacing-lg) 0 var(--spacing-md);">🔩 Parts Used</h4>
+                        ${
+                          job.parts && job.parts.length > 0
+                            ? `
+                            <table class="parts-table">
+                                <thead>
+                                    <tr><th>Part Name</th><th>Qty</th><th>Unit Price</th><th>Total</th></tr>
+                                </thead>
+                                <tbody>
+                                    ${job.parts
+                                      .map(
+                                        (part) => `
+                                        <tr>
+                                            <td>${part.part_name}</td>
+                                            <td>${part.quantity}</td>
+                                            <td>KES ${part.unit_price.toLocaleString()}</td>
+                                            <td>KES ${part.total_price.toLocaleString()}</td>
+                                        </tr>
+                                    `,
+                                      )
+                                      .join("")}
+                                    <tr style="font-weight: 700; background: var(--gray-100);">
+                                        <td colspan="3" style="text-align: right;">Total Parts:</td>
+                                        <td>KES ${job.parts.reduce((sum, p) => sum + p.total_price, 0).toLocaleString()}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        `
+                            : "<p>No parts recorded</p>"
+                        }
+                        
+                        <h4 style="margin: var(--spacing-lg) 0 var(--spacing-md);">📝 Repair Notes</h4>
+                        <p>${job.repair_notes || "No notes recorded"}</p>
+                        
+                        <h4 style="margin: var(--spacing-lg) 0 var(--spacing-md);">⏱️ Activity Timeline</h4>
+                        <div style="background: var(--gray-50); padding: var(--spacing-md); border-radius: 8px;">
+                            ${
+                              job.updates && job.updates.length > 0
+                                ? job.updates
+                                    .map(
+                                      (update) => `
+                                <div style="padding: 8px 0; border-bottom: 1px solid var(--gray-200);">
+                                    <strong>${update.status}</strong> - ${update.technician_name}<br>
+                                    <small>${new Date(update.created_at).toLocaleString()}</small>
+                                    ${update.notes ? `<p style="margin-top: 4px; font-size: 13px;">${update.notes}</p>` : ""}
+                                </div>
+                            `,
+                                    )
+                                    .join("")
+                                : "<p>No updates recorded</p>"
+                            }
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: var(--spacing-md); margin-top: var(--spacing-lg);">
+                        <button class="btn btn-primary" onclick="downloadJobCard(${job.id})">📥 Download Job Card</button>
+                        <button class="btn btn-secondary" onclick="closeModal('jobModal')">Close</button>
+                    </div>
+                `;
+
+          document.getElementById("modalTitle").textContent =
+            `Job #${job.id} - ${job.service_name}`;
+          document.getElementById("jobModalContent").innerHTML = modalContent;
+          openModal("jobModal");
+        } catch (error) {
+          console.error("Error loading job details:", error);
+          showToast("Failed to load job details", "error");
+        }
+      }
+
+      function downloadJobCard(jobId) {
+        const job = filteredJobs.find((j) => j.id === jobId);
+        if (!job) return;
+
+        // Create HTML for job card
+        const jobCardHtml = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Job Card #${job.id}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: white;
+        }
+        .job-card {
+            max-width: 800px;
+            margin: 0 auto;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #f97316;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            margin: 0;
+            color: #f97316;
+        }
+        .section {
+            margin-bottom: 20px;
+        }
+        .section-title {
+            font-weight: bold;
+            background: #f97316;
+            color: white;
+            padding: 5px 10px;
+            margin-bottom: 10px;
+        }
+        .info-row {
+            display: flex;
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .info-label {
+            width: 120px;
+            font-weight: bold;
+        }
+        .info-value {
+            flex: 1;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background: #f5f5f5;
+        }
+        .footer {
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+            margin-top: 20px;
+            padding-top: 10px;
+            border-top: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <div class="job-card">
+        <div class="header">
+            <h1>GSMS JOB CARD</h1>
+            <p>Service Report #${job.id}</p>
+        </div>
+        
+        <div class="section">
+            <div class="section-title">Job Information</div>
+            <div class="info-row">
+                <div class="info-label">Service:</div>
+                <div class="info-value">${job.service_name}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Status:</div>
+                <div class="info-value">${job.status.toUpperCase()}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Created:</div>
+                <div class="info-value">${new Date(job.created_at).toLocaleString()}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Completed:</div>
+                <div class="info-value">${job.completed_at ? new Date(job.completed_at).toLocaleString() : "Pending"}</div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-title">Customer & Technician</div>
+            <div class="info-row">
+                <div class="info-label">Customer:</div>
+                <div class="info-value">${job.customer_name}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Technician:</div>
+                <div class="info-value">${job.technician_name || "Not Assigned"}</div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-title">Vehicle Details</div>
+            <div class="info-row">
+                <div class="info-label">Make/Model:</div>
+                <div class="info-value">${job.year} ${job.make} ${job.model}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">License Plate:</div>
+                <div class="info-value">${job.license_plate}</div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-title">Parts Used</div>
+            ${
+              job.parts && job.parts.length > 0
+                ? `
+                <table>
+                    <thead>
+                        <tr><th>Part Name</th><th>Quantity</th><th>Unit Price</th><th>Total</th></tr>
+                    </thead>
+                    <tbody>
+                        ${job.parts
+                          .map(
+                            (part) => `
+                            <tr>
+                                <td>${part.part_name}</td>
+                                <td>${part.quantity}</td>
+                                <td>KES ${part.unit_price.toLocaleString()}</td>
+                                <td>KES ${part.total_price.toLocaleString()}</td>
+                            </tr>
+                        `,
+                          )
+                          .join("")}
+                    </tbody>
+                </table>
+            `
+                : "<p>No parts recorded</p>"
+            }
+        </div>
+        
+        <div class="section">
+            <div class="section-title">Repair Notes</div>
+            <p>${job.repair_notes || "No notes recorded"}</p>
+        </div>
+        
+        <div class="section">
+            <div class="section-title">Invoice</div>
+            <div class="info-row">
+                <div class="info-label">Total Amount:</div>
+                <div class="info-value">KES ${(job.amount || 0).toLocaleString()}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Payment Status:</div>
+                <div class="info-value">${job.payment_status || "Pending"}</div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Generated by GSMS Admin System | ${new Date().toLocaleString()}</p>
+        </div>
+    </div>
+</body>
+</html>
+            `;
+
+        // Create download
+        const blob = new Blob([jobCardHtml], { type: "text/html" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `Job_Card_${job.id}_${job.service_name.replace(/\s/g, "_")}.html`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        showToast(`Downloading job card for #${job.id}`, "success");
+      }
+
+      function filterByStatus(status) {
+        document.getElementById("statusFilter").value = status;
+        applyFilters();
+      }
+
+      function openModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) modal.classList.add("active");
+      }
+
+      function closeModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) modal.classList.remove("active");
+      }
+
+      function logout() {
+        sessionStorage.removeItem("currentUser");
+        window.location.href = "login.html";
+      }
+
+      document.addEventListener("DOMContentLoaded", initializeUser);
+    </script>
+  </body>
+</html>
