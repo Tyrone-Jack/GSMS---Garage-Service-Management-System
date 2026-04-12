@@ -1034,8 +1034,8 @@ app.get("/api/technician/:id/rating", (req, res) => {
 // ==================== SERVER START ====================
 
 app.listen(PORT, () => {
-  console.log(`GSMS Server running on http://localhost:${PORT}`);
-  console.log(`API endpoints available at http://localhost:${PORT}/api/`);
+  console.log(`GSMS Server running on ${PORT}`);
+  console.log(`API endpoints available at ${PORT}/api/`);
 });
 // Update user profile
 app.put("/api/users/:id", (req, res) => {
