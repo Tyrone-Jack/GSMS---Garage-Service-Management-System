@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - GSMS</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <a href="customer-dashboard.html" class="logo"><span>GS</span>GSMS</a>
+            <nav class="nav-menu">
+                <a href="customer-dashboard.html">Dashboard</a>
+                <a href="book-service.html">Book Service</a>
+                <a href="customer-dashboard.html#active-jobs">Active Jobs</a>
+                <a href="customer-dashboard.html#invoices">Invoices</a>
+                <a href="profile.html">Profile</a>
+            </nav>
+            <div class="user-profile">
+                <div class="user-avatar" id="userAvatar">JD</div>
+                <button class="btn btn-secondary btn-sm" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-title">Menu</div>
+                <ul class="sidebar-menu">
+                    <li><a href="customer-dashboard.html">Dashboard</a></li>
+                    <li><a href="book-service.html">Book Service</a></li>
+                    <li><a href="customer-dashboard.html#active-jobs">Active Jobs</a></li>
+                    <li><a href="customer-dashboard.html#invoices">Invoices</a></li>
+                    <li><a href="profile.html">Profile</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-title">Support</div>
+                <ul class="sidebar-menu">
+                    <li><a href="faq.html">FAQ</a></li>
+                    <li><a href="contact.html" class="active">Contact Us</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <div class="contact-container">
+            <div class="container">
+                <div class="contact-header">
+                    <h1 class="contact-title">Contact Us</h1>
+                    <p class="contact-subtitle">We're here to help! Reach out to us through any of these channels</p>
+                </div>
+
+                <div id="successMessage" class="success-message">
+                    <strong>✓ Message Sent Successfully!</strong><br>
+                    Thank you for contacting us. We'll get back to you within 24 hours.
+                </div>
+
+                <div class="contact-grid">
+                    <div class="contact-card">
+                        <div class="contact-icon">📞</div>
+                        <h3>Phone Support</h3>
+                        <div class="contact-detail"><strong>Main Line:</strong><br><a href="tel:+254700123456">0700 123 456</a></div>
+                        <div class="contact-detail"><strong>Emergency:</strong><br><a href="tel:+254722123456">0722 123 456</a></div>
+                        <div class="contact-hours">Mon-Fri: 8AM - 6PM<br>Sat: 9AM - 4PM</div>
+                    </div>
+
+                    <div class="contact-card">
+                        <div class="contact-icon">📧</div>
+                        <h3>Email Us</h3>
+                        <div class="contact-detail"><strong>General Inquiries:</strong><br><a href="mailto:info@gsms.co.ke">info@gsms.co.ke</a></div>
+                        <div class="contact-detail"><strong>Support:</strong><br><a href="mailto:support@gsms.co.ke">support@gsms.co.ke</a></div>
+                        <div class="contact-detail"><strong>Billing:</strong><br><a href="mailto:billing@gsms.co.ke">billing@gsms.co.ke</a></div>
+                        <div class="contact-hours">Response within 24 hours</div>
+                    </div>
+
+                    <div class="contact-card">
+                        <div class="contact-icon">📍</div>
+                        <h3>Visit Us</h3>
+                        <div class="contact-detail"><strong>Main Workshop:</strong><br>Mombasa Road, Next to Sameer Business Park<br>Nairobi, Kenya</div>
+                        <div class="contact-detail"><strong>Branch:</strong><br>Thika Road, Garden City Mall<br>Nairobi, Kenya</div>
+                        <div class="contact-hours">Open for drop-offs 8AM - 5PM</div>
+                    </div>
+
+                    <div class="contact-card">
+                        <div class="contact-icon">💬</div>
+                        <h3>WhatsApp</h3>
+                        <div class="contact-detail"><strong>Chat with us:</strong><br><a href="https://wa.me/254712345678">0712 345 678</a></div>
+                        <div class="contact-detail"><strong>Service Updates:</strong><br><a href="https://wa.me/254712345679">0712 345 679</a></div>
+                        <div class="contact-hours">Available 8AM - 8PM daily</div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h2 class="form-title">Send us a Message</h2>
+                    <p class="form-subtitle">Fill out the form below and we'll get back to you as soon as possible</p>
+                    <form id="contactForm" onsubmit="sendMessage(event)">
+                        <div class="form-row">
+                            <div class="form-group"><label for="name">Full Name *</label><input type="text" id="name" name="name" required placeholder="Enter your full name"></div>
+                            <div class="form-group"><label for="email">Email Address *</label><input type="email" id="email" name="email" required placeholder="Enter your email"></div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group"><label for="phone">Phone Number</label><input type="tel" id="phone" name="phone" placeholder="e.g., 0712345678"></div>
+                            <div class="form-group">
+                                <label for="subject">Subject *</label>
+                                <select id="subject" name="subject" required>
+                                    <option value="">Select a subject</option>
+                                    <option value="general">General Inquiry</option>
+                                    <option value="booking">Booking Assistance</option>
+                                    <option value="technical">Technical Support</option>
+                                    <option value="billing">Billing Question</option>
+                                    <option value="complaint">Complaint</option>
+                                    <option value="feedback">Feedback</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group"><label for="message">Message *</label><textarea id="message" name="message" rows="6" required placeholder="Please provide details about your inquiry..."></textarea></div>
+                        <div class="form-group"><label><input type="checkbox" id="priority" name="priority"><strong>Mark as urgent</strong> (Response within 2 hours)</label></div>
+                        <div class="emergency-badge" id="emergencyNote" style="display: none;"><strong>⚠️ Emergency Request</strong><br>For urgent matters, please also call our emergency line: <strong>0722 123 456</strong></div>
+                        <button type="submit" class="btn btn-primary btn-lg">Send Message</button>
+                    </form>
+                </div>
+
+                <div class="map-container">
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3988.819487643982!2d36.839445!3d-1.324267!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x182f117b7c97c6c9%3A0x2b3b8e8c2b8e8c2b!2sNairobi%2C%20Kenya!5e0!3m2!1sen!2s!4v1700000000000!5m2!1sen!2s" allowfullscreen="" loading="lazy"></iframe>
+                </div>
+
+                <div class="contact-card" style="text-align: center;">
+                    <h3>Connect With Us</h3>
+                    <div class="social-links">
+                        <div class="social-link"><a href="https://facebook.com/gsmskenya" target="_blank">📘</a></div>
+                        <div class="social-link"><a href="https://twitter.com/gsmskenya" target="_blank">🐦</a></div>
+                        <div class="social-link"><a href="https://instagram.com/gsmskenya" target="_blank">📷</a></div>
+                        <div class="social-link"><a href="https://linkedin.com/company/gsmskenya" target="_blank">🔗</a></div>
+                        <div class="social-link"><a href="https://youtube.com/c/gsmskenya" target="_blank">▶️</a></div>
+                    </div>
+                    <p style="margin-top: var(--spacing-lg); font-size: 13px; color: var(--gray-500);">Follow us for service updates, promotions, and automotive tips</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="data.js"></script>
+    <script src="toast.js"></script>
+    <script>
+        let currentUser = null;
+        const API_BASE_URL = 'http://localhost:3000';
+
+        async function initializeUser() {
+            const userStr = sessionStorage.getItem("currentUser");
+            if (!userStr) { window.location.href = "login.html"; return; }
+            currentUser = JSON.parse(userStr);
+            document.getElementById("userAvatar").textContent = currentUser.name.split(" ").map(n => n[0]).join("");
+            if (currentUser) {
+                document.getElementById("name").value = currentUser.name || "";
+                document.getElementById("email").value = currentUser.email || "";
+                if (currentUser.phone) document.getElementById("phone").value = currentUser.phone;
+            }
+        }
+
+        function sendMessage(event) {
+            event.preventDefault();
+            const name = document.getElementById("name").value;
+            const email = document.getElementById("email").value;
+            const phone = document.getElementById("phone").value;
+            const subject = document.getElementById("subject").value;
+            const message = document.getElementById("message").value;
+            const isUrgent = document.getElementById("priority").checked;
+            if (!name || !email || !subject || !message) { showError("Please fill in all required fields"); return; }
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) { showError("Please enter a valid email address"); return; }
+            const subjectText = isUrgent ? `[URGENT] ${subject}` : subject;
+            console.log("Sending message:", { name, email, phone, subject: subjectText, message, isUrgent });
+            setTimeout(() => {
+                showSuccess();
+                document.getElementById("contactForm").reset();
+                if (currentUser) {
+                    document.getElementById("name").value = currentUser.name || "";
+                    document.getElementById("email").value = currentUser.email || "";
+                    if (currentUser.phone) document.getElementById("phone").value = currentUser.phone;
+                }
+            }, 500);
+        }
+
+        function showSuccess() {
+            const successMsg = document.getElementById("successMessage");
+            successMsg.classList.add("show");
+            setTimeout(() => { successMsg.classList.remove("show"); }, 5000);
+        }
+
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message show';
+            errorDiv.innerHTML = `<strong>⚠️ Error</strong><br>${message}`;
+            const form = document.getElementById("contactForm");
+            form.parentNode.insertBefore(errorDiv, form);
+            setTimeout(() => { errorDiv.remove(); }, 5000);
+        }
+
+        document.getElementById("priority").addEventListener("change", function() {
+            const emergencyNote = document.getElementById("emergencyNote");
+            emergencyNote.style.display = this.checked ? "block" : "none";
+        });
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const subjectParam = urlParams.get('subject');
+        if (subjectParam) {
+            const subjectSelect = document.getElementById("subject");
+            if (subjectSelect) {
+                for (let i = 0; i < subjectSelect.options.length; i++) {
+                    if (subjectSelect.options[i].value === subjectParam) { subjectSelect.selectedIndex = i; break; }
+                }
+            }
+        }
+
+        function logout() { sessionStorage.removeItem("currentUser"); window.location.href = "login.html"; }
+        document.addEventListener("DOMContentLoaded", initializeUser);
+    </script>
+</body>
+</html>

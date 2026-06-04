@@ -1,0 +1,1317 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reports - GSMS</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="toast.js"></script>
+    <script src="data.js"></script>
+    <style>
+      .main-content {
+        display: flex;
+        gap: var(--spacing-lg);
+        margin-top: var(--spacing-lg);
+      }
+
+      .reports-container {
+        flex: 1;
+        padding: var(--spacing-lg) 0;
+      }
+
+      /* Header */
+      .reports-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: var(--spacing-xl);
+        flex-wrap: wrap;
+        gap: var(--spacing-md);
+      }
+
+      /* Date Range Picker */
+      .date-range-picker {
+        background: var(--white);
+        border: 1px solid var(--gray-200);
+        border-radius: 12px;
+        padding: var(--spacing-md);
+        display: flex;
+        gap: var(--spacing-md);
+        flex-wrap: wrap;
+        align-items: flex-end;
+        margin-bottom: var(--spacing-lg);
+      }
+
+      .date-group {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .date-group label {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--gray-600);
+        margin-bottom: 4px;
+      }
+
+      .date-group input,
+      .date-group select {
+        padding: 8px 12px;
+        border: 1px solid var(--gray-300);
+        border-radius: 6px;
+      }
+
+      .preset-buttons {
+        display: flex;
+        gap: var(--spacing-sm);
+        flex-wrap: wrap;
+      }
+
+      .preset-btn {
+        padding: 8px 16px;
+        background: var(--gray-100);
+        border: 1px solid var(--gray-200);
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 12px;
+      }
+
+      .preset-btn:hover {
+        background: var(--primary-bg);
+        border-color: var(--primary);
+      }
+
+      /* Stats Bar */
+      .stats-bar {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: var(--spacing-md);
+        margin-bottom: var(--spacing-xl);
+      }
+
+      .stat-block {
+        background: var(--white);
+        border: 1px solid var(--gray-200);
+        border-radius: 12px;
+        padding: var(--spacing-lg);
+        text-align: center;
+      }
+
+      .stat-block-value {
+        font-size: 28px;
+        font-weight: 700;
+        color: var(--primary);
+      }
+
+      .stat-block-label {
+        font-size: 12px;
+        color: var(--gray-500);
+        margin-top: 4px;
+      }
+
+      /* Category Tabs */
+      .category-tabs {
+        display: flex;
+        gap: var(--spacing-sm);
+        border-bottom: 2px solid var(--gray-200);
+        margin-bottom: var(--spacing-lg);
+        flex-wrap: wrap;
+      }
+
+      .category-tab {
+        padding: var(--spacing-sm) var(--spacing-lg);
+        cursor: pointer;
+        font-weight: 600;
+        color: var(--gray-500);
+        border-bottom: 2px solid transparent;
+        margin-bottom: -2px;
+      }
+
+      .category-tab.active {
+        color: var(--primary);
+        border-bottom-color: var(--primary);
+      }
+
+      /* Report Cards Grid */
+      .report-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: var(--spacing-lg);
+        margin-bottom: var(--spacing-xl);
+      }
+
+      .report-card {
+        background: var(--white);
+        border: 1px solid var(--gray-200);
+        border-radius: 12px;
+        padding: var(--spacing-lg);
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .report-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+        border-color: var(--primary);
+      }
+
+      .report-icon {
+        font-size: 32px;
+        margin-bottom: var(--spacing-md);
+      }
+
+      .report-title {
+        font-weight: 700;
+        font-size: 16px;
+        margin-bottom: 4px;
+      }
+
+      .report-description {
+        font-size: 12px;
+        color: var(--gray-500);
+      }
+
+      /* Report View */
+      .report-view {
+        background: var(--white);
+        border: 1px solid var(--gray-200);
+        border-radius: 12px;
+        padding: var(--spacing-lg);
+        display: none;
+      }
+
+      .report-view.active {
+        display: block;
+      }
+
+      .report-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: var(--spacing-lg);
+        flex-wrap: wrap;
+        gap: var(--spacing-md);
+      }
+
+      .report-title-large {
+        font-size: 20px;
+        font-weight: 700;
+      }
+
+      .export-buttons {
+        display: flex;
+        gap: var(--spacing-sm);
+      }
+
+      .chart-container {
+        margin-bottom: var(--spacing-xl);
+        min-height: 400px;
+      }
+
+      .table-container {
+        overflow-x: auto;
+        margin-top: var(--spacing-lg);
+      }
+
+      .data-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .data-table th,
+      .data-table td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid var(--gray-200);
+      }
+
+      .data-table th {
+        background: var(--gray-50);
+        font-weight: 600;
+      }
+
+      .data-table tr:hover {
+        background: var(--gray-50);
+      }
+
+      .back-btn {
+        margin-bottom: var(--spacing-md);
+      }
+
+      @media (max-width: 768px) {
+        .main-content {
+          flex-direction: column;
+        }
+
+        .date-range-picker {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .report-cards {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <div class="header-content">
+        <a href="admin-dashboard.html" class="logo">
+          <span>GS</span>
+          GSMS
+        </a>
+        <nav class="nav-menu">
+          <a href="admin-dashboard.html">Dashboard</a>
+          <a href="all-jobs.html">All Jobs</a>
+          <a href="services.html">Services</a>
+          <a href="users.html">Users</a>
+          <a href="reports.html" class="active">Reports</a>
+        </nav>
+        <div class="user-profile">
+          <div class="user-avatar" id="userAvatar">AD</div>
+          <span id="adminName" style="margin-right: var(--spacing-md)"></span>
+          <button class="btn btn-secondary btn-sm" onclick="logout()">
+            Logout
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <aside class="sidebar">
+        <div class="sidebar-section">
+          <div class="sidebar-title">Reports Menu</div>
+          <ul class="sidebar-menu">
+            <li>
+              <a href="#" onclick="showCategory('financial')"
+                >Financial Reports</a
+              >
+            </li>
+            <li>
+              <a href="#" onclick="showCategory('operational')"
+                >Operational Reports</a
+              >
+            </li>
+            <li>
+              <a href="#" onclick="showCategory('customer')"
+                >Customer Reports</a
+              >
+            </li>
+            <li>
+              <a href="#" onclick="showCategory('service')">Service Reports</a>
+            </li>
+            <!--<li>
+              <a href="#" onclick="showCategory('time')">Time-Based Reports</a>
+            </li>-->
+          </ul>
+        </div>
+        <div class="sidebar-section">
+          <div class="sidebar-title">Quick Tips</div>
+          <ul class="sidebar-menu">
+            <li>
+              <a href="#" onclick="exportCurrentReport('pdf')"
+                >📄 Export as PDF</a
+              >
+            </li>
+            <li>
+              <a href="#" onclick="exportCurrentReport('excel')"
+                >📊 Export as Excel</a
+              >
+            </li>
+            <li>
+              <a href="#" onclick="exportCurrentReport('csv')"
+                >📋 Export as CSV</a
+              >
+            </li>
+            <li><a href="#" onclick="window.print()">🖨️ Print Report</a></li>
+          </ul>
+        </div>
+      </aside>
+
+      <div class="reports-container">
+        <div class="container">
+          <div class="reports-header">
+            <h1>📊 Analytics & Reports</h1>
+          </div>
+
+          <!-- Date Range Picker -->
+          <div class="date-range-picker">
+            <div class="date-group">
+              <label>From Date</label>
+              <input type="date" id="dateFrom" />
+            </div>
+            <div class="date-group">
+              <label>To Date</label>
+              <input type="date" id="dateTo" />
+            </div>
+            <div class="preset-buttons">
+              <button class="preset-btn" onclick="setDatePreset('today')">
+                Today
+              </button>
+              <button class="preset-btn" onclick="setDatePreset('week')">
+                This Week
+              </button>
+              <button class="preset-btn" onclick="setDatePreset('month')">
+                This Month
+              </button>
+              <button class="preset-btn" onclick="setDatePreset('quarter')">
+                This Quarter
+              </button>
+              <button class="preset-btn" onclick="setDatePreset('year')">
+                This Year
+              </button>
+              <button class="preset-btn" onclick="applyDateRange()">
+                Apply
+              </button>
+            </div>
+          </div>
+
+          <!-- Quick Stats Bar -->
+          <div class="stats-bar" id="statsBar">
+            <div class="stat-block">
+              <div class="stat-block-value" id="statRevenue">KES 0</div>
+              <div class="stat-block-label">Total Revenue</div>
+            </div>
+            <div class="stat-block">
+              <div class="stat-block-value" id="statJobs">0</div>
+              <div class="stat-block-label">Total Jobs</div>
+            </div>
+            <div class="stat-block">
+              <div class="stat-block-value" id="statCustomers">0</div>
+              <div class="stat-block-label">Active Customers</div>
+            </div>
+            <div class="stat-block">
+              <div class="stat-block-value" id="statRating">0.0</div>
+              <div class="stat-block-label">Avg Rating</div>
+            </div>
+          </div>
+
+          <!-- Category Tabs -->
+          <div class="category-tabs">
+            <div
+              class="category-tab active"
+              onclick="showCategory('financial')"
+            >
+              💰 Financial
+            </div>
+            <div class="category-tab" onclick="showCategory('operational')">
+              🔧 Operational
+            </div>
+            <div class="category-tab" onclick="showCategory('customer')">
+              👥 Customer
+            </div>
+            <div class="category-tab" onclick="showCategory('service')">
+              🔩 Service
+            </div>
+            <!--<div class="category-tab" onclick="showCategory('time')">
+              📅 Time
+            </div>-->
+          </div>
+
+          <!-- Report Cards Grid -->
+          <div id="reportCards" class="report-cards"></div>
+
+          <!-- Report View -->
+          <div id="reportView" class="report-view">
+            <div class="back-btn">
+              <button class="btn btn-sm btn-outline" onclick="closeReport()">
+                ← Back to Reports
+              </button>
+            </div>
+            <div id="reportContent"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let currentUser = null;
+      let currentReport = null;
+      let currentChart = null;
+      let currentReportData = null;
+      let dateFrom = new Date();
+      let dateTo = new Date();
+      const API_BASE_URL = "http://localhost:3000";
+
+      // Report definitions
+      const reports = {
+        financial: [
+          /*{
+            id: "revenue",
+            name: "Revenue Report",
+            icon: "💰",
+            description: "Daily/Monthly revenue breakdown and trends",
+            chartType: "line",
+          },*/
+          {
+            id: "techEarnings",
+            name: "Technician Earnings",
+            icon: "👨‍🔧",
+            description: "Earnings per technician over time",
+            chartType: "bar",
+          },
+          /*{
+            id: "pendingPayments",
+            name: "Pending Payments",
+            icon: "⏳",
+            description: "All unpaid invoices",
+            chartType: "table",
+          },*/
+          {
+            id: "serviceRevenue",
+            name: "Service Revenue Breakdown",
+            icon: "📊",
+            description: "Revenue by service type",
+            chartType: "pie",
+          },
+        ],
+        operational: [
+          {
+            id: "jobStatus",
+            name: "Job Status Distribution",
+            icon: "📋",
+            description: "Current status of all jobs",
+            chartType: "doughnut",
+          },
+          {
+            id: "techPerformance",
+            name: "Technician Performance",
+            icon: "🏆",
+            description: "Jobs completed, ratings, earnings",
+            chartType: "bar",
+          },
+          {
+            id: "dailyActivity",
+            name: "Daily Activity",
+            icon: "📅",
+            description: "Jobs created vs completed trends",
+            chartType: "line",
+          },
+          /*{
+            id: "serviceDuration",
+            name: "Service Duration Analysis",
+            icon: "⏱️",
+            description: "Actual vs estimated times",
+            chartType: "bar",
+          },*/
+        ],
+        customer: [
+          {
+            id: "topCustomers",
+            name: "Top Customers",
+            icon: "👑",
+            description: "Highest spending customers",
+            chartType: "bar",
+          },
+          /*{
+            id: "customerRetention",
+            name: "Customer Retention",
+            icon: "🔄",
+            description: "New vs returning customers",
+            chartType: "line",
+          },*/
+          {
+            id: "satisfaction",
+            name: "Customer Satisfaction",
+            icon: "⭐",
+            description: "Ratings and reviews analysis",
+            chartType: "bar",
+          },
+        ],
+        service: [
+          /*{
+            id: "popularServices",
+            name: "Most Popular Services",
+            icon: "🔥",
+            description: "Most requested services",
+            chartType: "bar",
+          },*/
+          {
+            id: "partsUsage",
+            name: "Parts Usage Report",
+            icon: "🔩",
+            description: "Most commonly used parts",
+            chartType: "bar",
+          },
+        ],
+        /*time: [
+          {
+            id: "peakHours",
+            name: "Peak Hours",
+            icon: "⏰",
+            description: "Busiest times and days",
+            chartType: "bar",
+          },
+          {
+            id: "monthlyTrends",
+            name: "Monthly Trends",
+            icon: "📈",
+            description: "Month-over-month business trends",
+            chartType: "line",
+          },
+        ]*/
+      };
+
+      async function initialize() {
+        const userStr = sessionStorage.getItem("currentUser");
+        if (!userStr) {
+          window.location.href = "login.html";
+          return;
+        }
+
+        currentUser = JSON.parse(userStr);
+        if (currentUser.role !== "admin") {
+          window.location.href = "login.html";
+          return;
+        }
+
+        document.getElementById("userAvatar").textContent = currentUser.name
+          .split(" ")
+          .map((n) => n[0])
+          .join("");
+        document.getElementById("adminName").textContent = currentUser.name;
+
+        // Set default dates
+        const today = new Date();
+        dateTo = today;
+        dateFrom = new Date(today.getFullYear(), today.getMonth(), 1);
+
+        document.getElementById("dateFrom").value = dateFrom
+          .toISOString()
+          .split("T")[0];
+        document.getElementById("dateTo").value = dateTo
+          .toISOString()
+          .split("T")[0];
+
+        await loadQuickStats();
+        renderReportCards("financial");
+      }
+
+      async function loadQuickStats() {
+        try {
+          const response = await fetch(`${API_BASE_URL}/api/admin/stats`);
+          const stats = await response.json();
+
+          document.getElementById("statRevenue").textContent =
+            `KES ${(stats.totalRevenue || 0).toLocaleString()}`;
+          document.getElementById("statJobs").textContent =
+            stats.totalJobs || 0;
+
+          // Get active customers count
+          const usersResponse = await fetch(`${API_BASE_URL}/api/admin/users`);
+          const users = await usersResponse.json();
+          const customers = users.filter((u) => u.role === "customer").length;
+          document.getElementById("statCustomers").textContent = customers;
+
+          // Get average rating
+          const ratingResponse = await fetch(
+            `${API_BASE_URL}/api/reviews/average`,
+          );
+          const rating = await ratingResponse.json();
+          document.getElementById("statRating").textContent = rating.average
+            ? rating.average.toFixed(1)
+            : "0.0";
+        } catch (error) {
+          console.error("Error loading stats:", error);
+        }
+      }
+
+      function renderReportCards(category) {
+        const container = document.getElementById("reportCards");
+        const reportsList = reports[category];
+
+        container.innerHTML = reportsList
+          .map(
+            (report) => `
+                <div class="report-card" onclick="loadReport('${report.id}')">
+                    <div class="report-icon">${report.icon}</div>
+                    <div class="report-title">${report.name}</div>
+                    <div class="report-description">${report.description}</div>
+                </div>
+            `,
+          )
+          .join("");
+
+        document.getElementById("reportCards").style.display = "grid";
+        document.getElementById("reportView").classList.remove("active");
+      }
+
+      async function loadReport(reportId) {
+        currentReport = reportId;
+        document.getElementById("reportCards").style.display = "none";
+        document.getElementById("reportView").classList.add("active");
+
+        const reportInfo = getReportInfo(reportId);
+        document.getElementById("reportContent").innerHTML = `
+                <div class="report-header">
+                    <div class="report-title-large">${reportInfo.icon} ${reportInfo.name}</div>
+                    <div class="export-buttons">
+                        <button class="btn btn-sm btn-outline" onclick="exportCurrentReport('pdf')">📄 PDF</button>
+                        <button class="btn btn-sm btn-outline" onclick="exportCurrentReport('excel')">📊 Excel</button>
+                        <button class="btn btn-sm btn-outline" onclick="exportCurrentReport('csv')">📋 CSV</button>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="reportChart"></canvas>
+                </div>
+                <div class="table-container" id="reportTable"></div>
+            `;
+
+        await fetchReportData(reportId);
+      }
+
+      function getReportInfo(reportId) {
+        for (const category in reports) {
+          const found = reports[category].find((r) => r.id === reportId);
+          if (found) return found;
+        }
+        return { name: reportId, icon: "📊" };
+      }
+
+      async function fetchReportData(reportId) {
+        const fromDate = document.getElementById("dateFrom").value;
+        const toDate = document.getElementById("dateTo").value;
+
+        try {
+          const response = await fetch(
+            `${API_BASE_URL}/api/reports/${reportId}?from=${fromDate}&to=${toDate}`,
+          );
+          const data = await response.json();
+          currentReportData = data;
+          renderReport(reportId, data);
+        } catch (error) {
+          console.error("Error fetching report data:", error);
+          showToast("Failed to load report data", "error");
+        }
+      }
+
+      function renderReport(reportId, data) {
+        if (currentChart) {
+          currentChart.destroy();
+        }
+
+        const ctx = document.getElementById("reportChart").getContext("2d");
+        const reportInfo = getReportInfo(reportId);
+
+        switch (reportId) {
+          case "revenue":
+            renderRevenueReport(ctx, data);
+            break;
+          case "techEarnings":
+            renderTechEarningsReport(ctx, data);
+            break;
+          case "pendingPayments":
+            renderPendingPaymentsReport(data);
+            break;
+          case "serviceRevenue":
+            renderServiceRevenueReport(ctx, data);
+            break;
+          case "jobStatus":
+            renderJobStatusReport(ctx, data);
+            break;
+          case "techPerformance":
+            renderTechPerformanceReport(ctx, data);
+            break;
+          case "dailyActivity":
+            renderDailyActivityReport(ctx, data);
+            break;
+          case "topCustomers":
+            renderTopCustomersReport(ctx, data);
+            break;
+          case "popularServices":
+            renderPopularServicesReport(ctx, data);
+            break;
+          case "monthlyTrends":
+            renderMonthlyTrendsReport(ctx, data);
+            break;
+          default:
+            renderGenericReport(ctx, data, reportInfo.name);
+        }
+      }
+
+      function renderRevenueReport(ctx, data) {
+        currentChart = new Chart(ctx, {
+          type: "line",
+          data: {
+            labels: data.labels,
+            datasets: [
+              {
+                label: "Revenue (KES)",
+                data: data.values,
+                borderColor: "#f97316",
+                backgroundColor: "rgba(249, 115, 22, 0.1)",
+                tension: 0.4,
+                fill: true,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+              legend: { position: "top" },
+              title: { display: true, text: "Revenue Trend" },
+            },
+          },
+        });
+
+        renderTable(data.tableData || data.data, [
+          "Date",
+          "Jobs",
+          "Revenue",
+          "Average",
+        ]);
+      }
+
+      function renderTechEarningsReport(ctx, data) {
+        // Check if there's data
+        if (!data.tableData || data.tableData.length === 0) {
+          document.getElementById("reportChart").style.display = "none";
+          /*document.getElementById("reportTable").innerHTML = `
+            <div style="text-align: center; padding: 40px; color: var(--gray-500);">
+                <div style="font-size: 48px; margin-bottom: 16px;">💰</div>
+                <p>No technician earnings data available yet.</p>
+                <p style="font-size: 13px;">Complete jobs will appear here once technicians finish work.</p>
+            </div>
+        `;*/
+          return;
+        }
+
+        // Show chart
+        document.getElementById("reportChart").style.display = "block";
+
+        currentChart = new Chart(ctx, {
+          type: "bar",
+          data: {
+            labels: data.labels,
+            datasets: [
+              {
+                label: "Earnings (KES)",
+                data: data.values,
+                backgroundColor: "#f97316",
+                borderRadius: 8,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+              legend: { position: "top" },
+              title: { display: true, text: "Technician Earnings" },
+            },
+          },
+        });
+
+       /* renderTable(data.tableData, [
+          "Technician",
+          "Jobs Completed",
+          "Total Earnings",
+          "Avg per Job",
+        ]);*/
+      }
+      function renderPendingPaymentsReport(data) {
+        document.getElementById("reportChart").style.display = "none";
+        renderTable(data.data || [], [
+          "Invoice #",
+          "Customer",
+          "Service",
+          "Amount",
+          "Days Overdue",
+          "Status",
+        ]);
+      }
+
+      function renderServiceRevenueReport(ctx, data) {
+        currentChart = new Chart(ctx, {
+          type: "pie",
+          data: {
+            labels: data.labels,
+            datasets: [
+              {
+                data: data.values,
+                backgroundColor: [
+                  "#f97316",
+                  "#3b82f6",
+                  "#10b981",
+                  "#8b5cf6",
+                  "#f59e0b",
+                  "#ef4444",
+                  "#06b6d4",
+                  "#ec4899",
+                ],
+                borderWidth: 0,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+              legend: { position: "right" },
+              title: { display: true, text: "Revenue by Service Type" },
+            },
+          },
+        });
+
+        /*renderTable(data.tableData || data.data, [
+          "Service",
+          "Jobs",
+          "Revenue",
+          "Percentage",
+        ]);*/
+      }
+
+      function renderJobStatusReport(ctx, data) {
+        currentChart = new Chart(ctx, {
+          type: "doughnut",
+          data: {
+            labels: data.labels,
+            datasets: [
+              {
+                data: data.values,
+                backgroundColor: [
+                  "#f59e0b",
+                  "#3b82f6",
+                  "#8b5cf6",
+                  "#10b981",
+                  "#ef4444",
+                ],
+                borderWidth: 0,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+              legend: { position: "right" },
+              title: { display: true, text: "Job Status Distribution" },
+            },
+          },
+        });
+
+        /*renderTable(data.tableData || data.data, [
+          "Status",
+          "Count",
+          "Percentage",
+        ]);*/
+      }
+
+      function renderTechPerformanceReport(ctx, data) {
+        currentChart = new Chart(ctx, {
+          type: "bar",
+          data: {
+            labels: data.labels,
+            datasets: [
+              {
+                label: "Jobs Completed",
+                data: data.jobsData,
+                backgroundColor: "#3b82f6",
+                borderRadius: 8,
+                yAxisID: "y",
+              },
+              {
+                label: "Rating",
+                data: data.ratingData,
+                backgroundColor: "#f59e0b",
+                borderRadius: 8,
+                yAxisID: "y1",
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+              legend: { position: "top" },
+              title: { display: true, text: "Technician Performance" },
+            },
+            scales: {
+              y: { title: { display: true, text: "Jobs Completed" } },
+              y1: {
+                position: "right",
+                title: { display: true, text: "Rating" },
+                min: 0,
+                max: 5,
+              },
+            },
+          },
+        });
+
+        /*renderTable(data.tableData || data.data, [
+          "Technician",
+          "Jobs",
+          "Rating",
+          "Earnings",
+        ]);*/
+      }
+
+      function renderDailyActivityReport(ctx, data) {
+        currentChart = new Chart(ctx, {
+          type: "line",
+          data: {
+            labels: data.labels,
+            datasets: [
+              {
+                label: "Jobs Created",
+                data: data.created,
+                borderColor: "#3b82f6",
+                backgroundColor: "rgba(59, 130, 246, 0.1)",
+                tension: 0.4,
+                fill: true,
+              },
+              {
+                label: "Jobs Completed",
+                data: data.completed,
+                borderColor: "#10b981",
+                backgroundColor: "rgba(16, 185, 129, 0.1)",
+                tension: 0.4,
+                fill: true,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+              legend: { position: "top" },
+              title: { display: true, text: "Daily Activity Trend" },
+            },
+          },
+        });
+
+        /*renderTable(data.tableData || data.data, [
+          "Date",
+          "Jobs Created",
+          "Jobs Completed",
+          "Active Jobs",
+        ]);*/
+      }
+
+      function renderTopCustomersReport(ctx, data) {
+        currentChart = new Chart(ctx, {
+          type: "bar",
+          data: {
+            labels: data.labels,
+            datasets: [
+              {
+                label: "Total Spent (KES)",
+                data: data.values,
+                backgroundColor: "#f97316",
+                borderRadius: 8,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+              legend: { position: "top" },
+              title: { display: true, text: "Top Customers by Spending" },
+            },
+          },
+        });
+
+        /*renderTable(data.tableData || data.data, [
+          "Customer",
+          "Jobs",
+          "Total Spent",
+          "Average per Job",
+        ]);*/
+      }
+
+      /*function renderPopularServicesReport(ctx, data) {
+        currentChart = new Chart(ctx, {
+          type: "bar",
+          data: {
+            labels: data.labels,
+            datasets: [
+              {
+                label: "Number of Jobs",
+                data: data.values,
+                backgroundColor: "#8b5cf6",
+                borderRadius: 8,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+              legend: { position: "top" },
+              title: { display: true, text: "Most Popular Services" },
+            },
+          },
+        });
+
+        renderTable(data.tableData || data.data, [
+          "Service",
+          "Jobs",
+          "Revenue",
+          "Percentage",
+        ]);
+      }
+*/
+      function renderMonthlyTrendsReport(ctx, data) {
+        /*currentChart = new Chart(ctx, {
+          type: "line",
+          data: {
+            labels: data.labels,
+            datasets: [
+              {
+                label: "Revenue (KES)",
+                data: data.revenue,
+                borderColor: "#f97316",
+                backgroundColor: "rgba(249, 115, 22, 0.1)",
+                tension: 0.4,
+                fill: true,
+                yAxisID: "y",
+              },
+              {
+                label: "Jobs",
+                data: data.jobs,
+                borderColor: "#3b82f6",
+                backgroundColor: "rgba(59, 130, 246, 0.1)",
+                tension: 0.4,
+                fill: true,
+                yAxisID: "y1",
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+              legend: { position: "top" },
+              title: { display: true, text: "Monthly Business Trends" },
+            },
+            scales: {
+              y: { title: { display: true, text: "Revenue (KES)" } },
+              y1: {
+                position: "right",
+                title: { display: true, text: "Number of Jobs" },
+              },
+            },
+          },
+        });*/
+
+        renderTable(data.tableData || data.data, [
+          "Month",
+          "Jobs",
+          "Revenue",
+          "New Customers",
+          "Repeat Customers",
+        ]);
+      }
+
+      function renderGenericReport(ctx, data, title) {
+        if (data.labels && data.values) {
+          currentChart = new Chart(ctx, {
+            type: "bar",
+            data: {
+              labels: data.labels,
+              datasets: [
+                {
+                  label: title,
+                  data: data.values,
+                  backgroundColor: "#f97316",
+                },
+              ],
+            },
+            options: { responsive: true, maintainAspectRatio: true },
+          });
+        }
+        if (data.tableData) {
+          renderTable(data.tableData, Object.keys(data.tableData[0] || {}));
+        }
+      }
+
+      function renderTable(data, columns) {
+        const container = document.getElementById("reportTable");
+        if (!data || data.length === 0) {
+          container.innerHTML = `
+            <div style="text-align: center; padding: 40px; color: var(--gray-500);">
+                <div style="font-size: 48px; margin-bottom: 16px;">📊</div>
+                <p>No data available for this report.</p>
+                <p style="font-size: 13px;">Try changing the date range or check back later.</p>
+            </div>
+        `;
+          return;
+        }
+
+        document.getElementById("reportChart").style.display = "block";
+
+        const headers = columns.map((col) => `<th>${col}</th>`).join("");
+        const rows = data
+          .map(
+            (row) => `
+        <tr>
+            ${columns
+              .map((col) => {
+                let value = row[col];
+                if (value === undefined || value === null) return "<td>-</td>";
+                if (
+                  col === "Total Earnings" ||
+                  col === "Avg per Job" ||
+                  col === "earnings" ||
+                  col === "avg_per_job"
+                ) {
+                  if (typeof value === "number")
+                    return `<td>KES ${value.toLocaleString()}</td>`;
+                }
+                if (col === "rating" && typeof value === "number")
+                  return `<td>${value.toFixed(1)} ★</td>`;
+                if (typeof value === "number")
+                  return `<td>${value.toLocaleString()}</td>`;
+                return `<td>${value}</td>`;
+              })
+              .join("")}
+        </tr>
+    `,
+          )
+          .join("");
+
+        container.innerHTML = `
+        <table class="data-table">
+            <thead><tr>${headers}</thead>
+            <tbody>${rows}</tbody>
+        </table>
+    `;
+      }
+      function formatValue(value) {
+        if (value === undefined || value === null) return "-";
+        if (typeof value === "number") {
+          if (value > 1000) return value.toLocaleString();
+          return value;
+        }
+        if (value instanceof Object) return JSON.stringify(value);
+        return value;
+      }
+
+      function closeReport() {
+        document.getElementById("reportCards").style.display = "grid";
+        document.getElementById("reportView").classList.remove("active");
+        if (currentChart) {
+          currentChart.destroy();
+          currentChart = null;
+        }
+      }
+
+      function showCategory(category) {
+        document
+          .querySelectorAll(".category-tab")
+          .forEach((tab) => tab.classList.remove("active"));
+        event.target.classList.add("active");
+        renderReportCards(category);
+      }
+
+      function setDatePreset(preset) {
+        const today = new Date();
+        let from = new Date();
+
+        switch (preset) {
+          case "today":
+            from = today;
+            break;
+          case "week":
+            from = new Date(today);
+            from.setDate(today.getDate() - 7);
+            break;
+          case "month":
+            from = new Date(today.getFullYear(), today.getMonth(), 1);
+            break;
+          case "quarter":
+            const quarter = Math.floor(today.getMonth() / 3);
+            from = new Date(today.getFullYear(), quarter * 3, 1);
+            break;
+          case "year":
+            from = new Date(today.getFullYear(), 0, 1);
+            break;
+        }
+
+        document.getElementById("dateFrom").value = from
+          .toISOString()
+          .split("T")[0];
+        document.getElementById("dateTo").value = today
+          .toISOString()
+          .split("T")[0];
+        applyDateRange();
+      }
+
+      async function applyDateRange() {
+        dateFrom = new Date(document.getElementById("dateFrom").value);
+        dateTo = new Date(document.getElementById("dateTo").value);
+
+        await loadQuickStats();
+        if (currentReport) {
+          await fetchReportData(currentReport);
+        }
+      }
+
+      async function exportCurrentReport(format) {
+        if (!currentReportData) {
+          showToast("No data to export", "warning");
+          return;
+        }
+
+        const reportInfo = getReportInfo(currentReport);
+        const filename = `${reportInfo.name}_${new Date().toISOString().split("T")[0]}`;
+
+        if (format === "pdf") {
+          const element = document.getElementById("reportContent");
+          const opt = {
+            margin: [0.5, 0.5, 0.5, 0.5],
+            filename: `${filename}.pdf`,
+            image: { type: "jpeg", quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: "in", format: "a4", orientation: "landscape" },
+          };
+          html2pdf().set(opt).from(element).save();
+          showToast("Generating PDF...", "success");
+        } else if (format === "excel") {
+          const ws = XLSX.utils.json_to_sheet(
+            currentReportData.tableData || currentReportData.data || [],
+          );
+          const wb = XLSX.utils.book_new();
+          XLSX.utils.book_append_sheet(wb, ws, reportInfo.name);
+          XLSX.writeFile(wb, `${filename}.xlsx`);
+          showToast("Excel file downloaded", "success");
+        } else if (format === "csv") {
+          const data =
+            currentReportData.tableData || currentReportData.data || [];
+          if (data.length > 0) {
+            const headers = Object.keys(data[0]);
+            const csvRows = [];
+            csvRows.push(headers.join(","));
+            for (const row of data) {
+              const values = headers.map((header) =>
+                JSON.stringify(row[header] || ""),
+              );
+              csvRows.push(values.join(","));
+            }
+            const blob = new Blob([csvRows.join("\n")], { type: "text/csv" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `${filename}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast("CSV file downloaded", "success");
+          }
+        }
+      }
+
+      function logout() {
+        sessionStorage.removeItem("currentUser");
+        window.location.href = "login.html";
+      }
+
+      document.addEventListener("DOMContentLoaded", initialize);
+    </script>
+  </body>
+</html>

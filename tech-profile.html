@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Technician Profile - GSMS</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="toast.js"></script>
+    <script src="data.js"></script>
+    <style>
+        .main-content {
+            display: flex;
+            gap: var(--spacing-lg);
+            margin-top: var(--spacing-lg);
+        }
+
+        .profile-container {
+            flex: 1;
+            padding: var(--spacing-lg) 0;
+        }
+
+        .profile-header {
+            background: linear-gradient(135deg, var(--primary-bg), var(--primary-lighter));
+            border-radius: 16px;
+            padding: var(--spacing-2xl);
+            margin-bottom: var(--spacing-2xl);
+            text-align: center;
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto var(--spacing-lg);
+            font-size: 48px;
+            font-weight: 700;
+            color: white;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .avatar-edit {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            background: var(--primary);
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            cursor: pointer;
+            border: 2px solid white;
+        }
+
+        .profile-name {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .profile-email {
+            color: var(--gray-600);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .rating-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--white);
+            padding: 6px 12px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: var(--spacing-sm);
+        }
+
+        .profile-stats {
+            display: flex;
+            justify-content: center;
+            gap: var(--spacing-2xl);
+            margin-top: var(--spacing-lg);
+            flex-wrap: wrap;
+        }
+
+        .stat {
+            text-align: center;
+            background: var(--white);
+            padding: var(--spacing-md) var(--spacing-xl);
+            border-radius: 12px;
+            min-width: 120px;
+        }
+
+        .stat-number {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--gray-600);
+        }
+
+        .profile-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--spacing-lg);
+        }
+
+        .info-card {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: var(--spacing-lg);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: var(--spacing-md);
+            border-bottom: 2px solid var(--gray-200);
+        }
+
+        .edit-btn {
+            background: none;
+            border: none;
+            color: var(--primary);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .info-row {
+            display: flex;
+            padding: var(--spacing-md) 0;
+            border-bottom: 1px solid var(--gray-100);
+        }
+
+        .info-label {
+            width: 140px;
+            font-weight: 600;
+            color: var(--gray-700);
+        }
+
+        .info-value {
+            flex: 1;
+            color: var(--gray-900);
+        }
+
+        .availability-toggle {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            padding: var(--spacing-md);
+            background: var(--gray-50);
+            border-radius: 8px;
+            margin-top: var(--spacing-md);
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.4s;
+            border-radius: 34px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: var(--success);
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+
+        .earnings-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .earning-item {
+            display: flex;
+            justify-content: space-between;
+            padding: var(--spacing-sm) 0;
+            border-bottom: 1px solid var(--gray-100);
+        }
+
+        @media (max-width: 768px) {
+            .profile-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .info-row {
+                flex-direction: column;
+            }
+            
+            .info-label {
+                width: 100%;
+                margin-bottom: 4px;
+            }
+            
+            .profile-stats {
+                gap: var(--spacing-md);
+            }
+            
+            .stat {
+                padding: var(--spacing-sm) var(--spacing-md);
+                min-width: 80px;
+            }
+            
+            .stat-number {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <a href="technician-dashboard.html" class="logo">
+                <span>GS</span>
+                GSMS
+            </a>
+            <nav class="nav-menu">
+                <a href="technician-dashboard.html">Dashboard</a>
+                <a href="#available-jobs">Available Jobs</a>
+                <a href="#my-jobs">My Jobs</a>
+                <a href="#earnings">Earnings</a>
+                <a href="tech-profile.html" class="active">Profile</a>
+            </nav>
+            <div class="user-profile">
+                <div class="user-avatar" id="userAvatar">JD</div>
+                <span id="techName" style="margin-right: var(--spacing-md);"></span>
+                <button class="btn btn-secondary btn-sm" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-title">Menu</div>
+                <ul class="sidebar-menu">
+                    <li><a href="technician-dashboard.html">Dashboard</a></li>
+                    <li><a href="#availableJobs">Available Jobs</a></li>
+                    <li><a href="#myJobs">My Jobs</a></li>
+                    <li><a href="#earningsHistory">Earnings</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <div class="profile-container">
+            <div class="container">
+                <!-- Profile Header -->
+                <div class="profile-header">
+                    <div class="profile-avatar" onclick="changeProfilePicture()">
+                        <span id="profileAvatar">JD</span>
+                        <div class="avatar-edit">📷</div>
+                    </div>
+                    <h1 class="profile-name" id="profileName">John Doe</h1>
+                    <p class="profile-email" id="profileEmail">john@example.com</p>
+                    <div class="rating-badge" id="ratingBadge">
+                        ⭐ Loading rating...
+                    </div>
+                    <div class="profile-stats">
+                        <div class="stat">
+                            <div class="stat-number" id="completedJobs">0</div>
+                            <div class="stat-label">Jobs Completed</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-number" id="totalEarned">KES 0</div>
+                            <div class="stat-label">Total Earned</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-number" id="activeJobsCount">0</div>
+                            <div class="stat-label">Active Jobs</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="profile-grid">
+                    <!-- Personal Information -->
+                    <div class="info-card">
+                        <div class="card-title">
+                            Personal Information
+                            <button class="edit-btn" onclick="toggleEditProfile()" id="editProfileBtn">Edit</button>
+                        </div>
+                        <div id="profileView">
+                            <div class="info-row">
+                                <div class="info-label">Full Name:</div>
+                                <div class="info-value" id="viewName">-</div>
+                            </div>
+                            <div class="info-row">
+                                <div class="info-label">Email:</div>
+                                <div class="info-value" id="viewEmail">-</div>
+                            </div>
+                            <div class="info-row">
+                                <div class="info-label">Phone:</div>
+                                <div class="info-value" id="viewPhone">Not set</div>
+                            </div>
+                            <div class="info-row">
+                                <div class="info-label">Specialization:</div>
+                                <div class="info-value" id="viewSpecialization">General Mechanic</div>
+                            </div>
+                        </div>
+                        <div id="profileEdit" style="display: none;">
+                            <div class="info-row">
+                                <div class="info-label">Full Name:</div>
+                                <input type="text" id="editName" class="info-value" style="padding: 8px; border: 1px solid var(--gray-300); border-radius: 6px;">
+                            </div>
+                            <div class="info-row">
+                                <div class="info-label">Email:</div>
+                                <input type="email" id="editEmail" class="info-value" style="padding: 8px; border: 1px solid var(--gray-300); border-radius: 6px;">
+                            </div>
+                            <div class="info-row">
+                                <div class="info-label">Phone:</div>
+                                <input type="tel" id="editPhone" class="info-value" placeholder="e.g., 0712345678" style="padding: 8px; border: 1px solid var(--gray-300); border-radius: 6px;">
+                            </div>
+                            <div class="info-row">
+                                <div class="info-label">Specialization:</div>
+                                <select id="editSpecialization" style="padding: 8px; border: 1px solid var(--gray-300); border-radius: 6px; width: 100%;">
+                                    <option value="General Mechanic">General Mechanic</option>
+                                    <option value="Engine Specialist">Engine Specialist</option>
+                                    <option value="Electrical Specialist">Electrical Specialist</option>
+                                    <option value="Transmission Specialist">Transmission Specialist</option>
+                                    <option value="Brake & Suspension">Brake & Suspension</option>
+                                    <option value="Diagnostic Expert">Diagnostic Expert</option>
+                                </select>
+                            </div>
+                            <div style="margin-top: var(--spacing-lg); display: flex; gap: var(--spacing-sm);">
+                                <button class="btn btn-primary btn-sm" onclick="saveProfile()">Save Changes</button>
+                                <button class="btn btn-secondary btn-sm" onclick="cancelEditProfile()">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Change Password -->
+                    <div class="info-card">
+                        <div class="card-title">
+                            Change Password
+                            <button class="edit-btn" onclick="toggleChangePassword()">Change</button>
+                        </div>
+                        <div id="passwordView">
+                            <div class="info-row">
+                                <div class="info-label">Password:</div>
+                                <div class="info-value">••••••••</div>
+                            </div>
+                        </div>
+                        <div id="passwordEdit" style="display: none;">
+                            <div class="info-row">
+                                <div class="info-label">Current Password:</div>
+                                <input type="password" id="currentPassword" class="info-value" style="padding: 8px; border: 1px solid var(--gray-300); border-radius: 6px;">
+                            </div>
+                            <div class="info-row">
+                                <div class="info-label">New Password:</div>
+                                <input type="password" id="newPassword" class="info-value" style="padding: 8px; border: 1px solid var(--gray-300); border-radius: 6px;">
+                            </div>
+                            <div class="info-row">
+                                <div class="info-label">Confirm Password:</div>
+                                <input type="password" id="confirmPassword" class="info-value" style="padding: 8px; border: 1px solid var(--gray-300); border-radius: 6px;">
+                            </div>
+                            <div style="margin-top: var(--spacing-lg); display: flex; gap: var(--spacing-sm);">
+                                <button class="btn btn-primary btn-sm" onclick="changePassword()">Update Password</button>
+                                <button class="btn btn-secondary btn-sm" onclick="cancelChangePassword()">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Availability Status -->
+                    <div class="info-card">
+                        <div class="card-title">
+                            Availability Status
+                        </div>
+                        <div class="availability-toggle">
+                            <span>✅ Available for new jobs</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="availabilityToggle" onchange="toggleAvailability()">
+                                <span class="toggle-slider"></span>
+                            </label>
+                            <span id="availabilityStatus">Available</span>
+                        </div>
+                        <p style="font-size: 12px; color: var(--gray-500); margin-top: var(--spacing-md);">
+                            When available, you'll see new job requests. When unavailable, you won't receive new assignments.
+                        </p>
+                    </div>
+
+                    <!-- Recent Earnings -->
+                    <div class="info-card">
+                        <div class="card-title">
+                            Recent Earnings
+                            <button class="edit-btn" onclick="viewAllEarnings()">View All</button>
+                        </div>
+                        <div id="recentEarnings" class="earnings-list">
+                            <p style="text-align: center; padding: var(--spacing-lg);">Loading earnings...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+        const API_BASE_URL = 'http://localhost:3000';
+
+        async function initializeUser() {
+            const userStr = sessionStorage.getItem("currentUser");
+            if (!userStr) {
+                window.location.href = "login.html";
+                return;
+            }
+
+            currentUser = JSON.parse(userStr);
+            if (currentUser.role !== "technician") {
+                window.location.href = "login.html";
+                return;
+            }
+            
+            document.getElementById("userAvatar").textContent = currentUser.name.split(" ").map(n => n[0]).join("");
+            document.getElementById("techName").textContent = currentUser.name;
+            document.getElementById("profileAvatar").textContent = currentUser.name.split(" ").map(n => n[0]).join("");
+            document.getElementById("profileName").textContent = currentUser.name;
+            document.getElementById("profileEmail").textContent = currentUser.email;
+            
+            document.getElementById("viewName").textContent = currentUser.name;
+            document.getElementById("viewEmail").textContent = currentUser.email;
+            document.getElementById("viewPhone").textContent = currentUser.phone || "Not set";
+            document.getElementById("viewSpecialization").textContent = currentUser.specialization || "General Mechanic";
+            
+            // Set availability toggle
+            const isAvailable = currentUser.is_available !== 0;
+            document.getElementById("availabilityToggle").checked = isAvailable;
+            document.getElementById("availabilityStatus").textContent = isAvailable ? "Available" : "Unavailable";
+            document.getElementById("availabilityStatus").style.color = isAvailable ? "var(--success)" : "var(--gray-500)";
+            
+            await loadTechStats();
+            await loadRecentEarnings();
+            await loadRating();
+        }
+
+       /* async function loadTechStats() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/technician/stats?technicianId=${currentUser.id}`);
+        const stats = await response.json();
+        
+        console.log("Profile stats loaded:", stats);
+        
+        document.getElementById("completedJobs").textContent = stats.completedJobs || 0;
+        document.getElementById("totalEarned").textContent = `KES ${(stats.totalEarned || 0).toLocaleString()}`;
+        document.getElementById("activeJobsCount").textContent = stats.activeJobs || 0;
+        
+    } catch (error) {
+        console.error("Error loading stats:", error);
+        document.getElementById("completedJobs").textContent = "0";
+        document.getElementById("totalEarned").textContent = "KES 0";
+        document.getElementById("activeJobsCount").textContent = "0";
+    }
+}
+*/       
+async function loadTechStats() {
+    try {
+        // Get completed jobs for earnings calculation
+        const completedResponse = await fetch(`${API_BASE_URL}/api/technician/completed-jobs?technicianId=${currentUser.id}`);
+        const completedJobs = await completedResponse.json();
+        
+        // Calculate total earnings from completed jobs
+        let totalEarned = 0;
+        completedJobs.forEach(job => {
+            totalEarned += job.invoice_amount || 0;
+        });
+        
+        // Get active jobs count
+        const activeResponse = await fetch(`${API_BASE_URL}/api/technician/my-jobs?technicianId=${currentUser.id}`);
+        const activeJobs = await activeResponse.json();
+        
+        document.getElementById("completedJobs").textContent = completedJobs.length;
+        document.getElementById("totalEarned").textContent = `KES ${totalEarned.toLocaleString()}`;
+        document.getElementById("activeJobsCount").textContent = activeJobs.length;
+        
+    } catch (error) {
+        console.error("Error loading stats:", error);
+        document.getElementById("completedJobs").textContent = "0";
+        document.getElementById("totalEarned").textContent = "KES 0";
+        document.getElementById("activeJobsCount").textContent = "0";
+    }
+}
+async function loadRating() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/technician/${currentUser.id}/rating`);
+                const rating = await response.json();
+                
+                const avgRating = rating.average || 0;
+                const totalReviews = rating.total || 0;
+                
+                if (totalReviews > 0) {
+                    document.getElementById("ratingBadge").innerHTML = `⭐ ${avgRating.toFixed(1)} (${totalReviews} review${totalReviews !== 1 ? 's' : ''})`;
+                } else {
+                    document.getElementById("ratingBadge").innerHTML = `⭐ No reviews yet`;
+                }
+            } catch (error) {
+                console.error("Error loading rating:", error);
+                document.getElementById("ratingBadge").innerHTML = `⭐ No reviews yet`;
+            }
+        }
+
+        /*async function loadRecentEarnings() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/technician/completed-jobs?technicianId=${currentUser.id}`);
+                const jobs = await response.json();
+                
+                const container = document.getElementById("recentEarnings");
+                if (jobs.length === 0) {
+                    container.innerHTML = '<p style="text-align: center; padding: var(--spacing-lg); color: var(--gray-500);">No completed jobs yet.</p>';
+                    return;
+                }
+                
+                container.innerHTML = jobs.slice(0, 5).map(job => `
+                    <div class="earning-item">
+                        <div>
+                            <strong>${job.service_name}</strong><br>
+                            <small>${new Date(job.completed_at).toLocaleDateString()}</small>
+                        </div>
+                        <div style="font-weight: 700; color: var(--primary);">
+                            KES ${(job.invoice_amount || 0).toLocaleString()}
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error("Error loading earnings:", error);
+            }
+        }
+*/
+async function loadRecentEarnings() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/technician/completed-jobs?technicianId=${currentUser.id}`);
+        const jobs = await response.json();
+        
+        const container = document.getElementById("recentEarnings");
+        if (jobs.length === 0) {
+            container.innerHTML = '<p style="text-align: center; padding: var(--spacing-lg); color: var(--gray-500);">No completed jobs yet.</p>';
+            return;
+        }
+        
+        // Calculate running total
+        let runningTotal = 0;
+        const earningsWithRunningTotal = jobs.map(job => {
+            runningTotal += job.invoice_amount || 0;
+            return { ...job, runningTotal };
+        });
+        
+        container.innerHTML = earningsWithRunningTotal.slice(0, 5).map(job => `
+            <div class="earning-item">
+                <div>
+                    <strong>${job.service_name}</strong><br>
+                    <small>${new Date(job.completed_at).toLocaleDateString()}</small>
+                    <div><small>${job.make} ${job.model}</small></div>
+                </div>
+                <div style="text-align: right;">
+                    <div style="font-weight: 700; color: var(--primary);">
+                        +KES ${(job.invoice_amount || 0).toLocaleString()}
+                    </div>
+                    <div style="font-size: 11px; color: var(--gray-500);">
+                        Total: KES ${job.runningTotal.toLocaleString()}
+                    </div>
+                </div>
+            </div>
+        `).join('');
+        
+        // Add total at the bottom
+        const totalEarned = jobs.reduce((sum, job) => sum + (job.invoice_amount || 0), 0);
+        container.innerHTML += `
+            <div class="earning-item" style="background: var(--primary-bg); margin-top: var(--spacing-md); border-radius: 8px; padding: var(--spacing-md);">
+                <div><strong>💰 Total Earned (All Time)</strong></div>
+                <div style="font-weight: 700; font-size: 18px; color: var(--primary);">
+                    KES ${totalEarned.toLocaleString()}
+                </div>
+            </div>
+        `;
+        
+    } catch (error) {
+        console.error("Error loading earnings:", error);
+        document.getElementById("recentEarnings").innerHTML = '<p style="text-align: center; padding: var(--spacing-lg); color: var(--gray-500);">Error loading earnings</p>';
+    }
+}
+        function viewAllEarnings() {
+            showToast("Full earnings report coming soon", "info");
+        }
+
+        function toggleEditProfile() {
+            document.getElementById("profileView").style.display = "none";
+            document.getElementById("profileEdit").style.display = "block";
+            document.getElementById("editName").value = currentUser.name;
+            document.getElementById("editEmail").value = currentUser.email;
+            document.getElementById("editPhone").value = currentUser.phone || "";
+            document.getElementById("editSpecialization").value = currentUser.specialization || "General Mechanic";
+        }
+
+        function cancelEditProfile() {
+            document.getElementById("profileView").style.display = "block";
+            document.getElementById("profileEdit").style.display = "none";
+        }
+
+        async function saveProfile() {
+            const updatedData = {
+                name: document.getElementById("editName").value,
+                email: document.getElementById("editEmail").value,
+                phone: document.getElementById("editPhone").value,
+                specialization: document.getElementById("editSpecialization").value
+            };
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/users/${currentUser.id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(updatedData)
+                });
+                
+                if (response.ok) {
+                    const updatedUser = await response.json();
+                    currentUser = { ...currentUser, ...updatedUser };
+                    sessionStorage.setItem("currentUser", JSON.stringify(currentUser));
+                    
+                    document.getElementById("profileName").textContent = currentUser.name;
+                    document.getElementById("userAvatar").textContent = currentUser.name.split(" ").map(n => n[0]).join("");
+                    document.getElementById("profileAvatar").textContent = currentUser.name.split(" ").map(n => n[0]).join("");
+                    document.getElementById("viewName").textContent = currentUser.name;
+                    document.getElementById("viewEmail").textContent = currentUser.email;
+                    document.getElementById("viewPhone").textContent = currentUser.phone || "Not set";
+                    document.getElementById("viewSpecialization").textContent = currentUser.specialization || "General Mechanic";
+                    
+                    cancelEditProfile();
+                    showToast("Profile updated successfully!", "success");
+                } else {
+                    showToast("Failed to update profile", "error");
+                }
+            } catch (error) {
+                console.error("Error updating profile:", error);
+                showToast("Error updating profile", "error");
+            }
+        }
+
+        function toggleChangePassword() {
+            document.getElementById("passwordView").style.display = "none";
+            document.getElementById("passwordEdit").style.display = "block";
+        }
+
+        function cancelChangePassword() {
+            document.getElementById("passwordView").style.display = "block";
+            document.getElementById("passwordEdit").style.display = "none";
+            document.getElementById("currentPassword").value = "";
+            document.getElementById("newPassword").value = "";
+            document.getElementById("confirmPassword").value = "";
+        }
+
+        async function changePassword() {
+            const currentPassword = document.getElementById("currentPassword").value;
+            const newPassword = document.getElementById("newPassword").value;
+            const confirmPassword = document.getElementById("confirmPassword").value;
+            
+            if (!currentPassword || !newPassword) {
+                showToast("Please fill in all fields", "error");
+                return;
+            }
+            
+            if (newPassword !== confirmPassword) {
+                showToast("New passwords do not match", "error");
+                return;
+            }
+            
+            if (newPassword.length < 6) {
+                showToast("Password must be at least 6 characters", "error");
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/users/${currentUser.id}/password`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ currentPassword, newPassword })
+                });
+                
+                if (response.ok) {
+                    showToast("Password changed successfully!", "success");
+                    cancelChangePassword();
+                } else {
+                    const error = await response.json();
+                    showToast(error.message || "Failed to change password", "error");
+                }
+            } catch (error) {
+                console.error("Error changing password:", error);
+                showToast("Error changing password", "error");
+            }
+        }
+
+        async function toggleAvailability() {
+            const isChecked = document.getElementById("availabilityToggle").checked;
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/technician/toggle-availability`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        technicianId: currentUser.id,
+                        isAvailable: isChecked
+                    })
+                });
+                
+                if (response.ok) {
+                    currentUser.is_available = isChecked ? 1 : 0;
+                    sessionStorage.setItem("currentUser", JSON.stringify(currentUser));
+                    
+                    document.getElementById("availabilityStatus").textContent = isChecked ? "Available" : "Unavailable";
+                    document.getElementById("availabilityStatus").style.color = isChecked ? "var(--success)" : "var(--gray-500)";
+                    showToast(isChecked ? "You are now available for jobs" : "You are now unavailable", "success");
+                } else {
+                    document.getElementById("availabilityToggle").checked = !isChecked;
+                    showToast("Failed to update availability", "error");
+                }
+            } catch (error) {
+                console.error("Error toggling availability:", error);
+                document.getElementById("availabilityToggle").checked = !isChecked;
+                showToast("Error updating availability", "error");
+            }
+        }
+
+        function changeProfilePicture() {
+            const emojis = ['🔧', '🚗', '⚙️', '🔩', '🛠️', '⭐'];
+            const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
+            document.getElementById("profileAvatar").textContent = randomEmoji;
+            showToast("Profile picture updated!", "success");
+        }
+
+        function logout() {
+            sessionStorage.removeItem("currentUser");
+            window.location.href = "login.html";
+        }
+
+        document.addEventListener("DOMContentLoaded", initializeUser);
+    </script>
+</body>
+</html>

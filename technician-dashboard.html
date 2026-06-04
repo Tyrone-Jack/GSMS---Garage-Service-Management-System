@@ -1,0 +1,1305 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Technician Dashboard - GSMS</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <div class="header">
+    <div class="header-content">
+      <a href="technician-dashboard.html" class="logo">
+        <span>GS</span>
+        GSMS
+      </a>
+      <nav class="nav-menu">
+        <a href="technician-dashboard.html" class="active">Dashboard</a>
+        <a href="#availableJobs">Available Jobs</a>
+        <a href="#myJobs">My Jobs</a>
+        <a href="#earningsHistory">Earnings</a>
+        <a href="tech-profile.html">Profile</a>
+      </nav>
+      <div class="user-profile">
+        <div class="user-avatar" id="userAvatar">JD</div>
+        <span id="techName" style="margin-right: var(--spacing-md)"></span>
+        <button class="btn btn-secondary btn-sm" onclick="logout()">
+          Logout
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="main-content">
+    <aside class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-title">Menu</div>
+        <ul class="sidebar-menu">
+          <li>
+            <a href="technician-dashboard.html" class="active">Dashboard</a>
+          </li>
+          <li>
+            <a href="#availableJobs" onclick="loadAvailableJobs()">Available Jobs</a>
+          </li>
+          <li><a href="#myJobs" onclick="loadMyJobs()">My Jobs</a></li>
+          <li><a href="#earningsHistory">Earnings History</a></li>
+          <li><a href="tech-profile.html">Profile</a></li>
+        </ul>
+      </div>
+    </aside>
+
+    <div class="dashboard-container">
+      <div class="container">
+        <div class="welcome-section">
+          <h1>Welcome, <span id="techWelcomeName">Technician</span>!</h1>
+          <p>
+            Manage your assigned jobs, update progress, and track your
+            earnings.
+          </p>
+        </div>
+
+        <!-- Update the stats grid in tech-dashboard.html -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-value" id="availableJobsCount">0</div>
+            <div class="stat-label">Available Jobs</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="activeJobsCount">0</div>
+            <div class="stat-label">Active Jobs</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="completedJobsCount">0</div>
+            <div class="stat-label">Completed Jobs</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="totalEarned">KES 0</div>
+            <div class="stat-label">Total Job Earnings</div>
+          </div>
+        </div>
+
+        <!-- Available Jobs Section -->
+        <div class="section-title">
+          Available Jobs
+          <button class="btn btn-sm btn-outline" onclick="loadAvailableJobs()">
+            Refresh
+          </button>
+        </div>
+        <div id="availableJobs" class="jobs-grid">
+          <!-- Available jobs will load here -->
+        </div>
+
+        <!-- My Active Jobs Section -->
+        <div class="section-title" style="margin-top: var(--spacing-2xl)">
+          My Active Jobs
+          <button class="btn btn-sm btn-outline" onclick="loadMyJobs()">
+            Refresh
+          </button>
+        </div>
+
+        <div id="myJobs" class="jobs-grid">
+          <!-- My jobs will load here -->
+        </div>
+        <!-- Earnings History Section -->
+        <div class="section-title" style="margin-top: var(--spacing-2xl)">
+          💰 Earnings History
+          <button class="btn btn-sm btn-outline" onclick="loadEarningsHistory()">
+            Refresh
+          </button>
+        </div>
+        <div id="earningsHistory" class="jobs-grid">
+          <!-- Earnings history will be loaded here -->
+          <div class="loading" style="text-align: center; padding: var(--spacing-xl)">
+            Loading earnings history...
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Availability Toggle -->
+  <div class="availability-toggle">
+    <button id="availabilityBtn" class="btn-available" onclick="toggleAvailability()">
+      ✅ Available for Jobs
+    </button>
+  </div>
+
+  <!-- Job Details Modal -->
+  <div id="jobModal" class="modal">
+    <div class="modal-content modal-large">
+      <div class="modal-header">
+        <h3 id="modalTitle">Job Details</h3>
+        <button class="modal-close" onclick="closeModal('jobModal')">
+          ×
+        </button>
+      </div>
+      <div id="jobModalContent">
+        <!-- Dynamic content -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Update Progress Modal -->
+  <div id="progressModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Update Job Progress</h3>
+        <button class="modal-close" onclick="closeModal('progressModal')">
+          ×
+        </button>
+      </div>
+      <div id="progressContent">
+        <!-- Dynamic content -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Parts Modal -->
+  <div id="partsModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Add Parts Used</h3>
+        <button class="modal-close" onclick="closeModal('partsModal')">
+          ×
+        </button>
+      </div>
+      <div class="form-group">
+        <label>Part Name</label>
+        <input type="text" id="partName" placeholder="e.g., Brake Pads, Oil Filter" />
+      </div>
+      <div class="form-group">
+        <label>Quantity</label>
+        <input type="number" id="partQuantity" value="1" min="1" />
+      </div>
+      <div class="form-group">
+        <label>Unit Price (KES)</label>
+        <input type="number" id="partPrice" placeholder="0.00" />
+      </div>
+      <div class="form-group">
+        <label>Supplier (Optional)</label>
+        <input type="text" id="partSupplier" placeholder="e.g., Toyota Kenya" />
+      </div>
+      <div style="
+            display: flex;
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-lg);
+          ">
+        <button class="btn btn-primary" onclick="savePart()">Add Part</button>
+        <button class="btn btn-secondary" onclick="closeModal('partsModal')">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+  <script src="data.js"></script>
+  <script>
+    let currentUser = null;
+    let currentJobId = null;
+    let currentParts = [];
+    const API_BASE_URL = "http://localhost:3000";
+
+    async function initializeUser() {
+      const userStr = sessionStorage.getItem("currentUser");
+      if (!userStr) {
+        window.location.href = "login.html";
+        return;
+      }
+
+      currentUser = JSON.parse(userStr);
+      if (currentUser.role !== "technician") {
+        window.location.href = "login.html";
+        return;
+      }
+
+      document.getElementById("userAvatar").textContent = currentUser.name
+        .split(" ")
+        .map((n) => n[0])
+        .join("");
+      document.getElementById("techName").textContent = currentUser.name;
+      document.getElementById("techWelcomeName").textContent =
+        currentUser.name.split(" ")[0];
+
+      await loadDashboardStats();
+      await loadAvailableJobs();
+      await loadMyJobs();
+      await loadEarningsHistory();
+    }
+    async function loadDashboardStats() {
+      try {
+        // Get completed jobs for accurate earnings calculation
+        const completedResponse = await fetch(
+          `${API_BASE_URL}/api/technician/completed-jobs?technicianId=${currentUser.id}`,
+        );
+        const completedJobs = await completedResponse.json();
+
+        // Calculate total earnings
+        const totalEarned = completedJobs.reduce(
+          (sum, job) => sum + (job.invoice_amount || 0),
+          0,
+        );
+
+        // Get available and active jobs counts
+        const response = await fetch(
+          `${API_BASE_URL}/api/technician/stats?technicianId=${currentUser.id}`,
+        );
+        const stats = await response.json();
+
+        document.getElementById("availableJobsCount").textContent =
+          stats.availableJobs || 0;
+        document.getElementById("activeJobsCount").textContent =
+          stats.activeJobs || 0;
+        document.getElementById("completedJobsCount").textContent =
+          completedJobs.length;
+        document.getElementById("totalEarned").textContent =
+          `KES ${totalEarned.toLocaleString()}`;
+
+        // Update quick stats
+        const today = new Date().toISOString().split("T")[0];
+        const todayJobs = completedJobs.filter((job) => {
+          const completedDay = new Date(job.completed_at)
+            .toISOString()
+            .split("T")[0];
+          return completedDay === today;
+        }).length;
+        const todayEarnings = completedJobs
+          .filter((job) => {
+            const completedDay = new Date(job.completed_at)
+              .toISOString()
+              .split("T")[0];
+            return completedDay === today;
+          })
+          .reduce((sum, job) => sum + (job.invoice_amount || 0), 0);
+
+        document.getElementById("todayJobs").textContent = todayJobs;
+        document.getElementById("todayEarnings").textContent =
+          `KES ${todayEarnings.toLocaleString()}`;
+        document.getElementById("monthEarnings").textContent =
+          `KES ${totalEarned.toLocaleString()}`;
+      } catch (error) {
+        console.error("Error loading stats:", error);
+      }
+    }
+    async function loadAvailableJobs() {
+      try {
+        const response = await fetch(
+          `${API_BASE_URL}/api/technician/available-jobs`,
+        );
+        const jobs = await response.json();
+
+        const container = document.getElementById("availableJobs");
+        if (jobs.length === 0) {
+          container.innerHTML =
+            '<p style="text-align: center; padding: var(--spacing-xl); color: var(--gray-500);">No available jobs at the moment.</p>';
+          return;
+        }
+
+        container.innerHTML = jobs
+          .map(
+            (job) => `
+                    <div class="job-card">
+                        <div class="job-header">
+                            <div>
+                                <div class="job-title">${job.service_name}</div>
+                                <div class="job-customer">Customer: ${job.customer_name}</div>
+                            </div>
+                            <span class="badge badge-warning">Pending</span>
+                        </div>
+                        <div class="job-details">
+                            <div class="detail-item">
+                                <span class="detail-label">Vehicle</span>
+                                <span class="detail-value">${job.year} ${job.make} ${job.model}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">License Plate</span>
+                                <span class="detail-value">${job.license_plate}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Preferred Date</span>
+                                <span class="detail-value">${new Date(job.preferred_date).toLocaleString()}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Price</span>
+                                <span class="detail-value">${job.price === 0 ? "Pending Quote" : `KES ${job.price.toLocaleString()}`}</span>
+                            </div>
+                        </div>
+                        <div class="job-actions">
+                            <button class="btn btn-primary btn-sm" onclick="acceptJob(${job.id})">Accept Job</button>
+                            <button class="btn btn-outline btn-sm" onclick="viewJobDetails(${job.id})">View Details</button>
+                        </div>
+                    </div>
+                `,
+          )
+          .join("");
+      } catch (error) {
+        console.error("Error loading available jobs:", error);
+      }
+    }
+
+    async function loadMyJobs() {
+      try {
+        const response = await fetch(
+          `${API_BASE_URL}/api/technician/my-jobs?technicianId=${currentUser.id}`,
+        );
+        const jobs = await response.json();
+
+        const container = document.getElementById("myJobs");
+        if (jobs.length === 0) {
+          container.innerHTML =
+            '<p style="text-align: center; padding: var(--spacing-xl); color: var(--gray-500);">No active jobs assigned to you.</p>';
+          return;
+        }
+
+        container.innerHTML = jobs
+          .map(
+            (job) => `
+                    <div class="job-card">
+                        <div class="job-header">
+                            <div>
+                                <div class="job-title">${job.service_name}</div>
+                                <div class="job-customer">Customer: ${job.customer_name}</div>
+                            </div>
+                            <span class="badge badge-${getStatusBadge(job.status)}">${job.status}</span>
+                        </div>
+                        <div class="job-details">
+                            <div class="detail-item">
+                                <span class="detail-label">Vehicle</span>
+                                <span class="detail-value">${job.year} ${job.make} ${job.model}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">License Plate</span>
+                                <span class="detail-value">${job.license_plate}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Status</span>
+                                <span class="detail-value">${job.status}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Accepted</span>
+                                <span class="detail-value">${job.accepted_at ? new Date(job.accepted_at).toLocaleString() : "Not accepted"}</span>
+                            </div>
+                        </div>
+                        <div class="job-actions">
+                            <button class="btn btn-primary btn-sm" onclick="updateJobProgress(${job.id})">Update Progress</button>
+                            <button class="btn btn-outline btn-sm" onclick="viewJobDetails(${job.id})">View Details</button>
+                        </div>
+                    </div>
+                `,
+          )
+          .join("");
+      } catch (error) {
+        console.error("Error loading my jobs:", error);
+      }
+    }
+
+    async function acceptJob(jobId) {
+      if (!confirm("Accept this job? It will be assigned to you.")) return;
+
+      try {
+        // Get job details first
+        const jobResponse = await fetch(
+          `${API_BASE_URL}/api/projects/${jobId}`,
+        );
+        const job = await jobResponse.json();
+
+        const response = await fetch(
+          `${API_BASE_URL}/api/technician/accept-job`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              projectId: jobId,
+              technicianId: currentUser.id,
+            }),
+          },
+        );
+
+        if (response.ok) {
+          // Create notification for customer
+          await fetch(`${API_BASE_URL}/api/notifications`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              user_id: job.customer_id,
+              user_role: "customer",
+              type: "job_update",
+              title: "👨‍🔧 Technician Assigned",
+              message: `${currentUser.name} has been assigned to your ${job.service_name}.`,
+            }),
+          });
+
+          showToast("Job accepted successfully!", "success");
+          await loadAvailableJobs();
+          await loadMyJobs();
+          await loadDashboardStats();
+        } else {
+          const error = await response.json();
+          showToast(error.error || "Failed to accept job", "error");
+        }
+      } catch (error) {
+        console.error("Error accepting job:", error);
+        showToast("Error accepting job", "error");
+      }
+    }
+    // Global variables for photo upload
+    let pendingPhotos = [];
+    let currentPhotoType = null;
+
+    function updateJobProgress(jobId) {
+      currentJobId = jobId;
+      pendingPhotos = [];
+
+      const content = `
+        <div class="form-group">
+            <label>Current Status</label>
+            <select id="jobStatus" class="form-control">
+                <option value="pending">Pending</option>
+                <option value="approved">Approved</option>
+                <option value="in_progress">In Progress</option>
+                <option value="completed">Completed</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Update Notes</label>
+            <textarea id="progressNotes" rows="3" placeholder="Describe what work was done..."></textarea>
+        </div>
+        
+        <!-- Photo Upload Section -->
+        <div style="margin-top: var(--spacing-lg);">
+            <h4>📸 Add Photos (Optional)</h4>
+            <p style="font-size: 12px; color: var(--gray-500); margin-bottom: var(--spacing-md);">You can upload photos from your device or take new ones with your camera</p>
+            
+            <!-- Photo Type Selection -->
+            <div style="display: flex; gap: var(--spacing-md); margin-bottom: var(--spacing-md); flex-wrap: wrap;">
+                <button type="button" class="btn btn-sm btn-outline" onclick="showPhotoUploader('before')">📷 Before Repair</button>
+                <button type="button" class="btn btn-sm btn-outline" onclick="showPhotoUploader('parts')">🔩 Parts Used/Fixed</button>
+                <button type="button" class="btn btn-sm btn-outline" onclick="showPhotoUploader('after')">✅ After Repair</button>
+            </div>
+            
+            <!-- Pending Photos Preview -->
+            <div id="pendingPhotosPreview" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: var(--spacing-md); margin-top: var(--spacing-md);"></div>
+        </div>
+        
+        <div style="display: flex; gap: var(--spacing-md); margin-top: var(--spacing-lg);">
+            <button class="btn btn-primary" onclick="saveProgressUpdateWithPhotos()">Save Update</button>
+            <button class="btn btn-secondary" onclick="closeModal('progressModal')">Cancel</button>
+        </div>
+    `;
+
+      document.getElementById("progressContent").innerHTML = content;
+      openModal("progressModal");
+    }
+
+    function showPhotoUploader(photoType) {
+      currentPhotoType = photoType;
+
+      const typeNames = {
+        before: "Before Repair",
+        parts: "Parts Used/Fixed",
+        after: "After Repair",
+      };
+
+      // Create a custom modal for camera/file selection
+      const modalContent = `
+        <div style="text-align: center;">
+            <h4>Add ${typeNames[photoType]} Photo</h4>
+            <div style="display: flex; gap: var(--spacing-md); margin: var(--spacing-lg) 0; flex-wrap: wrap; justify-content: center;">
+                <button class="btn btn-primary" onclick="openCamera()">
+                    📷 Take Photo with Camera
+                </button>
+                <button class="btn btn-outline" onclick="uploadFromGallery()">
+                    🖼️ Choose from Gallery
+                </button>
+            </div>
+            <div id="cameraPreview" style="margin-top: var(--spacing-lg); display: none;">
+                <video id="videoElement" style="width: 100%; max-width: 400px; border-radius: 8px; border: 1px solid var(--gray-300);"></video>
+                <div style="margin-top: var(--spacing-md);">
+                    <button class="btn btn-success" onclick="capturePhoto()">📸 Capture Photo</button>
+                    <button class="btn btn-secondary" onclick="closeCamera()">Cancel</button>
+                </div>
+            </div>
+            <div id="galleryInput" style="display: none;">
+                <input type="file" id="galleryFile" accept="image/*" onchange="processGalleryPhoto()">
+            </div>
+        </div>
+    `;
+
+      // Create or get camera modal
+      let cameraModal = document.getElementById("cameraModal");
+      if (!cameraModal) {
+        cameraModal = document.createElement("div");
+        cameraModal.id = "cameraModal";
+        cameraModal.className = "modal";
+        cameraModal.innerHTML = `<div class="modal-content" style="max-width: 500px;" id="cameraModalContent"></div>`;
+        document.body.appendChild(cameraModal);
+
+        cameraModal.addEventListener("click", function (e) {
+          if (e.target === cameraModal) {
+            closeCamera();
+            closeModal("cameraModal");
+          }
+        });
+      }
+
+      document.getElementById("cameraModalContent").innerHTML = modalContent;
+      openModal("cameraModal");
+    }
+
+    // Request camera permission and open camera
+    async function openCamera() {
+      try {
+        // Request camera permission
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: "environment" }, // Use back camera on mobile
+        });
+
+        const videoElement = document.getElementById("videoElement");
+        if (videoElement) {
+          videoElement.srcObject = stream;
+          videoElement.play();
+
+          document.getElementById("cameraPreview").style.display = "block";
+
+          // Store stream for later cleanup
+          window.currentVideoStream = stream;
+        }
+      } catch (error) {
+        console.error("Camera error:", error);
+        if (error.name === "NotAllowedError") {
+          showToast(
+            "Camera permission denied. Please allow camera access in your browser settings.",
+            "error",
+          );
+        } else if (error.name === "NotFoundError") {
+          showToast("No camera found on this device.", "error");
+        } else {
+          showToast(
+            "Unable to access camera. Please check your permissions.",
+            "error",
+          );
+        }
+      }
+    }
+
+    // Capture photo from camera
+    function capturePhoto() {
+      const videoElement = document.getElementById("videoElement");
+      if (!videoElement) return;
+
+      // Create a canvas to capture the video frame
+      const canvas = document.createElement("canvas");
+      canvas.width = videoElement.videoWidth;
+      canvas.height = videoElement.videoHeight;
+      const context = canvas.getContext("2d");
+      context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+
+      // Convert to base64
+      const imageData = canvas.toDataURL("image/jpeg", 0.8);
+
+      // Process the captured photo
+      processCapturedPhoto(imageData);
+
+      // Close camera
+      closeCamera();
+      closeModal("cameraModal");
+    }
+
+    // Process captured photo
+    async function processCapturedPhoto(imageData) {
+      // Convert base64 to file object
+      const blob = await (await fetch(imageData)).blob();
+      const file = new File([blob], `camera_${Date.now()}.jpg`, {
+        type: "image/jpeg",
+      });
+
+      // Process the photo
+      await processPhoto(file, currentPhotoType);
+    }
+
+    // Upload from gallery
+    function uploadFromGallery() {
+      const fileInput = document.getElementById("galleryFile");
+      if (fileInput) {
+        fileInput.click();
+      }
+    }
+
+    // Process gallery photo
+    async function processGalleryPhoto() {
+      const fileInput = document.getElementById("galleryFile");
+      const file = fileInput.files[0];
+
+      if (file) {
+        await processPhoto(file, currentPhotoType);
+        closeModal("cameraModal");
+      }
+    }
+
+    // Close camera and stop stream
+    function closeCamera() {
+      if (window.currentVideoStream) {
+        window.currentVideoStream
+          .getTracks()
+          .forEach((track) => track.stop());
+        window.currentVideoStream = null;
+      }
+
+      const videoElement = document.getElementById("videoElement");
+      if (videoElement) {
+        videoElement.srcObject = null;
+      }
+
+      document.getElementById("cameraPreview").style.display = "none";
+    }
+    // Check and request camera permission on load
+    async function checkCameraPermission() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: true,
+        });
+        stream.getTracks().forEach((track) => track.stop());
+        console.log("Camera permission granted");
+        return true;
+      } catch (error) {
+        console.log("Camera permission not granted:", error);
+        return false;
+      }
+    }
+
+    // Call this in initializeUser
+    async function initializeUser() {
+      const userStr = sessionStorage.getItem("currentUser");
+      if (!userStr) {
+        window.location.href = "login.html";
+        return;
+      }
+
+      currentUser = JSON.parse(userStr);
+      if (currentUser.role !== "technician") {
+        window.location.href = "login.html";
+        return;
+      }
+
+      document.getElementById("userAvatar").textContent = currentUser.name
+        .split(" ")
+        .map((n) => n[0])
+        .join("");
+      document.getElementById("techName").textContent = currentUser.name;
+      document.getElementById("techWelcomeName").textContent =
+        currentUser.name.split(" ")[0];
+
+      // Request camera permission on load
+      await checkCameraPermission();
+
+      await loadDashboardStats();
+      await loadAvailableJobs();
+      await loadMyJobs();
+    }
+    // Update the existing processPhoto function to handle camera images
+    async function processPhoto(file, photoType) {
+      // Check file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        showToast(
+          "Photo is too large. Please choose an image under 5MB.",
+          "error",
+        );
+        return;
+      }
+
+      // Convert to base64
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const photoData = {
+          id: Date.now() + Math.random(),
+          type: photoType,
+          data: e.target.result,
+          caption: "",
+        };
+        pendingPhotos.push(photoData);
+        updatePendingPhotosPreview();
+        showToast("Photo added successfully!", "success");
+      };
+      reader.readAsDataURL(file);
+    }
+    async function processPhoto(file, photoType) {
+      // Check file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        showToast("Photo is too large. Please choose an image under 5MB.");
+        return;
+      }
+
+      // Convert to base64
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const photoData = {
+          id: Date.now() + Math.random(),
+          type: photoType,
+          data: e.target.result,
+          caption: "",
+        };
+        pendingPhotos.push(photoData);
+        updatePendingPhotosPreview();
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function updatePendingPhotosPreview() {
+      const container = document.getElementById("pendingPhotosPreview");
+      if (!container) return;
+
+      if (pendingPhotos.length === 0) {
+        container.innerHTML = "";
+        return;
+      }
+
+      const typeNames = {
+        before: "📷 Before Repair",
+        parts: "🔩 Parts Used/Fixed",
+        after: "✅ After Repair",
+      };
+
+      container.innerHTML = pendingPhotos
+        .map(
+          (photo) => `
+        <div style="border: 1px solid var(--gray-200); border-radius: 8px; padding: var(--spacing-sm); position: relative;">
+            <img src="${photo.data}" alt="Preview" style="width: 100%; height: 120px; object-fit: cover; border-radius: 4px;">
+            <div style="margin-top: var(--spacing-sm);">
+                <span style="font-size: 11px; font-weight: 600; background: var(--primary-bg); padding: 2px 6px; border-radius: 4px;">${typeNames[photo.type]}</span>
+                <input type="text" placeholder="Caption (optional)" 
+                       style="width: 100%; margin-top: 8px; padding: 4px 8px; font-size: 12px; border: 1px solid var(--gray-300); border-radius: 4px;"
+                       onchange="updatePhotoCaption(${photo.id}, this.value)">
+            </div>
+            <button onclick="removePhoto(${photo.id})" style="position: absolute; top: 5px; right: 5px; background: red; color: white; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer;">×</button>
+        </div>
+    `,
+        )
+        .join("");
+    }
+
+    function updatePhotoCaption(photoId, caption) {
+      const photo = pendingPhotos.find((p) => p.id === photoId);
+      if (photo) {
+        photo.caption = caption;
+      }
+    }
+
+    function removePhoto(photoId) {
+      pendingPhotos = pendingPhotos.filter((p) => p.id !== photoId);
+      updatePendingPhotosPreview();
+    }
+    async function saveProgressUpdateWithPhotos() {
+      const status = document.getElementById("jobStatus").value;
+      const notes = document.getElementById("progressNotes").value;
+
+      const saveBtn = document.querySelector("#progressModal .btn-primary");
+      const originalText = saveBtn.textContent;
+      saveBtn.textContent = "Saving...";
+      saveBtn.disabled = true;
+
+      try {
+        // Get job details
+        const jobResponse = await fetch(
+          `${API_BASE_URL}/api/projects/${currentJobId}`,
+        );
+        const job = await jobResponse.json();
+
+        // Update job status and notes
+        const updateResponse = await fetch(
+          `${API_BASE_URL}/api/jobs/${currentJobId}/update`,
+          {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              status: status,
+              notes: notes,
+              technicianId: currentUser.id,
+            }),
+          },
+        );
+
+        if (!updateResponse.ok) {
+          throw new Error("Failed to update job progress");
+        }
+
+        // Send notification for status update
+        let notificationTitle = "";
+        let notificationMessage = "";
+
+        switch (status) {
+          case "approved":
+            notificationTitle = "📋 Job Approved";
+            notificationMessage = `Your ${job.service_name} has been approved and assigned to ${currentUser.name}.`;
+            break;
+          case "in_progress":
+            notificationTitle = "🔧 Work Started";
+            notificationMessage = `${currentUser.name} has started working on your ${job.service_name}.`;
+            break;
+          case "completed":
+            notificationTitle = "✅ Service Complete";
+            notificationMessage = `Your ${job.service_name} is complete! Please check your invoice.`;
+            break;
+        }
+
+        if (notificationTitle) {
+          await fetch(`${API_BASE_URL}/api/notifications`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              user_id: job.customer_id,
+              user_role: "customer",
+              type: "job_update",
+              title: notificationTitle,
+              message: notificationMessage,
+            }),
+          });
+        }
+
+        // Send notification for technician notes if provided
+        if (notes && notes.trim()) {
+          await fetch(`${API_BASE_URL}/api/notifications`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              user_id: job.customer_id,
+              user_role: "customer",
+              type: "job_update",
+              title: "📝 Technician Notes Added",
+              message: `Technician notes: ${notes.substring(0, 100)}${notes.length > 100 ? "..." : ""}`,
+            }),
+          });
+        }
+
+        // Upload photos and send notifications for each
+        let uploadedCount = 0;
+        for (const photo of pendingPhotos) {
+          try {
+            const photoResponse = await fetch(
+              `${API_BASE_URL}/api/jobs/${currentJobId}/photos`,
+              {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  photo_type: photo.type,
+                  photo_url: photo.data,
+                  caption: photo.caption || "",
+                  technicianId: currentUser.id,
+                }),
+              },
+            );
+
+            if (photoResponse.ok) {
+              uploadedCount++;
+            }
+          } catch (error) {
+            console.error("Error uploading photo:", error);
+          }
+        }
+
+        // Send notification for photos
+        if (uploadedCount > 0) {
+          const photoTypeNames = {
+            before: "Before Repair",
+            parts: "Parts Used/Fixed",
+            after: "After Repair",
+          };
+
+          const photoTypes = [
+            ...new Set(pendingPhotos.map((p) => photoTypeNames[p.type])),
+          ];
+
+          await fetch(`${API_BASE_URL}/api/notifications`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              user_id: job.customer_id,
+              user_role: "customer",
+              type: "job_update",
+              title: "📸 New Photos Added",
+              message: `${uploadedCount} new photo(s) added: ${photoTypes.join(", ")}`,
+            }),
+          });
+        }
+
+        let message = "Progress updated successfully!";
+        if (uploadedCount > 0) {
+          message += ` ${uploadedCount} photo(s) uploaded.`;
+        }
+        showToast(message, "success");
+
+        closeModal("progressModal");
+        await loadMyJobs();
+        await loadDashboardStats();
+      } catch (error) {
+        console.error("Error updating progress:", error);
+        showToast("Failed to update progress: " + error.message, "error");
+      } finally {
+        saveBtn.textContent = originalText;
+        saveBtn.disabled = false;
+      }
+    }
+    // Also update the viewJobDetails function to show photos properly
+    async function loadJobPhotos(jobId) {
+      try {
+        const response = await fetch(
+          `${API_BASE_URL}/api/jobs/${jobId}/photos`,
+        );
+        const photos = await response.json();
+
+        const container = document.getElementById("photosContainer");
+        if (!container) return;
+
+        if (photos.length === 0) {
+          container.innerHTML = "<p>No photos uploaded yet.</p>";
+          return;
+        }
+
+        // Group photos by type
+        const beforePhotos = photos.filter((p) => p.photo_type === "before");
+        const partsPhotos = photos.filter((p) => p.photo_type === "parts");
+        const afterPhotos = photos.filter((p) => p.photo_type === "after");
+
+        let html = "";
+
+        if (beforePhotos.length > 0) {
+          html += `<h5 style="margin: var(--spacing-md) 0 var(--spacing-sm);">📷 Before Repair</h5>`;
+          html += `<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: var(--spacing-md); margin-bottom: var(--spacing-lg);">`;
+          beforePhotos.forEach((photo) => {
+            html += `
+                    <div style="border: 1px solid var(--gray-200); border-radius: 8px; overflow: hidden;">
+                        <img src="${photo.photo_url}" alt="Before" style="width: 100%; height: 120px; object-fit: cover;">
+                        ${photo.caption ? `<p style="padding: var(--spacing-sm); font-size: 11px; margin: 0; background: var(--gray-50);">${photo.caption}</p>` : ""}
+                    </div>
+                `;
+          });
+          html += `</div>`;
+        }
+
+        if (partsPhotos.length > 0) {
+          html += `<h5 style="margin: var(--spacing-md) 0 var(--spacing-sm);">🔩 Parts Used / Fixed</h5>`;
+          html += `<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: var(--spacing-md); margin-bottom: var(--spacing-lg);">`;
+          partsPhotos.forEach((photo) => {
+            html += `
+                    <div style="border: 1px solid var(--gray-200); border-radius: 8px; overflow: hidden;">
+                        <img src="${photo.photo_url}" alt="Parts" style="width: 100%; height: 120px; object-fit: cover;">
+                        ${photo.caption ? `<p style="padding: var(--spacing-sm); font-size: 11px; margin: 0; background: var(--gray-50);">${photo.caption}</p>` : ""}
+                    </div>
+                `;
+          });
+          html += `</div>`;
+        }
+
+        if (afterPhotos.length > 0) {
+          html += `<h5 style="margin: var(--spacing-md) 0 var(--spacing-sm);">✅ After Repair</h5>`;
+          html += `<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: var(--spacing-md); margin-bottom: var(--spacing-lg);">`;
+          afterPhotos.forEach((photo) => {
+            html += `
+                    <div style="border: 1px solid var(--gray-200); border-radius: 8px; overflow: hidden;">
+                        <img src="${photo.photo_url}" alt="After" style="width: 100%; height: 120px; object-fit: cover;">
+                        ${photo.caption ? `<p style="padding: var(--spacing-sm); font-size: 11px; margin: 0; background: var(--gray-50);">${photo.caption}</p>` : ""}
+                    </div>
+                `;
+          });
+          html += `</div>`;
+        }
+
+        container.innerHTML = html;
+      } catch (error) {
+        console.error("Error loading photos:", error);
+        if (container)
+          container.innerHTML =
+            '<p style="color: red;">Failed to load photos</p>';
+      }
+    }
+    async function saveProgressUpdate() {
+      const status = document.getElementById("jobStatus").value;
+      const notes = document.getElementById("progressNotes").value;
+
+      try {
+        const response = await fetch(
+          `${API_BASE_URL}/api/jobs/${currentJobId}/update`,
+          {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              status: status,
+              notes: notes,
+              technicianId: currentUser.id,
+            }),
+          },
+        );
+
+        if (response.ok) {
+          showToast("Progress updated successfully!");
+          closeModal("progressModal");
+          closeModal("jobModal");
+          await loadMyJobs();
+          await loadDashboardStats();
+        } else {
+          showToast("Failed to update progress");
+        }
+      } catch (error) {
+        console.error("Error updating progress:", error);
+        showToast("Error updating progress");
+      }
+    }
+
+    function openAddPartsModal() {
+      document.getElementById("partName").value = "";
+      document.getElementById("partQuantity").value = "1";
+      document.getElementById("partPrice").value = "";
+      document.getElementById("partSupplier").value = "";
+      openModal("partsModal");
+    }
+
+    async function savePart() {
+      const partName = document.getElementById("partName").value;
+      const quantity = parseInt(
+        document.getElementById("partQuantity").value,
+      );
+      const unitPrice = parseFloat(
+        document.getElementById("partPrice").value,
+      );
+      const supplier = document.getElementById("partSupplier").value;
+
+      if (!partName || !unitPrice) {
+        showToast("Please fill in part name and price", "warning");
+        return;
+      }
+
+      try {
+        // Get job details
+        const jobResponse = await fetch(
+          `${API_BASE_URL}/api/projects/${currentJobId}`,
+        );
+        const job = await jobResponse.json();
+
+        const response = await fetch(
+          `${API_BASE_URL}/api/jobs/${currentJobId}/parts`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              part_name: partName,
+              quantity: quantity,
+              unit_price: unitPrice,
+              total_price: quantity * unitPrice,
+              supplier: supplier,
+            }),
+          },
+        );
+
+        if (response.ok) {
+          // Send notification for new part
+          await fetch(`${API_BASE_URL}/api/notifications`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              user_id: job.customer_id,
+              user_role: "customer",
+              type: "payment",
+              title: "🔩 New Part Added to Invoice",
+              message: `${partName} (x${quantity}) - KES ${(quantity * unitPrice).toLocaleString()}`,
+            }),
+          });
+
+          showToast("Part added successfully!", "success");
+          closeModal("partsModal");
+          await loadJobParts(currentJobId);
+        } else {
+          showToast("Failed to add part", "error");
+        }
+      } catch (error) {
+        console.error("Error adding part:", error);
+        showToast("Error adding part", "error");
+      }
+    }
+    function getStatusBadge(status) {
+      const badges = {
+        pending: "warning",
+        approved: "info",
+        in_progress: "primary",
+        completed: "success",
+        cancelled: "danger",
+      };
+      return badges[status] || "secondary";
+    }
+
+    async function toggleAvailability() {
+      const btn = document.getElementById("availabilityBtn");
+      const isAvailable = btn.classList.contains("btn-available");
+
+      try {
+        const response = await fetch(
+          `${API_BASE_URL}/api/technician/toggle-availability`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              technicianId: currentUser.id,
+              isAvailable: !isAvailable,
+            }),
+          },
+        );
+
+        if (response.ok) {
+          if (isAvailable) {
+            btn.classList.remove("btn-available");
+            btn.classList.add("btn-unavailable");
+            btn.innerHTML = "❌ Not Available";
+          } else {
+            btn.classList.remove("btn-unavailable");
+            btn.classList.add("btn-available");
+            btn.innerHTML = "✅ Available for Jobs";
+          }
+          showToast("Availability updated!");
+        }
+      } catch (error) {
+        console.error("Error toggling availability:", error);
+      }
+    }
+    async function loadEarningsHistory() {
+      try {
+        const response = await fetch(
+          `${API_BASE_URL}/api/technician/completed-jobs?technicianId=${currentUser.id}`,
+        );
+        const jobs = await response.json();
+
+        const container = document.getElementById("earningsHistory");
+
+        if (jobs.length === 0) {
+          container.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state-icon">💰</div>
+                    <p>No completed jobs yet. Your earnings will appear here.</p>
+                </div>
+            `;
+          return;
+        }
+
+        // Group jobs by month/year
+        const groupedJobs = {};
+        jobs.forEach((job) => {
+          const date = new Date(job.completed_at);
+          const key = `${date.getFullYear()}-${date.getMonth() + 1}`;
+          const monthName = date.toLocaleString("default", {
+            month: "long",
+            year: "numeric",
+          });
+
+          if (!groupedJobs[key]) {
+            groupedJobs[key] = {
+              month: monthName,
+              jobs: [],
+              total: 0,
+            };
+          }
+          groupedJobs[key].jobs.push(job);
+          groupedJobs[key].total += job.invoice_amount || 0;
+        });
+
+        // Calculate grand total
+        const grandTotal = jobs.reduce(
+          (sum, job) => sum + (job.invoice_amount || 0),
+          0,
+        );
+
+        // Build HTML
+        let html = "";
+
+        // Sort months in reverse chronological order
+        const sortedMonths = Object.keys(groupedJobs).sort().reverse();
+
+        sortedMonths.forEach((monthKey) => {
+          const monthData = groupedJobs[monthKey];
+
+          html += `
+                <div style="margin-bottom: var(--spacing-xl);">
+                    <h3 style="margin-bottom: var(--spacing-md); color: var(--primary-dark);">📅 ${monthData.month}</h3>
+                    <div style="background: var(--white); border-radius: 12px; overflow: hidden;">
+                        ${monthData.jobs
+              .map(
+                (job) => `
+                            <div class="earning-card">
+                                <div class="earning-header">
+                                    <div>
+                                        <div class="earning-service">${job.service_name}</div>
+                                        <div class="earning-date">Completed: ${new Date(job.completed_at).toLocaleDateString()}</div>
+                                    </div>
+                                    <div class="earning-amount">
+                                        +KES ${(job.invoice_amount || 0).toLocaleString()}
+                                    </div>
+                                </div>
+                                <div class="earning-details">
+                                    <div>
+                                        <strong>Customer:</strong> ${job.customer_name}
+                                    </div>
+                                    <div>
+                                        <strong>Vehicle:</strong> ${job.make} ${job.model}
+                                    </div>
+                                    <div>
+                                        <strong>License:</strong> ${job.license_plate}
+                                    </div>
+                                    <div>
+                                        <strong>Payment:</strong> 
+                                        <span class="badge badge-${job.payment_status === "paid" ? "success" : "warning"}">
+                                            ${job.payment_status === "paid" ? "Paid" : "Pending"}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        `,
+              )
+              .join("")}
+                        <div style="background: var(--primary-bg); padding: var(--spacing-md); text-align: right; border-top: 1px solid var(--primary-lighter);">
+                            <strong>Month Total: KES ${monthData.total.toLocaleString()}</strong>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+
+        // Add grand total at the bottom
+        html += `
+            <div class="grand-total">
+                <div class="label">🏆 Total Earnings (All Time)</div>
+                <div class="amount">KES ${grandTotal.toLocaleString()}</div>
+                <div style="margin-top: var(--spacing-md);">
+                    <small>Based on ${jobs.length} completed ${jobs.length === 1 ? "job" : "jobs"}</small>
+                </div>
+            </div>
+        `;
+
+        container.innerHTML = html;
+      } catch (error) {
+        console.error("Error loading earnings history:", error);
+        document.getElementById("earningsHistory").innerHTML = `
+            <div class="empty-state">
+                <div class="empty-state-icon">❌</div>
+                <p>Error loading earnings history</p>
+            </div>
+        `;
+      }
+    }
+
+    function openModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) modal.classList.add("active");
+    }
+
+    function closeModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) modal.classList.remove("active");
+    }
+
+    function logout() {
+      sessionStorage.removeItem("currentUser");
+      window.location.href = "login.html";
+    }
+
+    document.addEventListener("DOMContentLoaded", initializeUser);
+  </script>
+  <script src="toast.js"></script>
+</body>
+
+</html>
