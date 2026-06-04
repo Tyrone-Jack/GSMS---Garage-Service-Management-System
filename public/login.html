@@ -4,8 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - GSMS</title>
-    <link rel="stylesheet" href="styles.css">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #f97316;
+            --primary-dark: #ea580c;
+            --white: #ffffff;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-500: #6b7280;
+            --gray-700: #374151;
+            --spacing-sm: 0.5rem;
+            --spacing-md: 0.75rem;
+            --spacing-lg: 1rem;
+            --spacing-xl: 1.5rem;
+            --spacing-2xl: 2rem;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+
         .auth-container {
             min-height: 100vh;
             display: flex;
@@ -78,6 +102,26 @@
             box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
         }
 
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
         .btn-login {
             width: 100%;
             margin-top: var(--spacing-md);
@@ -126,6 +170,25 @@
             margin-right: 8px;
         }
 
+        /* Credentials hint */
+        .credentials-hint {
+            margin-top: var(--spacing-lg);
+            padding: var(--spacing-md);
+            background: #f0fdf4;
+            border-radius: 8px;
+            border-left: 3px solid #22c55e;
+        }
+
+        .credentials-hint p {
+            font-size: 12px;
+            color: var(--gray-700);
+            margin-bottom: 4px;
+        }
+
+        .credentials-hint strong {
+            color: #16a34a;
+        }
+
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
@@ -140,6 +203,17 @@
                 transform: translateY(0);
             }
         }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
     </style>
 </head>
 <body>
@@ -147,7 +221,7 @@
         <div class="auth-card">
             <div class="auth-header">
                 <div class="auth-logo">
-                    <span>GS</span>GSMS
+                    <span>GS</span>MS
                 </div>
                 <h1 class="auth-title">Welcome Back</h1>
                 <p class="auth-subtitle">Sign in to access your garage services</p>
@@ -155,10 +229,10 @@
 
             <div id="errorMessage" class="error-message"></div>
 
-            <form id="loginForm" onsubmit="handleLogin(event)">
+            <form id="loginForm">
                 <div class="form-group">
-                    <label for="username">Username or Email</label>
-                    <input type="text" id="username" name="username" required placeholder="Enter your username or email">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" required placeholder="Enter your username">
                 </div>
 
                 <div class="form-group">
@@ -169,19 +243,56 @@
                 <button type="submit" class="btn btn-primary btn-login" id="loginBtn">Sign In</button>
             </form>
 
+            <!-- Credentials hint for testing -->
+            <div class="credentials-hint">
+                <p><strong>🔐 Demo Credentials:</strong></p>
+                <p>👤 Customer: <strong>client</strong> / <strong>client123</strong></p>
+                <p>🔧 Technician: <strong>john_tjau</strong> / <strong>john123</strong></p>
+                <p>👨‍💼 Admin: <strong>admins</strong> / <strong>command123</strong></p>
+            </div>
+
             <div class="auth-footer">
-                <p>Don't have an account? <a href="register.html">Create one here</a></p>
+                <p>Don't have an account? <a href="#">Create one here</a></p>
             </div>
         </div>
     </div>
 
     <script>
-        const API_BASE_URL = 'http://localhost:3000';
+        // Hardcoded user credentials
+        const USERS = {
+            // Customer account
+            client: {
+                username: "client",
+                password: "client123",
+                role: "customer",
+                name: "John Client",
+                email: "client@example.com",
+                id: 1001
+            },
+            // Technician account
+            john_tjau: {
+                username: "john_tjau",
+                password: "john123",
+                role: "technician",
+                name: "John Technician",
+                email: "john.technician@gsms.com",
+                id: 2001
+            },
+            // Admin account
+            admins: {
+                username: "admins",
+                password: "command123",
+                role: "admin",
+                name: "System Administrator",
+                email: "admin@gsms.local",
+                id: 3001
+            }
+        };
 
-        async function handleLogin(event) {
+        function handleLogin(event) {
             event.preventDefault();
             
-            const username = document.getElementById('username').value;
+            const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value;
             
             // Show loading state
@@ -193,85 +304,51 @@
             // Clear previous error
             hideError();
 
-            // CHECK ADMIN HARDCODED CREDENTIALS FIRST
-            if (username === "admin" && password === "command123") {
-                const adminUser = {
-                    id: 999,
-                    name: "System Administrator",
-                    email: "admin@gsms.local",
-                    username: "admin",
-                    role: "admin",
-                    created_at: new Date().toISOString()
-                };
-                sessionStorage.setItem("currentUser", JSON.stringify(adminUser));
-                showToast("Admin login successful! Redirecting...", "success");
-                setTimeout(() => {
-                    window.location.href = "admin-dashboard.html";
-                }, 1000);
+            // Check if user exists
+            const user = USERS[username];
+            
+            if (!user) {
+                showError('Invalid username. Please check your credentials.');
+                resetButton(loginBtn, originalText);
                 return;
             }
-
-            // REGULAR USER LOGIN - Check against database
-            try {
-                // First, check if the input is email or username and get user
-                const checkResponse = await fetch(`${API_BASE_URL}/api/user/find`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ identifier: username })
-                });
-
-                const userData = await checkResponse.json();
-
-                if (!checkResponse.ok || !userData.exists) {
-                    showError('Invalid username/email or password');
-                    loginBtn.innerHTML = originalText;
-                    loginBtn.disabled = false;
-                    return;
-                }
-
-                // Now attempt login with the found user's email and role
-                const loginResponse = await fetch(`${API_BASE_URL}/api/login`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        email: userData.email,
-                        password: password,
-                        role: userData.role
-                    })
-                });
-
-                const data = await loginResponse.json();
-
-                if (loginResponse.ok && data.success) {
-                    // Store user data in sessionStorage
-                    sessionStorage.setItem('currentUser', JSON.stringify(data.user));
-                    showToast(`Welcome back, ${data.user.name}!`, "success");
-                    
-                    // Redirect based on role
-                    setTimeout(() => {
-                        if (data.user.role === 'customer') {
-                            window.location.href = 'customer-dashboard.html';
-                        } else if (data.user.role === 'technician') {
-                            window.location.href = 'technician-dashboard.html';
-                        } else if (data.user.role === 'admin') {
-                            window.location.href = 'admin-dashboard.html';
-                        }
-                    }, 500);
-                } else {
-                    showError(data.message || 'Invalid username/email or password');
-                    loginBtn.innerHTML = originalText;
-                    loginBtn.disabled = false;
-                }
-            } catch (error) {
-                console.error('Login error:', error);
-                showError('Unable to connect to server. Please make sure the server is running.');
-                loginBtn.innerHTML = originalText;
-                loginBtn.disabled = false;
+            
+            if (user.password !== password) {
+                showError('Invalid password. Please try again.');
+                resetButton(loginBtn, originalText);
+                return;
             }
+            
+            // Login successful - store user in session
+            const loggedInUser = {
+                id: user.id,
+                username: user.username,
+                name: user.name,
+                email: user.email,
+                role: user.role,
+                loginTime: new Date().toISOString()
+            };
+            
+            sessionStorage.setItem('currentUser', JSON.stringify(loggedInUser));
+            showToast(`Welcome back, ${user.name}! Redirecting...`, 'success');
+            
+            // Redirect based on role
+            setTimeout(() => {
+                if (user.role === 'customer') {
+                    window.location.href = 'customer-dashboard.html';
+                } else if (user.role === 'technician') {
+                    window.location.href = 'technician-dashboard.html';
+                } else if (user.role === 'admin') {
+                    window.location.href = 'admin-dashboard.html';
+                } else {
+                    window.location.href = 'dashboard.html';
+                }
+            }, 800);
+        }
+
+        function resetButton(btn, originalText) {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
         }
 
         function showError(message) {
@@ -306,6 +383,7 @@
                     z-index: 10000;
                     animation: slideIn 0.3s ease;
                     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                    font-size: 14px;
                 `;
                 document.body.appendChild(toast);
             }
@@ -317,23 +395,9 @@
                 toast.style.display = 'none';
             }, 3000);
         }
-        
-        // Add slideIn animation
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes slideIn {
-                from {
-                    transform: translateX(100%);
-                    opacity: 0;
-                }
-                to {
-                    transform: translateX(0);
-                    opacity: 1;
-                }
-            }
-        `;
-        document.head.appendChild(style);
+
+        // Attach event listener
+        document.getElementById('loginForm').addEventListener('submit', handleLogin);
     </script>
-    <script src="toast.js"></script>
 </body>
 </html>
