@@ -4,21 +4,136 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GSMS - Garage Service Management System</title>
-    <link rel="stylesheet" href="styles.css">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #f97316;
+            --primary-dark: #ea580c;
+            --primary-lighter: #fed7aa;
+            --primary-bg: #fff7ed;
+            --white: #ffffff;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --spacing-sm: 0.5rem;
+            --spacing-md: 0.75rem;
+            --spacing-lg: 1rem;
+            --spacing-xl: 1.5rem;
+            --spacing-2xl: 2rem;
+            --font-mono: 'Courier New', monospace;
+        }
+
         body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             background: var(--gray-50);
         }
 
+        /* Header */
         .header {
             background: var(--white);
             border-bottom: 1px solid var(--gray-200);
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: var(--spacing-lg) var(--spacing-2xl);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: var(--spacing-lg);
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            text-decoration: none;
+            color: var(--gray-900);
+        }
+
+        .logo span {
+            color: var(--primary);
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: var(--spacing-2xl);
+        }
+
+        .nav-menu a {
+            text-decoration: none;
+            color: var(--gray-600);
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+
+        .nav-menu a:hover {
+            color: var(--primary);
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .btn-lg {
+            padding: 14px 32px;
+            font-size: 16px;
+        }
+
+        .btn-sm {
+            padding: 6px 16px;
+            font-size: 14px;
+        }
+
+        /* Hero Section */
         .hero {
             background: linear-gradient(135deg, var(--primary-bg) 0%, #fef3c7 100%);
             padding: var(--spacing-2xl) var(--spacing-lg);
-            margin-top: var(--spacing-lg);
+            margin-top: 0;
         }
 
         .hero-content {
@@ -52,12 +167,14 @@
             flex-wrap: wrap;
         }
 
+        /* Main Container */
         .main-container {
             max-width: 1400px;
             margin: 0 auto;
             padding: var(--spacing-2xl) var(--spacing-lg);
         }
 
+        /* Features */
         .features-section {
             margin-bottom: var(--spacing-2xl);
         }
@@ -110,6 +227,7 @@
             line-height: 1.6;
         }
 
+        /* Roles Section */
         .roles-section {
             margin-bottom: var(--spacing-2xl);
         }
@@ -189,6 +307,7 @@
             background: var(--primary-dark);
         }
 
+        /* Demo Credentials */
         .demo-credentials {
             background: var(--primary-bg);
             border: 2px solid var(--primary-lighter);
@@ -216,6 +335,13 @@
             border-radius: 8px;
             padding: var(--spacing-lg);
             text-align: left;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .credential-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
         .credential-label {
@@ -244,6 +370,7 @@
             font-family: var(--font-mono);
         }
 
+        /* Stats Section */
         .stats-section {
             background: linear-gradient(135deg, var(--primary-bg), var(--primary-lighter));
             border-radius: 12px;
@@ -273,6 +400,7 @@
             font-weight: 600;
         }
 
+        /* Footer */
         .footer {
             background: var(--gray-900);
             color: var(--white);
@@ -325,23 +453,18 @@
             .hero-title {
                 font-size: 36px;
             }
-
             .hero-subtitle {
                 font-size: 16px;
             }
-
             .hero-buttons {
                 flex-direction: column;
             }
-
             .hero-buttons .btn {
                 width: 100%;
             }
-
             .section-title {
                 font-size: 28px;
             }
-
             .role-card {
                 padding: var(--spacing-lg);
             }
@@ -351,17 +474,21 @@
             .hero-title {
                 font-size: 28px;
             }
-
             .features-grid, .roles-grid {
                 grid-template-columns: 1fr;
             }
-
             .credentials-grid {
                 grid-template-columns: 1fr;
             }
-
             .stats-content {
                 grid-template-columns: 1fr;
+            }
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            .nav-menu {
+                justify-content: center;
             }
         }
     </style>
@@ -379,7 +506,7 @@
                 <a href="#roles">Roles</a>
                 <a href="#demo">Demo</a>
             </nav>
-            <div class="user-profile">
+            <div>
                 <a href="login.html" class="btn btn-primary btn-sm">Sign In</a>
             </div>
         </div>
@@ -430,31 +557,26 @@
                     <h3 class="feature-title">Easy Booking</h3>
                     <p class="feature-description">Customers can book services online with instant confirmation and real-time updates</p>
                 </div>
-
                 <div class="feature-card">
                     <div class="feature-icon">🔧</div>
                     <h3 class="feature-title">Job Management</h3>
                     <p class="feature-description">Technicians receive assignments and can track progress with photo documentation</p>
                 </div>
-
                 <div class="feature-card">
                     <div class="feature-icon">📊</div>
                     <h3 class="feature-title">Analytics</h3>
                     <p class="feature-description">Admin dashboard with comprehensive reporting and business insights</p>
                 </div>
-
                 <div class="feature-card">
                     <div class="feature-icon">⭐</div>
                     <h3 class="feature-title">Reviews & Ratings</h3>
                     <p class="feature-description">Build reputation through customer feedback and service quality tracking</p>
                 </div>
-
                 <div class="feature-card">
                     <div class="feature-icon">📱</div>
                     <h3 class="feature-title">Mobile Ready</h3>
                     <p class="feature-description">Fully responsive design works seamlessly on all devices</p>
                 </div>
-
                 <div class="feature-card">
                     <div class="feature-icon">🔒</div>
                     <h3 class="feature-title">Secure</h3>
@@ -478,7 +600,7 @@
                         <li>Rate and review services</li>
                         <li>Manage multiple vehicles</li>
                     </ul>
-                    <button class="role-button" onclick="window.location.href='login.html?role=customer'">Customer Access</button>
+                    <button class="role-button" onclick="window.location.href='login.html?username=client&password=client123'">Customer Access</button>
                 </div>
 
                 <!-- Technician Role -->
@@ -492,7 +614,7 @@
                         <li>Add service notes</li>
                         <li>Track performance metrics</li>
                     </ul>
-                    <button class="role-button" onclick="window.location.href='login.html?role=tech'">Technician Access</button>
+                    <button class="role-button" onclick="window.location.href='login.html?username=john_tjau&password=john123'">Technician Access</button>
                 </div>
 
                 <!-- Admin Role -->
@@ -506,17 +628,17 @@
                         <li>View detailed analytics</li>
                         <li>Manage users and roles</li>
                     </ul>
-                    <button class="role-button" onclick="window.location.href='login.html?role=admin'">Admin Access</button>
+                    <button class="role-button" onclick="window.location.href='login.html?username=admins&password=command123'">Admin Access</button>
                 </div>
             </div>
         </div>
 
-        <!-- Demo Credentials -->
+        <!-- Demo Credentials Section with Click-to-Autofill -->
         <div id="demo" class="demo-credentials">
             <h2 class="demo-title">Test Drive GSMS</h2>
-            <p style="color: var(--gray-700); margin-bottom: var(--spacing-lg);">Use these credentials to explore all features:</p>
+            <p style="color: var(--gray-700); margin-bottom: var(--spacing-lg);">Click any credential box to auto-fill and login:</p>
             <div class="credentials-grid">
-                <div class="credential-item">
+                <div class="credential-item" onclick="window.location.href='login.html?username=client&password=client123'">
                     <div class="credential-label">👤 Customer Account</div>
                     <div class="credential-row">
                         <span class="credential-key">Username:</span>
@@ -528,7 +650,7 @@
                     </div>
                 </div>
 
-                <div class="credential-item">
+                <div class="credential-item" onclick="window.location.href='login.html?username=john_tjau&password=john123'">
                     <div class="credential-label">🔧 Technician Account</div>
                     <div class="credential-row">
                         <span class="credential-key">Username:</span>
@@ -540,7 +662,7 @@
                     </div>
                 </div>
 
-                <div class="credential-item">
+                <div class="credential-item" onclick="window.location.href='login.html?username=admins&password=command123'">
                     <div class="credential-label">👨‍💼 Admin Account</div>
                     <div class="credential-row">
                         <span class="credential-key">Username:</span>
@@ -553,7 +675,7 @@
                 </div>
             </div>
             <div style="margin-top: var(--spacing-lg);">
-                <a href="login.html" class="btn btn-primary btn-lg">Start Demo</a>
+                <a href="login.html" class="btn btn-primary btn-lg">Manual Login</a>
             </div>
         </div>
     </div>
@@ -565,7 +687,6 @@
                 <h4>GSMS</h4>
                 <p style="color: var(--gray-400); font-size: 14px; margin-bottom: var(--spacing-lg);">Garage Service Management System - Powering automotive service businesses</p>
             </div>
-
             <div class="footer-section">
                 <h4>Product</h4>
                 <ul class="footer-links">
@@ -575,7 +696,6 @@
                     <li><a href="#">Pricing</a></li>
                 </ul>
             </div>
-
             <div class="footer-section">
                 <h4>Company</h4>
                 <ul class="footer-links">
@@ -585,7 +705,6 @@
                     <li><a href="#">Contact</a></li>
                 </ul>
             </div>
-
             <div class="footer-section">
                 <h4>Legal</h4>
                 <ul class="footer-links">
@@ -596,12 +715,9 @@
                 </ul>
             </div>
         </div>
-
         <div class="footer-bottom">
             <p>&copy; 2026 TJ & U Garage Service Management System. All rights reserved.</p>
         </div>
     </div>
-    <script src="toast.js"></script>
 </body>
-
 </html>
