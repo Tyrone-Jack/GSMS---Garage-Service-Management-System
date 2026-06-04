@@ -398,6 +398,25 @@
 
         // Attach event listener
         document.getElementById('loginForm').addEventListener('submit', handleLogin);
+        // Auto-fill login form from URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const usernameParam = urlParams.get('username');
+    const passwordParam = urlParams.get('password');
+    
+    if (usernameParam) {
+        document.getElementById('username').value = usernameParam;
+    }
+    if (passwordParam) {
+        document.getElementById('password').value = passwordParam;
+        
+        // Optional: Auto-submit if both username and password are present
+        if (usernameParam && passwordParam) {
+            // Small delay to ensure form is ready
+            setTimeout(() => {
+                document.getElementById('loginForm').dispatchEvent(new Event('submit'));
+            }, 100);
+        }
+    }
     </script>
 </body>
 </html>
