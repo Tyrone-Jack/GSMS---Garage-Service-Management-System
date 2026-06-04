@@ -720,4 +720,32 @@
         </div>
     </div>
 </body>
+    <script>
+    // Auto-fill and auto-submit login from URL parameters
+    (function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const usernameParam = urlParams.get('username');
+        const passwordParam = urlParams.get('password');
+        
+        if (usernameParam) {
+            const usernameField = document.getElementById('username');
+            if (usernameField) usernameField.value = usernameParam;
+        }
+        
+        if (passwordParam) {
+            const passwordField = document.getElementById('password');
+            if (passwordField) passwordField.value = passwordParam;
+        }
+        
+        // Auto-submit if both fields are filled
+        if (usernameParam && passwordParam) {
+            setTimeout(() => {
+                const form = document.getElementById('loginForm');
+                if (form) {
+                    form.dispatchEvent(new Event('submit'));
+                }
+            }, 200);
+        }
+    })();
+</script>
 </html>
