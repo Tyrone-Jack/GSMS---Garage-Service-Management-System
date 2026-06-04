@@ -75,6 +75,60 @@
             font-size: 14px;
         }
 
+        /* Demo Selector Styles */
+        .demo-selector {
+            margin-bottom: var(--spacing-xl);
+            padding: var(--spacing-md);
+            background: var(--primary-bg, #fff7ed);
+            border-radius: 12px;
+            border: 1px solid var(--primary-lighter, #fed7aa);
+        }
+
+        .demo-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--primary-dark);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: var(--spacing-sm);
+            display: block;
+        }
+
+        .demo-buttons {
+            display: flex;
+            gap: var(--spacing-md);
+            flex-wrap: wrap;
+        }
+
+        .demo-btn {
+            flex: 1;
+            padding: 10px 12px;
+            background: var(--white);
+            border: 1px solid var(--gray-300);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+
+        .demo-btn:hover {
+            border-color: var(--primary);
+            background: var(--primary-bg, #fff7ed);
+            transform: translateY(-1px);
+        }
+
+        .demo-btn.customer {
+            border-left: 3px solid #10b981;
+        }
+        .demo-btn.technician {
+            border-left: 3px solid #3b82f6;
+        }
+        .demo-btn.admin {
+            border-left: 3px solid #f97316;
+        }
+
         .form-group {
             margin-bottom: var(--spacing-lg);
         }
@@ -140,10 +194,6 @@
             font-weight: 600;
         }
 
-        .auth-footer a:hover {
-            text-decoration: underline;
-        }
-
         .error-message {
             background: #fee2e2;
             border: 1px solid #fecaca;
@@ -170,7 +220,6 @@
             margin-right: 8px;
         }
 
-        /* Credentials hint */
         .credentials-hint {
             margin-top: var(--spacing-lg);
             padding: var(--spacing-md);
@@ -183,10 +232,6 @@
             font-size: 12px;
             color: var(--gray-700);
             margin-bottom: 4px;
-        }
-
-        .credentials-hint strong {
-            color: #16a34a;
         }
 
         @keyframes spin {
@@ -227,6 +272,23 @@
                 <p class="auth-subtitle">Sign in to access your garage services</p>
             </div>
 
+            <!-- Demo Selector - Quick Account Access -->
+            <div class="demo-selector">
+                <span class="demo-label">⚡ Quick Demo Access</span>
+                <div class="demo-buttons">
+                    <div class="demo-btn customer" onclick="fillCredentials('client', 'client123')">
+                        👤 Customer
+                    </div>
+                    <div class="demo-btn technician" onclick="fillCredentials('john_tjau', 'john123')">
+                        🔧 Technician
+                    </div>
+                    <div class="demo-btn admin" onclick="fillCredentials('admins', 'command123')">
+                        👨‍💼 Admin
+                    </div>
+                </div>
+                <p style="font-size: 11px; color: var(--gray-500); margin-top: 8px; text-align: center;">Click any role to auto-fill demo credentials</p>
+            </div>
+
             <div id="errorMessage" class="error-message"></div>
 
             <form id="loginForm">
@@ -260,7 +322,6 @@
     <script>
         // Hardcoded user credentials
         const USERS = {
-            // Customer account
             client: {
                 username: "client",
                 password: "client123",
@@ -269,7 +330,6 @@
                 email: "client@example.com",
                 id: 1001
             },
-            // Technician account
             john_tjau: {
                 username: "john_tjau",
                 password: "john123",
@@ -278,7 +338,6 @@
                 email: "john.technician@gsms.com",
                 id: 2001
             },
-            // Admin account
             admins: {
                 username: "admins",
                 password: "command123",
@@ -289,22 +348,40 @@
             }
         };
 
+        // Function to fill credentials from demo buttons
+        function fillCredentials(username, password) {
+            document.getElementById('username').value = username;
+            document.getElementById('password').value = password;
+            
+            // Visual feedback - highlight the filled fields
+            const usernameField = document.getElementById('username');
+            const passwordField = document.getElementById('password');
+            usernameField.style.borderColor = '#10b981';
+            passwordField.style.borderColor = '#10b981';
+            setTimeout(() => {
+                usernameField.style.borderColor = '';
+                passwordField.style.borderColor = '';
+            }, 1000);
+            
+            // Optional: auto-submit after filling (uncomment if desired)
+            // setTimeout(() => {
+            //     document.getElementById('loginForm').dispatchEvent(new Event('submit'));
+            // }, 100);
+        }
+
         function handleLogin(event) {
             event.preventDefault();
             
             const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value;
             
-            // Show loading state
             const loginBtn = document.getElementById('loginBtn');
             const originalText = loginBtn.innerHTML;
             loginBtn.innerHTML = '<span class="loading-spinner"></span> Signing in...';
             loginBtn.disabled = true;
             
-            // Clear previous error
             hideError();
 
-            // Check if user exists
             const user = USERS[username];
             
             if (!user) {
@@ -319,7 +396,6 @@
                 return;
             }
             
-            // Login successful - store user in session
             const loggedInUser = {
                 id: user.id,
                 username: user.username,
@@ -332,7 +408,6 @@
             sessionStorage.setItem('currentUser', JSON.stringify(loggedInUser));
             showToast(`Welcome back, ${user.name}! Redirecting...`, 'success');
             
-            // Redirect based on role
             setTimeout(() => {
                 if (user.role === 'customer') {
                     window.location.href = 'customer-dashboard.html';
@@ -340,8 +415,6 @@
                     window.location.href = 'technician-dashboard.html';
                 } else if (user.role === 'admin') {
                     window.location.href = 'admin-dashboard.html';
-                } else {
-                    window.location.href = 'dashboard.html';
                 }
             }, 800);
         }
@@ -355,8 +428,6 @@
             const errorDiv = document.getElementById('errorMessage');
             errorDiv.textContent = message;
             errorDiv.classList.add('show');
-            
-            // Auto-hide after 5 seconds
             setTimeout(() => {
                 errorDiv.classList.remove('show');
             }, 5000);
@@ -367,7 +438,6 @@
         }
 
         function showToast(message, type) {
-            // Create toast element if it doesn't exist
             let toast = document.getElementById('customToast');
             if (!toast) {
                 toast = document.createElement('div');
@@ -387,36 +457,31 @@
                 `;
                 document.body.appendChild(toast);
             }
-            
             toast.textContent = message;
             toast.style.display = 'block';
-            
             setTimeout(() => {
                 toast.style.display = 'none';
             }, 3000);
         }
 
-        // Attach event listener
-        document.getElementById('loginForm').addEventListener('submit', handleLogin);
-        // Auto-fill login form from URL parameters
-    const urlParams = new URLSearchParams(window.location.search);
-    const usernameParam = urlParams.get('username');
-    const passwordParam = urlParams.get('password');
-    
-    if (usernameParam) {
-        document.getElementById('username').value = usernameParam;
-    }
-    if (passwordParam) {
-        document.getElementById('password').value = passwordParam;
+        // Auto-fill from URL parameters (for landing page integration)
+        const urlParams = new URLSearchParams(window.location.search);
+        const usernameParam = urlParams.get('username');
+        const passwordParam = urlParams.get('password');
         
-        // Optional: Auto-submit if both username and password are present
-        if (usernameParam && passwordParam) {
-            // Small delay to ensure form is ready
-            setTimeout(() => {
-                document.getElementById('loginForm').dispatchEvent(new Event('submit'));
-            }, 100);
+        if (usernameParam) {
+            document.getElementById('username').value = usernameParam;
         }
-    }
+        if (passwordParam) {
+            document.getElementById('password').value = passwordParam;
+            if (usernameParam && passwordParam) {
+                setTimeout(() => {
+                    document.getElementById('loginForm').dispatchEvent(new Event('submit'));
+                }, 100);
+            }
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', handleLogin);
     </script>
 </body>
 </html>
